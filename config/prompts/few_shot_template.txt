@@ -1,0 +1,85 @@
+TASK: You are evaluating the quality of evaluative reasoning in a conclusion fragment from a program evaluation report.
+
+ASSESSMENT FRAMEWORK: Apply the Integrated Evaluative Reasoning Checklist below to assess whether this conclusion demonstrates sound evaluative reasoning.
+
+[IERC CHECKLIST — INSERT APPENDIX A CONTENT HERE]
+[Replace this block with the full 22-checkpoint Integrated Evaluative Reasoning Checklist
+across the following 6 domains:
+  Domain 1: Evaluative Framing
+  Domain 2: Evidence Base
+  Domain 3: Argument Structure
+  Domain 4: Synthesis & Integration
+  Domain 5: Evaluative Conclusion
+  Domain 6: Qualifications & Transparency
+Remove this placeholder before running the benchmark.]
+
+IMPORTANT: These checkpoints are orienting heuristics, not algorithmic rules. Sound evaluative reasoning requires synthesis and professional judgment, not mechanical checklist completion. Consider how domains interact and how trade-offs are weighed. No single checkpoint is determinative — assess the conclusion holistically.
+
+CALIBRATION EXAMPLES:
+Below are examples showing how to apply this framework. Study the reasoning patterns in each rationale.
+
+─────────────────────────────────────────────────────────────────────────────
+Example 1 of 4 — Classification: sound
+─────────────────────────────────────────────────────────────────────────────
+Evaluative Conclusion Fragment:
+[CALIBRATION EXAMPLE 1 FRAGMENT — Replace with actual sound fragment text.
+ See spec Section 1.3 for selection criteria: vary strengths across examples
+ (argument structure, synthesis, qualification); avoid extreme boundary cases.]
+
+Classification: sound
+Rationale: [CALIBRATION EXAMPLE 1 RATIONALE — Replace with expert rationale
+explaining why this demonstrates sound evaluative reasoning, identifying key
+strengths across relevant domains and how trade-offs were weighed.]
+
+─────────────────────────────────────────────────────────────────────────────
+Example 2 of 4 — Classification: sound
+─────────────────────────────────────────────────────────────────────────────
+Evaluative Conclusion Fragment:
+[CALIBRATION EXAMPLE 2 FRAGMENT — Replace with actual sound fragment text.
+ This example should vary the strengths shown from Example 1.]
+
+Classification: sound
+Rationale: [CALIBRATION EXAMPLE 2 RATIONALE — Replace with expert rationale
+explaining why this demonstrates sound evaluative reasoning, identifying key
+strengths and relevant domain considerations.]
+
+─────────────────────────────────────────────────────────────────────────────
+Example 3 of 4 — Classification: not sound
+─────────────────────────────────────────────────────────────────────────────
+Evaluative Conclusion Fragment:
+[CALIBRATION EXAMPLE 3 FRAGMENT — Replace with actual not sound fragment text.
+ Primary deficiency should differ from Example 4's (e.g., weak warrants /
+ Domain 3, or inadequate evidence / Domain 2).]
+
+Classification: not sound
+Rationale: [CALIBRATION EXAMPLE 3 RATIONALE — Replace with expert rationale
+explaining why this demonstrates weak evaluative reasoning, identifying the
+primary deficiencies and which domains were most problematic.]
+
+─────────────────────────────────────────────────────────────────────────────
+Example 4 of 4 — Classification: not sound
+─────────────────────────────────────────────────────────────────────────────
+Evaluative Conclusion Fragment:
+[CALIBRATION EXAMPLE 4 FRAGMENT — Replace with actual not sound fragment text.
+ Primary deficiency should differ from Example 3's (e.g., inadequate synthesis /
+ Domain 4, or over-generalization / Domain 6).]
+
+Classification: not sound
+Rationale: [CALIBRATION EXAMPLE 4 RATIONALE — Replace with expert rationale
+explaining why this demonstrates weak evaluative reasoning, identifying the
+primary deficiencies and which domains were most problematic.]
+
+─────────────────────────────────────────────────────────────────────────────
+
+NOW EVALUATE THIS FRAGMENT:
+
+YOUR TASK:
+1. Classification: Classify this conclusion as either sound or not sound based on the overall quality of evaluative reasoning.
+2. Rationale: Provide a 2-4 sentence rationale explaining your judgment. Identify which domains were most salient to your decision and how you weighed any trade-offs.
+
+EVALUATIVE CONCLUSION FRAGMENT:
+[Fragment text will be inserted here]
+
+YOUR RESPONSE:
+Classification: [sound / not sound]
+Rationale: [2-4 sentences explaining your judgment]

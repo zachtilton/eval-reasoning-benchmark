@@ -88,9 +88,14 @@ def has_clear_final_classification(
     if not any(marker in final_lower for marker in conclusory_markers):
         return False
 
-    # Normalize stated_classification for substring search
-    display = stated_classification.replace("_", " ")
-    return display in final_lower
+    # Use regex to avoid "sound" matching inside "not sound" as a substring.
+    if stated_classification == "sound":
+        # Remove "not sound" phrases first, then check for standalone "sound".
+        cleaned = re.sub(r"\bnot\s+sound\b", "", final_lower)
+        return bool(re.search(r"\bsound\b", cleaned))
+    else:  # not_sound
+        display = stated_classification.replace("_", " ")  # "not sound"
+        return bool(re.search(r"\bnot\s+sound\b", final_lower))
 
 
 def has_contradictory_classifications(rationale: str) -> bool:
