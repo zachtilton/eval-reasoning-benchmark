@@ -1,0 +1,34 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+
+# Environment and secrets
+.env
+*.key
+api_keys.yaml
+
+# Data files (tracked selectively)
+data/responses/*
+data/raw/*
+!data/raw/.gitkeep
+!data/responses/.gitkeep
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Logs
+logs/*
+!logs/.gitkeep
+
+# Jupyter
+.ipynb_checkpoints/
