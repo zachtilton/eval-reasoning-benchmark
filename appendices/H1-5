@@ -1,0 +1,1035 @@
+Appendix H.1: Performance Matrix Generation
+import pandas as pd
+import numpy as np
+from scipy import stats
+
+def generate_performance_matrix(fragment_df):
+    """
+    Generate the 12-cell performance matrix (6 models × 2 prompts)
+    with pass rates and 95% Wilson score confidence intervals.
+    
+    Args:
+        fragment_df: DataFrame with fragment-level outcomes
+            Required columns: model_family, prompt_condition, fragment_outcome, 
+            unanimous_agreement
+    
+    Returns:
+        DataFrame with performance matrix for Appendix H.1
+    """
+    results = []
+    
+    for model in fragment_df['model_family'].unique():
+        for prompt in fragment_df['prompt_condition'].unique():
+            subset = fragment_df[
+                (fragment_df['model_family'] == model) & 
+                (fragment_df['prompt_condition'] == prompt)
+            ]
+            
+            n = len(subset)
+            passes = (subset['fragment_outcome'] == 'pass').sum()
+            fails = n - passes
+            pass_rate = passes / n if n > 0 else 0
+            unanimous = subset['unanimous_agreement'].sum()
+            unanimous_rate = unanimous / n if n > 0 else 0
+            
+            # Wilson score confidence interval
+            ci_lower, ci_upper = wilson_confidence_interval(pass_rate, n)
+            
+            results.append({
+                'model_family': model,
+                'prompt_condition': prompt,
+                'n_fragments': n,
+                'passes': passes,
+                'fails': fails,
+                'fragment_pass_rate': pass_rate,
+                'ci_lower_95': ci_lower,
+                'ci_upper_95': ci_upper,
+                'ci_width': ci_upper - ci_lower,
+                'unanimous_agreement_rate': unanimous_rate,
+                'unanimous_count': unanimous
+            })
+    
+    matrix_df = pd.DataFrame(results)
+    matrix_df = matrix_df.sort_values(['model_family', 'prompt_condition'])
+    
+    return matrix_df
+
+
+def wilson_confidence_interval(p, n, confidence=0.95):
+    """
+    Wilson score interval for binomial proportion.
+    More accurate than Wald interval for small samples or extreme proportions.
+    
+    Args:
+        p: Observed proportion (pass rate)
+        n: Sample size
+        confidence: Confidence level (default 0.95)
+    
+    Returns:
+        Tuple of (lower_bound, upper_bound)
+    """
+    if n == 0:
+        return (0.0, 0.0)
+    
+    z = stats.norm.ppf((1 + confidence) / 2)
+    denominator = 1 + z**2 / n
+    center = (p + z**2 / (2 * n)) / denominator
+    margin = z * np.sqrt((p * (1 - p) / n + z**2 / (4 * n**2))) / denominator
+    
+    return (max(0, center - margin), min(1, center + margin))
+
+
+def generate_collapsed_summaries(fragment_df):
+    """
+    Generate summary tables collapsed by model (across prompts)
+    and by prompt (across models).
+    
+    Args:
+        fragment_df: DataFrame with fragment-level outcomes
+    
+    Returns:
+        Tuple of (by_model_df, by_prompt_df, by_architecture_df)
+    """
+    # By model (collapsed across prompts)
+    by_model = []
+    for model in fragment_df['model_family'].unique():
+        subset = fragment_df[fragment_df['model_family'] == model]
+        n = len(subset)
+        pass_rate = (subset['fragment_outcome'] == 'pass').mean()
+        ci_lower, ci_upper = wilson_confidence_interval(pass_rate, n)
+        
+        by_model.append({
+            'model_family': model,
+            'n_fragments': n,
+            'fragment_pass_rate': pass_rate,
+            'ci_lower_95': ci_lower,
+            'ci_upper_95': ci_upper,
+            'unanimous_agreement_rate': subset['unanimous_agreement'].mean()
+        })
+    
+    by_model_df = pd.DataFrame(by_model).sort_values('fragment_pass_rate', ascending=False)
+    
+    # By prompt (collapsed across models)
+    by_prompt = []
+    for prompt in fragment_df['prompt_condition'].unique():
+        subset = fragment_df[fragment_df['prompt_condition'] == prompt]
+        n = len(subset)
+        pass_rate = (subset['fragment_outcome'] == 'pass').mean()
+        ci_lower, ci_upper = wilson_confidence_interval(pass_rate, n)
+        
+        by_prompt.append({
+            'prompt_condition': prompt,
+            'n_fragments': n,
+            'fragment_pass_rate': pass_rate,
+            'ci_lower_95': ci_lower,
+            'ci_upper_95': ci_upper,
+            'unanimous_agreement_rate': subset['unanimous_agreement'].mean()
+        })
+    
+    by_prompt_df = pd.DataFrame(by_prompt)
+    
+    # By architecture type (open vs closed)
+    architecture_map = {
+        'gpt_5': 'closed',
+        'claude_opus_4_6': 'closed',
+        'gemini_3_pro': 'closed',
+        'deepseek_v3': 'open',
+        'kimi_k2': 'open',
+        'glm_4_7': 'open'
+    }
+    
+    fragment_df_arch = fragment_df.copy()
+    fragment_df_arch['architecture'] = fragment_df_arch['model_family'].map(architecture_map)
+    
+    by_arch = []
+    for arch in ['closed', 'open']:
+        subset = fragment_df_arch[fragment_df_arch['architecture'] == arch]
+        n = len(subset)
+        pass_rate = (subset['fragment_outcome'] == 'pass').mean()
+        ci_lower, ci_upper = wilson_confidence_interval(pass_rate, n)
+        
+        by_arch.append({
+            'architecture': arch,
+            'n_fragments': n,
+            'models': subset['model_family'].nunique(),
+            'fragment_pass_rate': pass_rate,
+            'ci_lower_95': ci_lower,
+            'ci_upper_95': ci_upper
+        })
+    
+    by_arch_df = pd.DataFrame(by_arch)
+    
+    return by_model_df, by_prompt_df, by_arch_df
+
+
+def export_all_h1_tables(fragment_df, output_dir='results/'):
+    """Export all H.1 performance tables to CSV."""
+    import os
+    os.makedirs(output_dir, exist_ok=True)
+    
+    matrix = generate_performance_matrix(fragment_df)
+    matrix.to_csv(f'{output_dir}/H1_performance_matrix.csv', index=False)
+    
+    by_model, by_prompt, by_arch = generate_collapsed_summaries(fragment_df)
+    by_model.to_csv(f'{output_dir}/H1_by_model.csv', index=False)
+    by_prompt.to_csv(f'{output_dir}/H1_by_prompt.csv', index=False)
+    by_arch.to_csv(f'{output_dir}/H1_by_architecture.csv', index=False)
+    
+    print(f"Exported H.1 tables to {output_dir}")
+    return matrix, by_model, by_prompt, by_arch
+ 
+Appendix H.2: Statistical Tests
+import numpy as np
+import pandas as pd
+from scipy import stats
+from itertools import combinations
+
+# ─────────────────────────────────────────────
+# TEST 1: McNemar's Test (Prompt Condition Effects)
+# ─────────────────────────────────────────────
+
+def mcnemars_test_prompt_effects(fragment_df):
+    """
+    McNemar's test for paired proportions: zero-shot vs. few-shot.
+    
+    Leverages within-fragment design where each fragment is assessed
+    under both conditions. Tests whether the marginal proportions
+    of pass/fail differ between prompt conditions.
+    
+    Args:
+        fragment_df: DataFrame with fragment-level outcomes
+            Must contain: fragment_id, model_family, prompt_condition, fragment_outcome
+    
+    Returns:
+        Dictionary with test results per model and overall
+    """
+    results = {}
+    
+    for model in fragment_df['model_family'].unique():
+        model_data = fragment_df[fragment_df['model_family'] == model]
+        
+        # Pivot to get zero-shot and few-shot outcomes side by side
+        zero = model_data[model_data['prompt_condition'] == 'zero_shot'][
+            ['fragment_id', 'fragment_outcome']
+        ].set_index('fragment_id').rename(columns={'fragment_outcome': 'zero_shot'})
+        
+        few = model_data[model_data['prompt_condition'] == 'few_shot'][
+            ['fragment_id', 'fragment_outcome']
+        ].set_index('fragment_id').rename(columns={'fragment_outcome': 'few_shot'})
+        
+        paired = zero.join(few, how='inner')
+        
+        # Build 2×2 contingency table for McNemar's
+        # Rows: zero-shot outcome, Columns: few-shot outcome
+        a = ((paired['zero_shot'] == 'pass') & (paired['few_shot'] == 'pass')).sum()  # both pass
+        b = ((paired['zero_shot'] == 'pass') & (paired['few_shot'] == 'fail')).sum()  # zero pass, few fail
+        c = ((paired['zero_shot'] == 'fail') & (paired['few_shot'] == 'pass')).sum()  # zero fail, few pass
+        d = ((paired['zero_shot'] == 'fail') & (paired['few_shot'] == 'fail')).sum()  # both fail
+        
+        n_discordant = b + c
+        
+        if n_discordant == 0:
+            # No discordant pairs — cannot compute McNemar's
+            results[model] = {
+                'contingency_table': {'both_pass': a, 'zero_only': b, 'few_only': c, 'both_fail': d},
+                'n_paired': len(paired),
+                'n_discordant': 0,
+                'statistic': None,
+                'p_value': None,
+                'odds_ratio': None,
+                'odds_ratio_ci': None,
+                'note': 'No discordant pairs; test not applicable'
+            }
+            continue
+        
+        # McNemar's test (with continuity correction for small samples)
+        if n_discordant < 25:
+            # Use exact binomial test for small discordant counts
+            p_value = stats.binom_test(b, n_discordant, 0.5)
+            test_stat = None
+            test_type = 'exact_binomial'
+        else:
+            # Use chi-squared approximation
+            test_stat = (abs(b - c) - 1)**2 / (b + c)  # with continuity correction
+            p_value = 1 - stats.chi2.cdf(test_stat, df=1)
+            test_type = 'chi_squared_corrected'
+        
+        # Odds ratio: ratio of discordant pairs
+        odds_ratio = b / c if c > 0 else float('inf')
+        
+        # 95% CI for odds ratio (log method)
+        if b > 0 and c > 0:
+            log_or = np.log(odds_ratio)
+            se_log_or = np.sqrt(1/b + 1/c)
+            ci_lower = np.exp(log_or - 1.96 * se_log_or)
+            ci_upper = np.exp(log_or + 1.96 * se_log_or)
+        else:
+            ci_lower, ci_upper = None, None
+        
+        results[model] = {
+            'contingency_table': {'both_pass': a, 'zero_only': b, 'few_only': c, 'both_fail': d},
+            'n_paired': len(paired),
+            'n_discordant': n_discordant,
+            'test_type': test_type,
+            'statistic': test_stat,
+            'p_value': p_value,
+            'significant_at_05': p_value < 0.05 if p_value else None,
+            'odds_ratio': odds_ratio,
+            'odds_ratio_ci': (ci_lower, ci_upper),
+            'zero_shot_pass_rate': (a + b) / len(paired),
+            'few_shot_pass_rate': (a + c) / len(paired),
+            'direction': 'few_shot_better' if c > b else ('zero_shot_better' if b > c else 'no_difference')
+        }
+    
+    return results
+
+
+# ─────────────────────────────────────────────
+# TEST 2: Chi-Squared Test (Model Family Differences)
+# ─────────────────────────────────────────────
+
+def chi_squared_model_comparison(fragment_df):
+    """
+    Chi-squared test of independence across 6 models.
+    Tests whether pass rates differ significantly across model families.
+    
+    Args:
+        fragment_df: DataFrame with fragment-level outcomes
+    
+    Returns:
+        Dictionary with omnibus test results and post-hoc pairwise comparisons
+    """
+    # Build contingency table: models × outcomes
+    contingency = pd.crosstab(
+        fragment_df['model_family'],
+        fragment_df['fragment_outcome']
+    )
+    
+    # Omnibus chi-squared test
+    chi2, p_value, dof, expected = stats.chi2_contingency(contingency)
+    
+    # Effect size: Cramér's V
+    n_total = contingency.sum().sum()
+    k = min(contingency.shape) - 1
+    cramers_v = np.sqrt(chi2 / (n_total * k)) if k > 0 else 0
+    
+    omnibus = {
+        'chi_squared': chi2,
+        'p_value': p_value,
+        'degrees_of_freedom': dof,
+        'significant_at_05': p_value < 0.05,
+        'cramers_v': cramers_v,
+        'contingency_table': contingency.to_dict(),
+        'expected_frequencies': pd.DataFrame(
+            expected, 
+            index=contingency.index, 
+            columns=contingency.columns
+        ).to_dict()
+    }
+    
+    # Post-hoc pairwise comparisons (only if omnibus is significant)
+    pairwise = {}
+    if p_value < 0.05:
+        models = fragment_df['model_family'].unique()
+        n_comparisons = len(list(combinations(models, 2)))
+        bonferroni_alpha = 0.05 / n_comparisons
+        
+        for model_a, model_b in combinations(models, 2):
+            subset = fragment_df[
+                fragment_df['model_family'].isin([model_a, model_b])
+            ]
+            pair_contingency = pd.crosstab(
+                subset['model_family'],
+                subset['fragment_outcome']
+            )
+            
+            chi2_pair, p_pair, _, _ = stats.chi2_contingency(pair_contingency)
+            
+            # Pass rates for each model in pair
+            rate_a = (fragment_df[fragment_df['model_family'] == model_a]['fragment_outcome'] == 'pass').mean()
+            rate_b = (fragment_df[fragment_df['model_family'] == model_b]['fragment_outcome'] == 'pass').mean()
+            
+            pairwise[f'{model_a}_vs_{model_b}'] = {
+                'chi_squared': chi2_pair,
+                'p_value': p_pair,
+                'bonferroni_alpha': bonferroni_alpha,
+                'significant_bonferroni': p_pair < bonferroni_alpha,
+                'pass_rate_a': rate_a,
+                'pass_rate_b': rate_b,
+                'difference': abs(rate_a - rate_b),
+                'higher_performer': model_a if rate_a > rate_b else model_b
+            }
+    
+    return {'omnibus': omnibus, 'pairwise': pairwise}
+
+
+# ─────────────────────────────────────────────
+# TEST 3: Z-Test for Architecture Comparison
+# ─────────────────────────────────────────────
+
+def architecture_z_test(fragment_df):
+    """
+    Independent proportions z-test: open vs. closed architecture.
+    Tests whether aggregated pass rates differ between architecture types.
+    
+    Args:
+        fragment_df: DataFrame with fragment-level outcomes
+    
+    Returns:
+        Dictionary with test results and Cohen's h effect size
+    """
+    architecture_map = {
+        'gpt_5': 'closed',
+        'claude_opus_4_6': 'closed',
+        'gemini_3_pro': 'closed',
+        'deepseek_v3': 'open',
+        'kimi_k2': 'open',
+        'glm_4_7': 'open'
+    }
+    
+    df = fragment_df.copy()
+    df['architecture'] = df['model_family'].map(architecture_map)
+    
+    closed = df[df['architecture'] == 'closed']
+    open_src = df[df['architecture'] == 'open']
+    
+    n_closed = len(closed)
+    n_open = len(open_src)
+    p_closed = (closed['fragment_outcome'] == 'pass').mean()
+    p_open = (open_src['fragment_outcome'] == 'pass').mean()
+    
+    # Pooled proportion
+    p_pooled = (
+        (closed['fragment_outcome'] == 'pass').sum() + 
+        (open_src['fragment_outcome'] == 'pass').sum()
+    ) / (n_closed + n_open)
+    
+    # Z-statistic
+    se = np.sqrt(p_pooled * (1 - p_pooled) * (1/n_closed + 1/n_open))
+    z_stat = (p_closed - p_open) / se if se > 0 else 0
+    p_value = 2 * (1 - stats.norm.cdf(abs(z_stat)))  # two-tailed
+    
+    # Cohen's h effect size
+    # h = 2 * arcsin(sqrt(p1)) - 2 * arcsin(sqrt(p2))
+    cohens_h = 2 * np.arcsin(np.sqrt(p_closed)) - 2 * np.arcsin(np.sqrt(p_open))
+    
+    # Interpret Cohen's h
+    h_abs = abs(cohens_h)
+    if h_abs < 0.2:
+        h_interpretation = 'small'
+    elif h_abs < 0.5:
+        h_interpretation = 'medium'
+    else:
+        h_interpretation = 'large'
+    
+    return {
+        'closed_pass_rate': p_closed,
+        'open_pass_rate': p_open,
+        'difference': p_closed - p_open,
+        'n_closed': n_closed,
+        'n_open': n_open,
+        'z_statistic': z_stat,
+        'p_value': p_value,
+        'significant_at_05': p_value < 0.05,
+        'cohens_h': cohens_h,
+        'cohens_h_magnitude': h_interpretation,
+        'higher_performer': 'closed' if p_closed > p_open else 'open'
+    }
+
+
+# ─────────────────────────────────────────────
+# MASTER ANALYSIS RUNNER
+# ─────────────────────────────────────────────
+
+def run_all_statistical_tests(fragment_df, output_dir='results/'):
+    """
+    Execute all three statistical tests and export results.
+    
+    Args:
+        fragment_df: DataFrame with fragment-level outcomes
+        output_dir: Directory for output files
+    
+    Returns:
+        Dictionary with all test results
+    """
+    import os
+    import json
+    os.makedirs(output_dir, exist_ok=True)
+    
+    print("=" * 70)
+    print("STATISTICAL ANALYSIS — APPENDIX H.2")
+    print("=" * 70)
+    
+    # Test 1: Prompt effects
+    print("\n--- Test 1: McNemar's Test (Prompt Condition Effects) ---")
+    mcnemar_results = mcnemars_test_prompt_effects(fragment_df)
+    for model, result in mcnemar_results.items():
+        sig = result.get('significant_at_05', 'N/A')
+        direction = result.get('direction', 'N/A')
+        p = result.get('p_value', 'N/A')
+        print(f"  {model}: p={p}, significant={sig}, direction={direction}")
+    
+    # Test 2: Model family differences
+    print("\n--- Test 2: Chi-Squared (Model Family Differences) ---")
+    chi2_results = chi_squared_model_comparison(fragment_df)
+    omnibus = chi2_results['omnibus']
+    print(f"  Omnibus: χ²={omnibus['chi_squared']:.3f}, "
+          f"p={omnibus['p_value']:.4f}, "
+          f"Cramér's V={omnibus['cramers_v']:.3f}")
+    if omnibus['significant_at_05']:
+        print(f"  Significant pairs (Bonferroni-corrected):")
+        for pair, result in chi2_results['pairwise'].items():
+            if result['significant_bonferroni']:
+                print(f"    {pair}: p={result['p_value']:.4f}, "
+                      f"diff={result['difference']:.3f}")
+    
+    # Test 3: Architecture comparison
+    print("\n--- Test 3: Z-Test (Open vs. Closed Architecture) ---")
+    z_results = architecture_z_test(fragment_df)
+    print(f"  Closed: {z_results['closed_pass_rate']:.1%}, "
+          f"Open: {z_results['open_pass_rate']:.1%}")
+    print(f"  z={z_results['z_statistic']:.3f}, "
+          f"p={z_results['p_value']:.4f}, "
+          f"Cohen's h={z_results['cohens_h']:.3f} ({z_results['cohens_h_magnitude']})")
+    
+    # Export
+    all_results = {
+        'test_1_mcnemar': mcnemar_results,
+        'test_2_chi_squared': chi2_results,
+        'test_3_z_test': z_results
+    }
+    
+    # JSON export (convert non-serializable types)
+    def make_serializable(obj):
+        if isinstance(obj, (np.integer,)):
+            return int(obj)
+        if isinstance(obj, (np.floating,)):
+            return float(obj)
+        if isinstance(obj, np.ndarray):
+            return obj.tolist()
+        if isinstance(obj, pd.DataFrame):
+            return obj.to_dict()
+        return obj
+    
+    with open(f'{output_dir}/H2_statistical_tests.json', 'w') as f:
+        json.dump(all_results, f, indent=2, default=make_serializable)
+    
+    print(f"\nExported results to {output_dir}/H2_statistical_tests.json")
+    
+    return all_results
+ 
+Appendix H.3: Failure Pattern Synthesis (GPT 5.2)
+
+import pandas as pd
+import numpy as np
+from collections import Counter
+
+def synthesize_failure_patterns(failure_codes_df, fragment_df):
+    """
+    Synthesize GPT 5.2 failure patterns for Appendix H.3.
+    
+    Args:
+        failure_codes_df: DataFrame with failure mode codes
+            Required columns: fragment_id, prompt_condition, primary_code, 
+            secondary_code (optional), domain, code_type (deductive/inductive)
+        fragment_df: DataFrame with fragment-level outcomes (for denominators)
+    
+    Returns:
+        Dictionary with synthesis results
+    """
+    synthesis = {}
+    
+    # ── Within-Domain Analysis ──
+    domain_analysis = {}
+    for domain_num in range(1, 7):
+        domain_label = {
+            1: 'Evaluative Framing',
+            2: 'Evidence Base',
+            3: 'Argument Structure',
+            4: 'Synthesis & Integration',
+            5: 'Evaluative Conclusion',
+            6: 'Qualifications & Transparency'
+        }[domain_num]
+        
+        domain_failures = failure_codes_df[
+            failure_codes_df['primary_code'].str.startswith(f'F{domain_num}.')
+        ]
+        
+        total_failures = len(failure_codes_df)
+        domain_count = len(domain_failures)
+        domain_pct = domain_count / total_failures * 100 if total_failures > 0 else 0
+        
+        # Most common checkpoint violations within domain
+        checkpoint_counts = domain_failures['primary_code'].value_counts().to_dict()
+        
+        # Compare across prompt conditions
+        zero_count = len(domain_failures[
+            domain_failures['prompt_condition'] == 'zero_shot'
+        ])
+        few_count = len(domain_failures[
+            domain_failures['prompt_condition'] == 'few_shot'
+        ])
+        
+        domain_analysis[domain_label] = {
+            'domain_number': domain_num,
+            'failure_count': domain_count,
+            'failure_percentage': domain_pct,
+            'checkpoint_violations': checkpoint_counts,
+            'zero_shot_count': zero_count,
+            'few_shot_count': few_count,
+            'prompt_differential': zero_count - few_count
+        }
+    
+    synthesis['within_domain'] = domain_analysis
+    
+    # ── Cross-Domain Co-occurrence Analysis ──
+    # Build co-occurrence matrix from cases with multiple codes
+    multi_coded = failure_codes_df[failure_codes_df['secondary_code'].notna()]
+    
+    co_occurrences = Counter()
+    for _, row in multi_coded.iterrows():
+        primary_domain = row['primary_code'].split('.')[0]  # e.g., 'F2'
+        secondary_domain = row['secondary_code'].split('.')[0]
+        pair = tuple(sorted([primary_domain, secondary_domain]))
+        co_occurrences[pair] += 1
+    
+    synthesis['co_occurrence'] = dict(co_occurrences)
+    
+    # ── Emergent Code Analysis ──
+    emergent = failure_codes_df[failure_codes_df['code_type'] == 'inductive']
+    deductive = failure_codes_df[failure_codes_df['code_type'] == 'deductive']
+    
+    synthesis['emergent_codes'] = {
+        'total_emergent': len(emergent),
+        'total_deductive': len(deductive),
+        'emergent_percentage': len(emergent) / len(failure_codes_df) * 100 if len(failure_codes_df) > 0 else 0,
+        'emergent_code_list': emergent['primary_code'].value_counts().to_dict(),
+        'framework_adequacy': 'adequate' if len(emergent) / max(len(failure_codes_df), 1) < 0.20 else 'supplemented'
+    }
+    
+    # ── GPT 5.2 Diagnostic Profile ──
+    # Rank domains by failure frequency
+    domain_ranking = sorted(
+        domain_analysis.items(),
+        key=lambda x: x[1]['failure_count'],
+        reverse=True
+    )
+    
+    synthesis['diagnostic_profile'] = {
+        'primary_failure_domains': [d[0] for d in domain_ranking[:2]],
+        'most_common_checkpoints': failure_codes_df['primary_code'].value_counts().head(5).to_dict(),
+        'prompt_sensitive_domains': [
+            d[0] for d in domain_ranking 
+            if abs(d[1]['prompt_differential']) > 3  # threshold for meaningful difference
+        ],
+        'prompt_resistant_domains': [
+            d[0] for d in domain_ranking 
+            if abs(d[1]['prompt_differential']) <= 1 and d[1]['failure_count'] > 3
+        ]
+    }
+    
+    return synthesis
+
+
+def export_h3_tables(synthesis, output_dir='results/'):
+    """Export H.3 synthesis tables."""
+    import os, json
+    os.makedirs(output_dir, exist_ok=True)
+    
+    # Domain failure distribution table
+    domain_rows = []
+    for domain_name, data in synthesis['within_domain'].items():
+        domain_rows.append({
+            'domain': domain_name,
+            'failure_count': data['failure_count'],
+            'failure_pct': f"{data['failure_percentage']:.1f}%",
+            'zero_shot': data['zero_shot_count'],
+            'few_shot': data['few_shot_count'],
+            'prompt_differential': data['prompt_differential']
+        })
+    
+    pd.DataFrame(domain_rows).to_csv(
+        f'{output_dir}/H3_domain_failure_distribution.csv', index=False
+    )
+    
+    # Full synthesis as JSON
+    with open(f'{output_dir}/H3_failure_synthesis.json', 'w') as f:
+        json.dump(synthesis, f, indent=2, default=str)
+    
+    print(f"Exported H.3 tables to {output_dir}")
+ 
+Appendix H.4: Challenge Case Analysis
+
+import pandas as pd
+import numpy as np
+
+def identify_challenge_cases(fragment_df, failure_codes_df, 
+                              primary_model='gpt_5',
+                              comparison_model_threshold=2,
+                              recurring_failure_threshold=0.10):
+    """
+    Identify challenge cases meeting either of two criteria:
+    
+    Criterion 1 (Systematic Disagreement): GPT 5.2 fails AND ≥2 comparison 
+    models also fail on the same fragment-prompt combination.
+    
+    Criterion 2 (Recurring Failure Mode): A single failure code accounts 
+    for ≥10% of GPT 5.2 failures.
+    
+    Args:
+        fragment_df: DataFrame with fragment-level outcomes for all models
+        failure_codes_df: DataFrame with GPT 5.2 failure codes
+        primary_model: Primary diagnostic model identifier
+        comparison_model_threshold: Min comparison model failures for Criterion 1
+        recurring_failure_threshold: Min proportion for Criterion 2
+    
+    Returns:
+        Dictionary with challenge case analysis
+    """
+    results = {}
+    
+    # ── Criterion 1: Systematic Disagreement ──
+    # For each fragment-prompt combination where GPT 5.2 failed,
+    # count how many comparison models also failed
+    
+    primary_failures = fragment_df[
+        (fragment_df['model_family'] == primary_model) &
+        (fragment_df['fragment_outcome'] == 'fail')
+    ][['fragment_id', 'prompt_condition']].copy()
+    
+    comparison_models = [m for m in fragment_df['model_family'].unique() 
+                         if m != primary_model]
+    
+    systematic_cases = []
+    for _, row in primary_failures.iterrows():
+        frag_id = row['fragment_id']
+        prompt = row['prompt_condition']
+        
+        # Count comparison model failures on same fragment-prompt
+        comparison_failures = fragment_df[
+            (fragment_df['fragment_id'] == frag_id) &
+            (fragment_df['prompt_condition'] == prompt) &
+            (fragment_df['model_family'].isin(comparison_models)) &
+            (fragment_df['fragment_outcome'] == 'fail')
+        ]
+        
+        n_comparison_fails = len(comparison_failures)
+        failing_models = comparison_failures['model_family'].tolist()
+        
+        if n_comparison_fails >= comparison_model_threshold:
+            systematic_cases.append({
+                'fragment_id': frag_id,
+                'prompt_condition': prompt,
+                'n_comparison_failures': n_comparison_fails,
+                'failing_comparison_models': failing_models,
+                'total_models_failing': n_comparison_fails + 1  # +1 for primary
+            })
+    
+    results['criterion_1'] = {
+        'label': 'Systematic Disagreement',
+        'description': f'{primary_model} fails AND ≥{comparison_model_threshold} comparison models fail',
+        'n_cases': len(systematic_cases),
+        'cases': pd.DataFrame(systematic_cases) if systematic_cases else pd.DataFrame()
+    }
+    
+    # ── Criterion 2: Recurring Failure Mode ──
+    total_primary_failures = len(failure_codes_df)
+    code_counts = failure_codes_df['primary_code'].value_counts()
+    
+    recurring_codes = code_counts[
+        code_counts / total_primary_failures >= recurring_failure_threshold
+    ]
+    
+    recurring_cases = []
+    for code, count in recurring_codes.items():
+        pct = count / total_primary_failures * 100
+        affected_fragments = failure_codes_df[
+            failure_codes_df['primary_code'] == code
+        ]['fragment_id'].tolist()
+        
+        recurring_cases.append({
+            'failure_code': code,
+            'count': count,
+            'percentage': pct,
+            'affected_fragments': affected_fragments
+        })
+    
+    results['criterion_2'] = {
+        'label': 'Recurring Failure Mode',
+        'description': f'Single code ≥{recurring_failure_threshold*100:.0f}% of {primary_model} failures',
+        'n_codes': len(recurring_cases),
+        'codes': pd.DataFrame(recurring_cases) if recurring_cases else pd.DataFrame()
+    }
+    
+    # ── Overlap Analysis ──
+    c1_fragments = set()
+    if len(systematic_cases) > 0:
+        c1_fragments = set(
+            f"{c['fragment_id']}_{c['prompt_condition']}" for c in systematic_cases
+        )
+    
+    c2_fragments = set()
+    for case in recurring_cases:
+        for frag_id in case['affected_fragments']:
+            # Find prompt conditions for this fragment's failures
+            matching = failure_codes_df[
+                (failure_codes_df['fragment_id'] == frag_id) &
+                (failure_codes_df['primary_code'] == case['failure_code'])
+            ]
+            for _, m in matching.iterrows():
+                c2_fragments.add(f"{frag_id}_{m['prompt_condition']}")
+    
+    overlap = c1_fragments & c2_fragments
+    c1_only = c1_fragments - c2_fragments
+    c2_only = c2_fragments - c1_fragments
+    
+    results['overlap'] = {
+        'n_overlap': len(overlap),
+        'n_criterion_1_only': len(c1_only),
+        'n_criterion_2_only': len(c2_only),
+        'overlap_fragments': list(overlap),
+        'interpretation': (
+            'high_overlap' if len(overlap) > max(len(c1_only), len(c2_only))
+            else 'low_overlap'
+        ),
+        'narrative': (
+            'High overlap suggests genuinely difficult cases that challenge '
+            'models broadly.' if len(overlap) > max(len(c1_only), len(c2_only))
+            else 'Low overlap suggests orthogonal difficulty dimensions: '
+            'systematic disagreement and recurring weaknesses identify '
+            'distinct fragment characteristics.'
+        )
+    }
+    
+    # ── Fragment Characteristics ──
+    # This requires the fragment corpus metadata; stub for now
+    results['characteristics_stub'] = (
+        'After data collection, analyze challenge case fragments for: '
+        'evaluation criterion addressed, paragraph length, complexity indicators, '
+        'gold-standard classification distribution, and boundary-case flags.'
+    )
+    
+    return results
+
+
+def export_h4_tables(results, output_dir='results/'):
+    """Export H.4 challenge case tables."""
+    import os, json
+    os.makedirs(output_dir, exist_ok=True)
+    
+    if len(results['criterion_1']['cases']) > 0:
+        results['criterion_1']['cases'].to_csv(
+            f'{output_dir}/H4_systematic_disagreement_cases.csv', index=False
+        )
+    
+    if len(results['criterion_2']['codes']) > 0:
+        results['criterion_2']['codes'].to_csv(
+            f'{output_dir}/H4_recurring_failure_modes.csv', index=False
+        )
+    
+    # Overlap summary
+    overlap_summary = {
+        k: v for k, v in results['overlap'].items() 
+        if k != 'overlap_fragments'
+    }
+    with open(f'{output_dir}/H4_overlap_analysis.json', 'w') as f:
+        json.dump(overlap_summary, f, indent=2)
+    
+    print(f"Exported H.4 tables to {output_dir}")
+ 
+Appendix H.5: Meta-Evaluation and Validity Assessment
+
+import pandas as pd
+
+def conduct_meta_evaluation(fragment_df, failure_codes_df, 
+                             gold_standard_df, reliability_results,
+                             challenge_results):
+    """
+    Meta-evaluation and validity assessment for Appendix H.5.
+    
+    This is a structured assessment framework that produces a narrative
+    report supplemented by summary tables. Many assessments require 
+    qualitative judgment and are documented as structured prompts 
+    rather than automated calculations.
+    
+    Args:
+        fragment_df: Fragment-level outcomes
+        failure_codes_df: GPT 5.2 failure codes
+        gold_standard_df: Gold standard with boundary case flags
+        reliability_results: Dictionary with RC1, RC2, RC3 results
+        challenge_results: Output from identify_challenge_cases()
+    
+    Returns:
+        Dictionary with meta-evaluation components
+    """
+    meta = {}
+    
+    # ── 1. Construct Validity Triangulation ──
+    # These are structured assessment prompts, not automated calculations
+    meta['construct_validity'] = {
+        'assessment_questions': [
+            {
+                'question': 'Does GPT 5.2 struggle more with Synthesis & Integration '
+                           '(Domain 4) than Evidence Identification (Domain 2)?',
+                'theoretical_prediction': 'Yes — synthesis requires higher-order '
+                    'integration that should be harder for models than pattern-matching evidence.',
+                'data_source': 'H.3 domain failure distribution',
+                'finding': '[TO BE COMPLETED AFTER DATA COLLECTION]'
+            },
+            {
+                'question': 'Does few-shot calibration improve performance on domains '
+                           'emphasizing tacit judgment (Domain 6)?',
+                'theoretical_prediction': 'Yes — calibration examples should help '
+                    'models learn implicit standards for qualification and transparency.',
+                'data_source': 'H.3 prompt differential by domain',
+                'finding': '[TO BE COMPLETED AFTER DATA COLLECTION]'
+            },
+            {
+                'question': 'Do challenge cases cluster around theoretically complex '
+                           'evaluation criteria (e.g., sustainability vs. relevance)?',
+                'theoretical_prediction': 'Yes — criteria requiring longer causal '
+                    'chains and counterfactual reasoning should produce more failures.',
+                'data_source': 'H.4 challenge case characteristics',
+                'finding': '[TO BE COMPLETED AFTER DATA COLLECTION]'
+            }
+        ]
+    }
+    
+    # ── 2. Gold Standard Defensibility Check ──
+    # Identify fragments warranting re-review
+    if challenge_results and 'criterion_1' in challenge_results:
+        c1_cases = challenge_results['criterion_1'].get('cases', pd.DataFrame())
+        if len(c1_cases) > 0:
+            review_fragments = c1_cases['fragment_id'].unique().tolist()
+        else:
+            review_fragments = []
+    else:
+        review_fragments = []
+    
+    # Count boundary cases in gold standard
+    if 'boundary_case_flag' in gold_standard_df.columns:
+        boundary_count = gold_standard_df['boundary_case_flag'].sum()
+    else:
+        boundary_count = 0
+    
+    meta['gold_standard_defensibility'] = {
+        'fragments_for_re_review': review_fragments,
+        'n_fragments_for_re_review': len(review_fragments),
+        'boundary_cases_in_gold_standard': boundary_count,
+        'note': 'Gold standard remains LOCKED. Re-review is analytical '
+                'reflection, not revision. Document any cases where model '
+                'responses reveal ambiguity in original expert classifications.',
+        'review_template': {
+            'fragment_id': '[ID]',
+            'original_classification': '[sound/not_sound]',
+            'n_models_disagreeing': '[count]',
+            'model_rationale_summary': '[key arguments from disagreeing models]',
+            'defensibility_assessment': '[defensible/ambiguous/acknowledged_limitation]',
+            'notes': '[analytical reflection]'
+        }
+    }
+    
+    # ── 3. Reliability Synthesis ──
+    meta['reliability_synthesis'] = {
+        'checks': [
+            {
+                'label': 'RC1',
+                'description': 'Expert temporal consistency',
+                'target': 'κ ≥ 0.80',
+                'achieved_kappa': reliability_results.get('rc1_kappa', '[PENDING]'),
+                'met_target': reliability_results.get('rc1_met', '[PENDING]')
+            },
+            {
+                'label': 'RC2',
+                'description': 'Automated coherence validation',
+                'target': 'κ ≥ 0.80',
+                'achieved_kappa': reliability_results.get('rc2_kappa', '[PENDING]'),
+                'met_target': reliability_results.get('rc2_met', '[PENDING]')
+            },
+            {
+                'label': 'RC3',
+                'description': 'Failure mode coding temporal consistency',
+                'target': 'κ ≥ 0.80',
+                'achieved_kappa': reliability_results.get('rc3_kappa', '[PENDING]'),
+                'met_target': reliability_results.get('rc3_met', '[PENDING]')
+            }
+        ],
+        'overall_assessment': '[TO BE COMPLETED: All targets met / Partial / Limitations noted]'
+    }
+    
+    # ── 4. Methodological Limitations ──
+    meta['limitations'] = [
+        {
+            'threat': 'Fragment selection bias',
+            'description': 'Conclusion sections may not represent typical evaluative reasoning.',
+            'mitigation': 'Random sampling from large UN corpus; ecological validity argument.',
+            'residual_risk': 'Moderate — UN evaluation style may differ from other contexts.'
+        },
+        {
+            'threat': 'Corpus scope',
+            'description': 'Generalizability limited to UN evaluation contexts.',
+            'mitigation': 'Explicit scope limitation; UN corpus provides standardized baseline.',
+            'residual_risk': 'Acknowledged — benchmark applies to meta-evaluation of written reports.'
+        },
+        {
+            'threat': 'Single-expert judgment',
+            'description': 'Gold standard reflects one expert rather than consensus panel.',
+            'mitigation': 'Pre-commitment protocol; temporal consistency check; explicit rationales.',
+            'residual_risk': 'Moderate — study tests replication of individual reasoning, not consensus.'
+        },
+        {
+            'threat': 'Prompt engineering constraints',
+            'description': 'Single prompt formulation per condition; 4 few-shot examples.',
+            'mitigation': 'Fixed prompts enable controlled comparison; prompt documented in appendices.',
+            'residual_risk': 'Low — alternative prompts are future research, not validity threat.'
+        },
+        {
+            'threat': 'Single-model failure coding',
+            'description': 'Deep diagnostic analysis limited to GPT 5.2.',
+            'mitigation': 'Comparative metrics across all 6 models; architecture-level comparisons.',
+            'residual_risk': 'Acknowledged — cross-architecture failure patterns are future work.'
+        }
+    ]
+    
+    return meta
+
+
+def export_h5_report(meta, output_dir='results/'):
+    """Export H.5 meta-evaluation report."""
+    import os, json
+    os.makedirs(output_dir, exist_ok=True)
+    
+    with open(f'{output_dir}/H5_meta_evaluation.json', 'w') as f:
+        json.dump(meta, f, indent=2, default=str)
+    
+    # Also export as readable markdown
+    lines = ['# Appendix H.5: Meta-Evaluation and Validity Assessment\n']
+    
+    lines.append('## Construct Validity Triangulation\n')
+    for q in meta['construct_validity']['assessment_questions']:
+        lines.append(f"**Q:** {q['question']}")
+        lines.append(f"- Prediction: {q['theoretical_prediction']}")
+        lines.append(f"- Data source: {q['data_source']}")
+        lines.append(f"- Finding: {q['finding']}\n")
+    
+    lines.append('## Reliability Synthesis\n')
+    lines.append('| Check | Description | Target | Achieved | Met? |')
+    lines.append('|-------|------------|--------|----------|------|')
+    for check in meta['reliability_synthesis']['checks']:
+        lines.append(
+            f"| {check['label']} | {check['description']} | "
+            f"{check['target']} | {check['achieved_kappa']} | {check['met_target']} |"
+        )
+    
+    lines.append('\n## Methodological Limitations\n')
+    for lim in meta['limitations']:
+        lines.append(f"**{lim['threat']}:** {lim['description']}")
+        lines.append(f"- Mitigation: {lim['mitigation']}")
+        lines.append(f"- Residual risk: {lim['residual_risk']}\n")
+    
+    with open(f'{output_dir}/H5_meta_evaluation.md', 'w') as f:
+        f.write('\n'.join(lines))
+    
+    print(f"Exported H.5 report to {output_dir}")
+
+ 
