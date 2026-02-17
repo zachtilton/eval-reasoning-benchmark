@@ -380,7 +380,7 @@ Claude Code should reference this file when generating modules.
 - Public deposition: Open Science Framework and/or GitHub upon completion
 
 **Final deliverable:** Discussion chapter interpreting results and implications for evaluation practice
-```
+
 ## Data Schemas
 
 ### 1. Fragment Corpus (data/raw/fragment_corpus.csv)
