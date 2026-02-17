@@ -381,11 +381,198 @@ Claude Code should reference this file when generating modules.
 
 **Final deliverable:** Discussion chapter interpreting results and implications for evaluation practice
 ```
-
-
 ## Data Schemas
-[To be populated from data dictionary]
+
+### 1. Fragment Corpus (data/raw/fragment_corpus.csv)
+
+| Column | Type | Valid Values | Notes |
+|--------|------|-------------|-------|
+| fragment_id | string | F_001–F_150 | Primary key |
+| report_id | integer | 0–6864 | From randomizer |
+| report_title | string | — | |
+| report_url | string | Valid URL | |
+| report_type | string | Decentralized CPE, Global Programme, Impact, Independent CPE, Outcome, Portfolio, Project, Regional Programme, Thematic, UNDAF | |
+| country | string | — | |
+| year | integer | 2000–2026 | |
+| budget | string | — | If available |
+| joint_evaluation | boolean | True/False | |
+| gef_evaluation | boolean | True/False | |
+| criterion_addressed | string | relevance, effectiveness, efficiency, sustainability, impact, coherence | |
+| fragment_text | string | — | 1–5 paragraphs |
+| paragraph_count | integer | 1–5 | |
+| extraction_date | date | ISO format | |
+| extraction_notes | string | — | Optional |
+
+### 2. Gold Standard (data/gold_standard/gold_standard_locked_YYYY-MM-DD.csv)
+
+| Column | Type | Valid Values | Notes |
+|--------|------|-------------|-------|
+| fragment_id | string | F_001–F_150 | FK → fragment_corpus |
+| expert_classification | string | sound, not_sound | IMMUTABLE after lock |
+| expert_rationale | string | — | 2–4 sentences, identifies salient domains |
+| salient_domains | string | 1,2,3,4,5,6 | Comma-separated |
+| boundary_case_flag | boolean | True/False | |
+| boundary_case_notes | string | — | If boundary_case_flag = True |
+| session_id | integer | 1–10 | From session log |
+| assessment_date | date | ISO format | |
+
+**Integrity:** MD5 hash recorded in Appendix E.4 lock declaration. File is read-only after lock. expert_classification never modified after lock.
+
+### 3. Calibration Examples (data/raw/calibration_examples.csv)
+
+| Column | Type | Valid Values | Notes |
+|--------|------|-------------|-------|
+| calibration_id | string | CAL_01–CAL_04 | |
+| fragment_id | string | — | NOT in F_001–F_150 range |
+| fragment_text | string | — | |
+| classification | string | sound, not_sound | |
+| rationale | string | — | |
+| selection_rationale | string | — | Diversity, complexity, etc. |
+| complexity_level | string | straightforward, moderate | |
+| primary_characteristic | string | — | |
+
+### 4. Response Database (data/responses/response_database.csv)
+
+| Column | Type | Valid Values | Notes |
+|--------|------|-------------|-------|
+| response_id | string | Auto-generated | Primary key |
+| fragment_id | string | F_001–F_150 | FK → fragment_corpus |
+| model_family | string | gpt_5, claude_opus_4_6, gemini_3_pro, deepseek_v3, kimi_k2, glm_4_7 | |
+| prompt_condition | string | zero_shot, few_shot | |
+| run_number | integer | 1, 2, 3 | |
+| classification_output | string | sound, not_sound, None | None if parsing failed |
+| rationale_text | string | — | Raw text |
+| timestamp | datetime | ISO format | |
+| api_latency_seconds | float | ≥ 0 | |
+| token_count_input | integer | ≥ 0 | |
+| token_count_output | integer | ≥ 0 | |
+| api_version | string | — | Documented at execution |
+| parse_method | string | json, text | |
+| error_flag | boolean | True/False | |
+| error_details | string | — | If error_flag = True |
+
+**Expected rows:** 5,400 (150 × 6 × 2 × 3)
+
+### 5. Scored Database (data/responses/scored_database.csv)
+
+Extends response_database with scoring columns:
+
+| Column | Type | Valid Values | Notes |
+|--------|------|-------------|-------|
+| (all response_database columns) | | | |
+| coherence_rule_based | string | coherent, incoherent | |
+| strength_indicator_count | integer | ≥ 0 | |
+| weakness_indicator_count | integer | ≥ 0 | |
+| coherence_llm | string | coherent, incoherent, not_checked | Only for uncertain rule-based cases |
+| coherence_final | string | coherent, incoherent, ambiguous | |
+| manual_review_flag | boolean | True/False | |
+| manual_coherence | string | coherent, incoherent, None | If reviewed |
+| classification_accuracy | string | correct, incorrect, None | None if incoherent |
+| run_outcome | string | pass, fail | |
+| failure_type | string | type_1, type_2, type_3, None | None if pass |
+| edge_case_type | string | substantive_refusal, safety_trigger, nonsensical_content, contradictory_claims, None | |
+| exclude_from_analysis | boolean | True/False | Only for infrastructure failures |
+
+### 6. Fragment-Level Outcomes (data/responses/fragment_outcomes.csv)
+
+| Column | Type | Valid Values | Notes |
+|--------|------|-------------|-------|
+| fragment_id | string | F_001–F_150 | |
+| model_family | string | See response_database | |
+| prompt_condition | string | zero_shot, few_shot | |
+| pass_count | integer | 0, 1, 2, 3 | |
+| fail_count | integer | 0, 1, 2, 3 | |
+| fragment_outcome | string | pass, fail | Majority rule |
+| unanimous_agreement | boolean | True/False | All 3 runs agree |
+
+**Expected rows:** 1,800 (150 × 6 × 2)
+
+### 7. Failure Mode Codes (data/analysis/failure_codes_gpt5.csv)
+
+| Column | Type | Valid Values | Notes |
+|--------|------|-------------|-------|
+| fragment_id | string | F_001–F_150 | |
+| prompt_condition | string | zero_shot, few_shot | |
+| representative_run | integer | 1, 2, 3 | Clearest failure pattern |
+| primary_code | string | F1.1–F6.6 or emergent | |
+| secondary_code | string | F1.1–F6.6, emergent, or None | Optional |
+| tertiary_code | string | F1.1–F6.6, emergent, or None | Optional |
+| domain | integer | 1–6 or 0 for emergent | |
+| code_type | string | deductive, inductive | |
+| coding_justification | string | — | |
+| coding_date | date | ISO format | |
+| coding_session | integer | — | |
+
+**Expected rows:** 60–120 (estimated GPT 5.2 failures across both prompts)
+
+### Table Relationships
+
+    fragment_corpus.fragment_id  ←→  gold_standard.fragment_id        (1:1)
+    fragment_corpus.fragment_id  ←→  response_database.fragment_id    (1:many, 36 per fragment)
+    response_database            →   scored_database                   (1:1 extension)
+    scored_database              →   fragment_outcomes                 (3:1 aggregation via majority rule)
+    fragment_outcomes            →   failure_codes_gpt5                (1:1 for GPT 5.2 failures only)
+    calibration_examples         →   few_shot prompt template          (embedded in prompt)
 
 ## Edge Case Rules
-[To be populated from Instrument 6]
+
+Source: Instrument 6 (Model Output Capture and Scoring Instrument)
+
+### Expected Output Format
+
+- Binary classification: sound / not sound
+- Rationale: 2-4 sentences explaining judgment
+- Capture method: JSON for models supporting structured output; parsed text otherwise
+- Normalization: classification values normalized across model phrasings
+- Validation: rationale must contain ≥10 words of substantive reasoning (not mere restatement)
+
+### Edge Case Categories
+
+**Refusals (categorized by source):**
+- Substantive refusal (e.g., "I cannot evaluate this conclusion") → Fail (reasoning failure)
+- Technical failure (API timeout) → Exclude (infrastructure issue)
+- Safety policy trigger → Fail, flagged separately for pattern analysis
+
+**Malformed outputs:**
+- Broken format + present reasoning content → 2 retry attempts, then technical exclusion
+- Correct format + nonsensical content → Fail (reasoning failure)
+
+**Multi-part judgments:**
+- Clear final classification present → extract and score
+- Unresolved ambivalence → Fail (cannot synthesize)
+- Contradictory claims → Fail (coherence validation)
+
+### Coherence Validation (tiered)
+
+**Tier 1 — Rule-based keyword matching:**
+- Match classification label against strength/weakness indicators in rationale
+- Example: "sound" + "fatal flaws" or "missing evidence" → flagged incoherent
+- Confident signal → assign automatically
+- Mixed/balanced/insufficient → route to Tier 2
+
+**Tier 2 — LLM screen (Claude Haiku, temperature 0):**
+- Input: classification + rationale text ONLY
+- Output: binary coherent/incoherent
+- Agreement with Tier 1 → assign accordingly
+- Disagreement → flag "ambiguous" → manual review
+
+**Coherence outcome:** Classification-rationale contradiction → Fail regardless of classification accuracy
+
+### Scoring Protocol (two stages)
+
+1. Coherence validation: screen out incoherent outputs
+2. Classification comparison: match remaining outputs against gold standard
+
+**Pass requirement:** classification agreement AND reasoning coherence
+
+### Performance Metrics
+
+- Overall accuracy (pass rate) stratified by:
+  - Failure type (coherence failure, classification error, refusal)
+  - Fragment characteristics
+
+### Implementation
+
+Python scripts using pandas, JSON, and supporting libraries. See Appendix G.
+
 ```
