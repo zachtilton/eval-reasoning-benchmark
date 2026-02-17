@@ -1,0 +1,42 @@
+Appendix B: Zero-Shot Prompt Template
+TASK: You are evaluating the quality of evaluative reasoning in a conclusion fragment from a program evaluation report.
+ASSESSMENT FRAMEWORK: Apply the Integrated Evaluative Reasoning Checklist to assess whether this conclusion demonstrates sound evaluative reasoning (insert Appendix A). 
+IMPORTANT: These checkpoints are orienting heuristics, not algorithmic rules. Sound evaluative reasoning requires synthesis and professional judgment, not mechanical checklist completion. Consider how domains interact and how trade-offs are weighed. No single checkpoint is determinative—assess the conclusion holistically.
+YOUR TASK:
+1.	Classification: Classify this conclusion as either sound or not sound based on the overall quality of evaluative reasoning.
+2.	Rationale: Provide a 2-4 sentence rationale explaining your judgment. Identify which domains were most salient to your decision and how you weighed any trade-offs.
+EVALUATIVE CONCLUSION FRAGMENT: [Fragment text will be inserted here]
+YOUR RESPONSE:
+Classification: [sound / not sound]
+Rationale: [2-4 sentences explaining your judgment]
+Appendix C: Few-Shot Prompt Template
+TASK: You are evaluating the quality of evaluative reasoning in a conclusion fragment from a program evaluation report.
+ASSESSMENT FRAMEWORK: Apply the Integrated Evaluative Reasoning Checklist to assess whether this conclusion demonstrates sound evaluative reasoning (insert Appendix A). 
+IMPORTANT: These checkpoints are orienting heuristics, not algorithmic rules. Sound evaluative reasoning requires synthesis and professional judgment, not mechanical checklist completion. Consider how domains interact and how trade-offs are weighed. No single checkpoint is determinative—assess the conclusion holistically.
+CALIBRATION EXAMPLES:
+Below are examples showing how to apply this framework:
+Example 1:
+Evaluative Conclusion Fragment Example 1: [Calibration example 1 - sound fragment text]
+Classification: sound
+Rationale: [Expert rationale explaining why this demonstrates sound evaluative reasoning, identifying key strengths]
+Example 2:
+Evaluative Conclusion Fragment: [Calibration example 2 - sound fragment text]
+Classification: sound
+Rationale: [Expert rationale explaining why this demonstrates sound evaluative reasoning, identifying key strengths]
+Example 3:
+Evaluative Conclusion Fragment: [Calibration example 3 - not sound fragment text]
+Classification: not sound
+Rationale: [Expert rationale explaining why this demonstrates weak evaluative reasoning, identifying primary deficiencies]
+Example 4:
+Evaluative Conclusion Fragment: [Calibration example 4 - not sound fragment text]
+Classification: not sound
+Rationale: [Expert rationale explaining why this demonstrates weak evaluative reasoning, identifying primary deficiencies]
+NOW EVALUATE THIS FRAGMENT:
+YOUR TASK:
+1.	Classification: Classify this conclusion as either sound or not sound based on the overall quality of evaluative reasoning.
+2.	Rationale: Provide a 2-4 sentence rationale explaining your judgment. Identify which domains were most salient to your decision and how you weighed any trade-offs.
+EVALUATIVE CONCLUSION FRAGMENT:
+[Target fragment text will be inserted here]
+YOUR RESPONSE:
+Classification: [sound / not sound]
+Rationale: [2-4 sentences explaining your judgment]
