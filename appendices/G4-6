@@ -1,0 +1,1076 @@
+Appendix G.4: Automated Coherence Validation
+Coherence validation uses a tiered approach: (1) rule-based keyword matching for clear cases, and (2) LLM-based semantic screening for ambiguous cases. The rule-based tier is documented below with strength and weakness indicator lists. The LLM screening tier uses the following fixed prompt at temperature 0:
+
+LLM Coherence Screening Prompt (Claude Haiku, temperature 0):
+You are checking whether a rationale logically supports its classification. 
+
+Classification: [sound / not sound] 
+Rationale: [model's rationale text] 
+Does the rationale logically support the classification? Consider: 
+- Does the rationale describe strengths if classified as "sound"? 
+- Does the rationale describe weaknesses if classified as "not sound"? 
+- Is there any contradiction between the rationale and the classification? 
+
+Respond with ONLY one word: "coherent" or "incoherent"
+
+Strength and Weakness Indicator Lists
+python
+# Keywords indicating reasoning quality (for "sound" classifications)
+STRENGTH_INDICATORS = [
+    # Affirmations of reasoning quality
+    'clear', 'strong', 'robust', 'comprehensive', 'thorough', 'well-supported',
+    'effective', 'appropriate', 'adequate', 'sufficient', 'sound', 'valid',
+    'defensible', 'convincing', 'compelling', 'coherent', 'logical',
+    
+    # Satisfied checkpoints
+    'establishes', 'demonstrates', 'provides', 'includes', 'presents',
+    'addresses', 'considers', 'integrates', 'synthesizes', 'acknowledges',
+    'articulates', 'specifies', 'identifies', 'supports',
+    
+    # Positive evaluative language
+    'successfully', 'effectively', 'appropriately', 'clearly', 'explicitly',
+    'adequately', 'properly', 'satisfactorily', 'well', 'good'
+]
+
+# Keywords indicating reasoning flaws (for "not sound" classifications)
+WEAKNESS_INDICATORS = [
+    # Identification of violated/missing checkpoints
+    'missing', 'absent', 'lacks', 'fails to', 'does not', 'omits',
+    'neglects', 'ignores', 'overlooks', 'insufficient', 'inadequate',
+    'incomplete', 'unclear', 'vague', 'ambiguous',
+    
+    # Reasoning flaws
+    'weak', 'unsupported', 'unsubstantiated', 'unjustified', 'unfounded',
+    'problematic', 'flawed', 'inconsistent', 'contradictory', 'circular',
+    'fallacious', 'invalid', 'indefensible',
+    
+    # Negative evaluative language
+    'poorly', 'inadequately', 'insufficiently', 'weakly', 'vaguely',
+    'unclearly', 'inappropriately', 'without', 'never', 'no evidence'
+]
+
+
+Rule-Based Keyword Matching
+python
+def count_indicators(rationale_text, indicator_list):
+    """
+    Count occurrences of indicator keywords in rationale.
+    
+    Args:
+        rationale_text: Rationale text from model
+        indicator_list: List of indicator keywords
+        
+    Returns:
+        Count of matched indicators
+    """
+    
+    text_lower = rationale_text.lower()
+    
+    count = 0
+    for indicator in indicator_list:
+        if indicator in text_lower:
+            count += 1
+    
+    return count
+
+
+def rule_based_coherence_check(classification, rationale_text):
+    """
+    Assess coherence using keyword matching.
+    
+    Logic:
+    - "sound" + strength indicators = Coherent
+    - "not sound" + weakness indicators = Coherent
+    - Mismatch = Incoherent
+    
+    Args:
+        classification: Normalized classification ('sound' or 'not_sound')
+        rationale_text: Rationale text from model
+        
+    Returns:
+        Tuple of (coherence_status, strength_count, weakness_count)
+    """
+    
+    if not classification or not rationale_text:
+        return ('incoherent', 0, 0)
+    
+    # Count indicators
+    strength_count = count_indicators(rationale_text, STRENGTH_INDICATORS)
+    weakness_count = count_indicators(rationale_text, WEAKNESS_INDICATORS)
+    
+    # Coherence logic
+    if classification == 'sound':
+        # Expect strength indicators to dominate
+        if strength_count > weakness_count:
+            return ('coherent', strength_count, weakness_count)
+        else:
+            return ('incoherent', strength_count, weakness_count)
+    
+    elif classification == 'not_sound':
+        # Expect weakness indicators to dominate
+        if weakness_count > strength_count:
+            return ('coherent', strength_count, weakness_count)
+        else:
+            return ('incoherent', strength_count, weakness_count)
+    
+    else:
+        return ('incoherent', strength_count, weakness_count)
+
+
+python
+import requests
+import os
+
+# LLM coherence screening prompt (fixed across all checks)
+LLM_COHERENCE_PROMPT = """You are checking whether a rationale logically supports its classification.
+
+Classification: {classification}
+Rationale: {rationale}
+
+Does the rationale logically support the classification? Consider:
+- Does the rationale describe strengths if classified as "sound"?
+- Does the rationale describe weaknesses if classified as "not sound"?
+- Is there any contradiction between the rationale and the classification?
+
+Respond with ONLY one word: "coherent" or "incoherent"
+"""
+
+def llm_coherence_check(classification, rationale_text):
+    """
+    Second-tier coherence check using lightweight LLM.
+    
+    Called only when rule-based check produces uncertain results
+    (mixed or insufficient keyword indicators).
+    
+    Receives ONLY classification and rationale — no fragment text,
+    gold standard, or study metadata — to maintain independence.
+    
+    Args:
+        classification: Normalized classification ('sound' or 'not_sound')
+        rationale_text: Rationale text from model
+    
+    Returns:
+        Tuple of (coherence_status, raw_response)
+    """
+    if not classification or not rationale_text:
+        return ('incoherent', 'missing_input')
+    
+    # Format classification for prompt
+    display_classification = classification.replace('_', ' ')
+    
+    prompt = LLM_COHERENCE_PROMPT.format(
+        classification=display_classification,
+        rationale=rationale_text
+    )
+    
+    try:
+        api_key = os.getenv('ANTHROPIC_API_KEY')
+        response = requests.post(
+            'https://api.anthropic.com/v1/messages',
+            headers={
+                'x-api-key': api_key,
+                'Content-Type': 'application/json',
+                'anthropic-version': '2024-10-22'
+            },
+            json={
+                'model': 'claude-haiku-4-5-20251001',
+                'messages': [{'role': 'user', 'content': prompt}],
+                'max_tokens': 10,
+                'temperature': 0
+            },
+            timeout=30
+        )
+        response.raise_for_status()
+        
+        result_text = response.json()['content'][0]['text'].strip().lower()
+        
+        if 'coherent' in result_text and 'incoherent' not in result_text:
+            return ('coherent', result_text)
+        elif 'incoherent' in result_text:
+            return ('incoherent', result_text)
+        else:
+            return ('ambiguous', result_text)
+    
+    except Exception as e:
+        # If LLM check fails, flag for manual review rather than
+        # silently assigning a coherence judgment
+        print(f"  LLM coherence check failed: {e}")
+        return ('ambiguous', f'error: {str(e)}')
+
+
+Combined Coherence Validation
+python
+def validate_coherence(classification, rationale_text, 
+                       confidence_threshold=3):
+    """
+    Validate coherence using tiered approach:
+    Tier 1 (rule-based) for clear cases, Tier 2 (LLM) for uncertain cases.
+    
+    Args:
+        classification: Normalized classification ('sound' or 'not_sound')
+        rationale_text: Rationale text from model
+        confidence_threshold: Minimum indicator difference for rule-based
+            confidence (default 3: strength must exceed weakness by ≥3
+            for 'sound', or vice versa)
+    
+    Returns:
+        Dictionary with coherence assessment and diagnostic data
+    """
+    # Tier 1: Rule-based check
+    rule_result, strength_count, weakness_count = rule_based_coherence_check(
+        classification, rationale_text
+    )
+    
+    # Determine rule-based confidence
+    indicator_difference = abs(strength_count - weakness_count)
+    rule_confident = indicator_difference >= confidence_threshold
+    
+    if rule_confident:
+        # Rule-based check is confident — use its judgment
+        return {
+            'coherence': rule_result,
+            'manual_review_flag': False,
+            'screening_tier': 'rule_based',
+            'rule_based_result': rule_result,
+            'strength_indicators': strength_count,
+            'weakness_indicators': weakness_count,
+            'llm_result': 'not_checked',
+            'llm_raw_response': None
+        }
+    
+    # Tier 2: Rule-based uncertain — route to LLM check
+    llm_result, llm_raw = llm_coherence_check(classification, rationale_text)
+    
+    if rule_result == llm_result:
+        # Both methods agree — assign their shared judgment
+        return {
+            'coherence': rule_result,
+            'manual_review_flag': False,
+            'screening_tier': 'llm_confirmed',
+            'rule_based_result': rule_result,
+            'strength_indicators': strength_count,
+            'weakness_indicators': weakness_count,
+            'llm_result': llm_result,
+            'llm_raw_response': llm_raw
+        }
+    else:
+        # Methods disagree — flag for manual review
+        return {
+            'coherence': 'ambiguous',
+            'manual_review_flag': True,
+            'screening_tier': 'disagreement',
+            'rule_based_result': rule_result,
+            'strength_indicators': strength_count,
+            'weakness_indicators': weakness_count,
+            'llm_result': llm_result,
+            'llm_raw_response': llm_raw
+        }
+
+
+Batch Coherence Validation
+python
+def validate_all_responses(database_df):
+    """
+    Apply coherence validation to all responses in database.
+    
+    Args:
+        database_df: Response database DataFrame
+        
+    Returns:
+        DataFrame with added coherence columns
+    """
+    
+    print(f"Validating coherence for {len(database_df)} responses...")
+    
+    coherence_results = []
+    
+    for idx, row in database_df.iterrows():
+        
+        # Skip if already has error flag (parsing/validation issues)
+        if row['error_flag']:
+            coherence_results.append({
+                'coherence': 'incoherent',
+                'manual_review_flag': False,
+                'rule_based_result': 'incoherent',
+                'strength_indicators': 0,
+                'weakness_indicators': 0,
+                'sentiment_result': 'incoherent',
+                'sentiment_polarity': 0.0
+            })
+            continue
+        
+        # Validate coherence
+        result = validate_coherence(
+            row['classification_output'],
+            row['rationale_text']
+        )
+        
+        coherence_results.append(result)
+        
+        # Progress indicator
+        if (idx + 1) % 100 == 0:
+            print(f"  Processed {idx + 1}/{len(database_df)} responses")
+    
+    # Add coherence columns to dataframe
+    coherence_df = pd.DataFrame(coherence_results)
+    database_df = pd.concat([database_df, coherence_df], axis=1)
+    
+# Summary statistics coherent_count = (database_df['coherence'] == 'coherent').sum() incoherent_count = (database_df['coherence'] == 'incoherent').sum() ambiguous_count = (database_df['coherence'] == 'ambiguous').sum() # Tier usage rule_only = (database_df['screening_tier'] == 'rule_based').sum() llm_confirmed = (database_df['screening_tier'] == 'llm_confirmed').sum() disagreement = (database_df['screening_tier'] == 'disagreement').sum() print(f"\nCoherence Validation Summary:") print(f" Coherent: {coherent_count} ({coherent_count/len(database_df)*100:.1f}%)") print(f" Incoherent: {incoherent_count} ({incoherent_count/len(database_df)*100:.1f}%)") print(f" Ambiguous (manual review): {ambiguous_count} ({ambiguous_count/len(database_df)*100:.1f}%)") print(f"\nScreening Tier Usage:") print(f" Rule-based only: {rule_only} ({rule_only/len(database_df)*100:.1f}%)") print(f" LLM-confirmed: {llm_confirmed} ({llm_confirmed/len(database_df)*100:.1f}%)") print(f" Disagreement (manual): {disagreement} ({disagreement/len(database_df)*100:.1f}%)")
+
+Manual Review Sample Selection (for RC2)
+python
+import random
+
+def select_manual_review_sample(database_df, sample_fraction=0.10, seed=42):
+    """
+    Select random sample of ambiguous cases for manual review (RC2).
+    
+    Args:
+        database_df: Database with coherence validation results
+        sample_fraction: Fraction of ambiguous cases to review (default 10%)
+        seed: Random seed for reproducibility
+        
+    Returns:
+        DataFrame of cases requiring manual review
+    """
+    
+    # Filter to ambiguous cases only
+    ambiguous_df = database_df[database_df['manual_review_flag'] == True].copy()
+    
+    if len(ambiguous_df) == 0:
+        print("No ambiguous cases flagged for manual review")
+        return pd.DataFrame()
+    
+    # Calculate sample size
+    sample_size = max(1, int(len(ambiguous_df) * sample_fraction))
+    
+    print(f"Ambiguous cases: {len(ambiguous_df)}")
+    print(f"Sample size (10%): {sample_size}")
+    
+    # Random sample
+    random.seed(seed)
+    sample_df = ambiguous_df.sample(n=sample_size, random_state=seed)
+    
+    # Save for manual review
+    sample_df.to_csv('manual_review_sample_rc2.csv', index=False)
+    
+    print(f"Saved {len(sample_df)} cases to manual_review_sample_rc2.csv")
+    
+    return sample_df
+
+
+Manual Review Recording
+python
+def record_manual_review_decision(fragment_id, model, prompt, run, 
+                                  manual_coherence_judgment, 
+                                  reviewer_notes=""):
+    """
+    Record manual coherence judgment for RC2 reliability check.
+    
+    Args:
+        fragment_id: Fragment identifier
+        model: Model identifier
+        prompt: Prompt condition
+        run: Run number
+        manual_coherence_judgment: 'coherent' or 'incoherent'
+        reviewer_notes: Optional notes explaining judgment
+        
+    Returns:
+        Dictionary with manual review record
+    """
+    
+    return {
+        'fragment_id': fragment_id,
+        'model': model,
+        'prompt_condition': prompt,
+        'run_number': run,
+        'manual_coherence': manual_coherence_judgment,
+        'review_timestamp': datetime.now().isoformat(),
+        'reviewer_notes': reviewer_notes
+    }
+
+
+def calculate_rc2_reliability(database_df, manual_reviews_df):
+    """
+    Calculate Cohen's kappa for RC2 (automated vs manual coherence coding).
+    
+    Args:
+        database_df: Database with automated coherence judgments
+        manual_reviews_df: DataFrame with manual review judgments
+        
+    Returns:
+        Dictionary with kappa and agreement statistics
+    """
+    
+    from sklearn.metrics import cohen_kappa_score, confusion_matrix
+    
+    # Merge automated and manual judgments
+    merged = database_df.merge(
+        manual_reviews_df,
+        on=['fragment_id', 'model', 'prompt_condition', 'run_number'],
+        how='inner'
+    )
+    
+    # Extract judgments (convert 'ambiguous' to most common automated result for comparison)
+    auto_judgments = merged['rule_based_result'].values  # Use rule-based as primary
+    manual_judgments = merged['manual_coherence'].values
+    
+    # Calculate Cohen's kappa
+    kappa = cohen_kappa_score(auto_judgments, manual_judgments)
+    
+    # Calculate agreement rate
+    agreement = (auto_judgments == manual_judgments).sum() / len(merged)
+    
+    # Confusion matrix
+    cm = confusion_matrix(manual_judgments, auto_judgments, 
+                         labels=['coherent', 'incoherent'])
+    
+    results = {
+        'kappa': kappa,
+        'agreement_rate': agreement,
+        'sample_size': len(merged),
+        'confusion_matrix': cm
+    }
+    
+    print(f"RC2 Reliability Check:")
+    print(f"  Cohen's kappa: {kappa:.3f}")
+    print(f"  Agreement rate: {agreement:.1%}")
+    print(f"  Sample size: {len(merged)}")
+    print(f"\nConfusion Matrix:")
+    print(f"                 Automated")
+    print(f"             Coherent  Incoherent")
+    print(f"Manual")
+    print(f"  Coherent      {cm[0,0]:3d}       {cm[0,1]:3d}")
+    print(f"  Incoherent    {cm[1,0]:3d}       {cm[1,1]:3d}")
+    
+    return results
+
+
+ 
+Appendix G.5: Scoring Algorithms
+Load Gold Standard
+python
+import pandas as pd
+
+def load_gold_standard(filepath='gold_standard_locked.csv'):
+    """
+    Load locked gold standard expert judgments.
+    
+    Expected columns:
+    - fragment_id
+    - expert_classification ('sound' or 'not_sound')
+    - expert_rationale
+    - boundary_case_flag
+    
+    Returns:
+        DataFrame with gold standard judgments
+    """
+    
+    gold_df = pd.read_csv(filepath)
+    
+    print(f"Loaded gold standard: {len(gold_df)} fragments")
+    print(f"  Sound: {(gold_df['expert_classification'] == 'sound').sum()}")
+    print(f"  Not sound: {(gold_df['expert_classification'] == 'not_sound').sum()}")
+    
+    return gold_df
+
+
+Classification Accuracy Comparison
+python
+def compare_to_gold_standard(database_df, gold_df):
+    """
+    Compare model classifications to gold standard.
+    
+    Only applies to coherent responses (incoherent responses 
+    automatically fail regardless of classification match).
+    
+    Args:
+        database_df: Response database with coherence validation
+        gold_df: Gold standard judgments
+        
+    Returns:
+        Database with accuracy comparison added
+    """
+    
+    # Merge with gold standard
+    merged_df = database_df.merge(
+        gold_df[['fragment_id', 'expert_classification']],
+        on='fragment_id',
+        how='left'
+    )
+    
+    # Compare classifications (only for coherent responses)
+    def determine_accuracy(row):
+        """Determine if classification matches gold standard."""
+        
+        # Incoherent responses bypass accuracy check
+        if row['coherence'] == 'incoherent':
+            return None  # Will be marked as Fail regardless
+        
+        # Ambiguous coherence flagged for review
+        if row['coherence'] == 'ambiguous':
+            return None
+        
+        # Compare classification
+        if row['classification_output'] == row['expert_classification']:
+            return 'correct'
+        else:
+            return 'incorrect'
+    
+    merged_df['classification_accuracy'] = merged_df.apply(
+        determine_accuracy, axis=1
+    )
+    
+    return merged_df
+
+
+Run-Level Outcome Assignment
+python
+def assign_run_outcomes(database_df):
+    """
+    Assign Pass/Fail outcomes at run level.
+    
+    Decision logic:
+    - Pass = Coherent AND Correct
+    - Fail = Incoherent OR Incorrect (or both)
+    
+    Args:
+        database_df: Database with coherence and accuracy data
+        
+    Returns:
+        Database with run_outcome column added
+    """
+    
+    def determine_run_outcome(row):
+        """Determine Pass/Fail for individual run."""
+        
+        # Fail if incoherent (regardless of accuracy)
+        if row['coherence'] == 'incoherent':
+            return 'fail'
+        
+        # Fail if ambiguous coherence
+        if row['coherence'] == 'ambiguous':
+            return 'fail'
+        
+        # Fail if classification incorrect
+        if row['classification_accuracy'] == 'incorrect':
+            return 'fail'
+        
+        # Pass if coherent AND correct
+        if (row['coherence'] == 'coherent' and 
+            row['classification_accuracy'] == 'correct'):
+            return 'pass'
+        
+        # Default to fail for edge cases
+        return 'fail'
+    
+    database_df['run_outcome'] = database_df.apply(
+        determine_run_outcome, axis=1
+    )
+    
+    # Summary
+    pass_count = (database_df['run_outcome'] == 'pass').sum()
+    fail_count = (database_df['run_outcome'] == 'fail').sum()
+    
+    print(f"\nRun-Level Outcomes (5,400 runs):")
+    print(f"  Pass: {pass_count} ({pass_count/len(database_df)*100:.1f}%)")
+    print(f"  Fail: {fail_count} ({fail_count/len(database_df)*100:.1f}%)")
+    
+    return database_df
+
+
+Fragment-Level Adjudication
+python
+def adjudicate_fragment_outcomes(database_df):
+    """
+    Apply majority rule across 3 runs for fragment-level outcomes.
+    
+    Fragment passes if ≥2 of 3 runs pass.
+    Fragment fails if ≥2 of 3 runs fail.
+    
+    Args:
+        database_df: Database with run-level outcomes
+        
+    Returns:
+        DataFrame with fragment-level outcomes (1,800 combinations)
+    """
+    
+    # Group by fragment-model-prompt combination
+    fragment_groups = database_df.groupby([
+        'fragment_id', 'model_family', 'prompt_condition'
+    ])
+    
+    fragment_outcomes = []
+    
+    for (frag_id, model, prompt), group in fragment_groups:
+        
+        # Should have exactly 3 runs
+        if len(group) != 3:
+            print(f"WARNING: {frag_id}/{model}/{prompt} has {len(group)} runs (expected 3)")
+        
+        # Count pass/fail across 3 runs
+        pass_count = (group['run_outcome'] == 'pass').sum()
+        fail_count = (group['run_outcome'] == 'fail').sum()
+        
+        # Majority rule
+        if pass_count >= 2:
+            fragment_outcome = 'pass'
+        else:
+            fragment_outcome = 'fail'
+        
+        # Unanimous agreement flag
+        unanimous = (pass_count == 3) or (fail_count == 3)
+        
+        fragment_outcomes.append({
+            'fragment_id': frag_id,
+            'model_family': model,
+            'prompt_condition': prompt,
+            'pass_count': pass_count,
+            'fail_count': fail_count,
+            'fragment_outcome': fragment_outcome,
+            'unanimous_agreement': unanimous
+        })
+    
+    fragment_df = pd.DataFrame(fragment_outcomes)
+    
+    # Summary
+    total_combinations = len(fragment_df)
+    pass_combinations = (fragment_df['fragment_outcome'] == 'pass').sum()
+    fail_combinations = (fragment_df['fragment_outcome'] == 'fail').sum()
+    unanimous_combinations = fragment_df['unanimous_agreement'].sum()
+    
+    print(f"\nFragment-Level Outcomes (1,800 combinations):")
+    print(f"  Pass: {pass_combinations} ({pass_combinations/total_combinations*100:.1f}%)")
+    print(f"  Fail: {fail_combinations} ({fail_combinations/total_combinations*100:.1f}%)")
+    print(f"  Unanimous agreement: {unanimous_combinations} ({unanimous_combinations/total_combinations*100:.1f}%)")
+    
+    return fragment_df
+
+
+Performance Metrics Calculation
+python
+def calculate_performance_metrics(fragment_df, database_df):
+    """
+    Calculate primary, secondary, and tertiary performance metrics.
+    
+    Primary: Fragment-level pass rate
+    Secondary: Unanimous agreement rate
+    Tertiary: Run-level pass rate
+    
+    All stratified by model, prompt, and interaction.
+    
+    Args:
+        fragment_df: Fragment-level outcomes (1,800 combinations)
+        database_df: Run-level outcomes (5,400 runs)
+        
+    Returns:
+        Dictionary with comprehensive performance metrics
+    """
+    
+    metrics = {}
+    
+    # Overall metrics
+    metrics['overall'] = {
+        'fragment_pass_rate': (fragment_df['fragment_outcome'] == 'pass').mean(),
+        'unanimous_agreement_rate': fragment_df['unanimous_agreement'].mean(),
+        'run_pass_rate': (database_df['run_outcome'] == 'pass').mean()
+    }
+    
+    # By model family (collapsed across prompts)
+    metrics['by_model'] = {}
+    for model in fragment_df['model_family'].unique():
+        model_data = fragment_df[fragment_df['model_family'] == model]
+        metrics['by_model'][model] = {
+            'fragment_pass_rate': (model_data['fragment_outcome'] == 'pass').mean(),
+            'unanimous_agreement_rate': model_data['unanimous_agreement'].mean(),
+            'n_fragments': len(model_data)
+        }
+    
+    # By prompt condition (collapsed across models)
+    metrics['by_prompt'] = {}
+    for prompt in fragment_df['prompt_condition'].unique():
+        prompt_data = fragment_df[fragment_df['prompt_condition'] == prompt]
+        metrics['by_prompt'][prompt] = {
+            'fragment_pass_rate': (prompt_data['fragment_outcome'] == 'pass').mean(),
+            'unanimous_agreement_rate': prompt_data['unanimous_agreement'].mean(),
+            'n_fragments': len(prompt_data)
+        }
+    
+    # By model × prompt interaction
+    metrics['by_interaction'] = {}
+    for model in fragment_df['model_family'].unique():
+        metrics['by_interaction'][model] = {}
+        for prompt in fragment_df['prompt_condition'].unique():
+            interaction_data = fragment_df[
+                (fragment_df['model_family'] == model) &
+                (fragment_df['prompt_condition'] == prompt)
+            ]
+            metrics['by_interaction'][model][prompt] = {
+                'fragment_pass_rate': (interaction_data['fragment_outcome'] == 'pass').mean(),
+                'unanimous_agreement_rate': interaction_data['unanimous_agreement'].mean(),
+                'n_fragments': len(interaction_data)
+            }
+    
+    return metrics
+
+
+def print_performance_summary(metrics):
+    """Print formatted performance metrics summary."""
+    
+    print("\n" + "="*70)
+    print("PERFORMANCE METRICS SUMMARY")
+    print("="*70)
+    
+    # Overall
+    print("\nOVERALL PERFORMANCE:")
+    print(f"  Fragment-level pass rate: {metrics['overall']['fragment_pass_rate']:.1%}")
+    print(f"  Unanimous agreement rate: {metrics['overall']['unanimous_agreement_rate']:.1%}")
+    print(f"  Run-level pass rate: {metrics['overall']['run_pass_rate']:.1%}")
+    
+    # By model
+    print("\nBY MODEL FAMILY:")
+    for model, model_metrics in metrics['by_model'].items():
+        print(f"  {model}:")
+        print(f"    Fragment pass rate: {model_metrics['fragment_pass_rate']:.1%}")
+        print(f"    Unanimous agreement: {model_metrics['unanimous_agreement_rate']:.1%}")
+    
+    # By prompt
+    print("\nBY PROMPT CONDITION:")
+    for prompt, prompt_metrics in metrics['by_prompt'].items():
+        print(f"  {prompt}:")
+        print(f"    Fragment pass rate: {prompt_metrics['fragment_pass_rate']:.1%}")
+        print(f"    Unanimous agreement: {prompt_metrics['unanimous_agreement_rate']:.1%}")
+    
+    # Interaction (condensed)
+    print("\nMODEL × PROMPT INTERACTION (Fragment Pass Rates):")
+    print(f"{'Model':<20} {'Zero-Shot':>12} {'Few-Shot':>12}")
+    print("-" * 46)
+    for model in metrics['by_interaction'].keys():
+        zero_rate = metrics['by_interaction'][model]['zero_shot']['fragment_pass_rate']
+        few_rate = metrics['by_interaction'][model]['few_shot']['fragment_pass_rate']
+        print(f"{model:<20} {zero_rate:>11.1%} {few_rate:>11.1%}")
+
+
+Export Performance Matrices
+python
+def export_performance_matrix(fragment_df, filepath='performance_matrix.csv'):
+    """
+    Export detailed performance matrix for all 12 model-prompt combinations.
+    
+    Args:
+        fragment_df: Fragment-level outcomes
+        filepath: Output file path
+    """
+    
+    # Calculate metrics for each combination
+    performance_matrix = fragment_df.groupby([
+        'model_family', 'prompt_condition'
+    ]).agg({
+        'fragment_outcome': lambda x: (x == 'pass').sum() / len(x),  # Pass rate
+        'unanimous_agreement': 'mean',  # Unanimous rate
+        'fragment_id': 'count'  # N fragments
+    }).reset_index()
+    
+    performance_matrix.columns = [
+        'model_family', 'prompt_condition', 
+        'fragment_pass_rate', 'unanimous_agreement_rate', 'n_fragments'
+    ]
+    
+    # Calculate 95% confidence intervals (Wilson score interval)
+    from scipy import stats
+    
+    def wilson_ci(pass_rate, n, confidence=0.95):
+        """Calculate Wilson score confidence interval."""
+        z = stats.norm.ppf((1 + confidence) / 2)
+        denominator = 1 + z**2 / n
+        center = (pass_rate + z**2 / (2*n)) / denominator
+        margin = z * ((pass_rate * (1 - pass_rate) / n + z**2 / (4*n**2))**0.5) / denominator
+        return (center - margin, center + margin)
+    
+    performance_matrix['ci_lower'] = performance_matrix.apply(
+        lambda row: wilson_ci(row['fragment_pass_rate'], row['n_fragments'])[0],
+        axis=1
+    )
+    performance_matrix['ci_upper'] = performance_matrix.apply(
+        lambda row: wilson_ci(row['fragment_pass_rate'], row['n_fragments'])[1],
+        axis=1
+    )
+    
+    # Sort by model then prompt
+    performance_matrix = performance_matrix.sort_values([
+        'model_family', 'prompt_condition'
+    ])
+    
+    # Export
+    performance_matrix.to_csv(filepath, index=False)
+    print(f"\nPerformance matrix exported to {filepath}")
+    
+    return performance_matrix
+
+
+Identify Failures for Coding
+python
+def identify_failures_for_coding(fragment_df, primary_model='gpt_5'):
+    """
+    Identify GPT 5.2 fragment-level failures for failure mode coding.
+    
+    Args:
+        fragment_df: Fragment-level outcomes
+        primary_model: Model identifier for primary diagnostic analysis
+        
+    Returns:
+        DataFrame of failures requiring coding
+    """
+    
+    # Filter to primary model failures
+    failures = fragment_df[
+        (fragment_df['model_family'] == primary_model) &
+        (fragment_df['fragment_outcome'] == 'fail')
+    ].copy()
+    
+    # Summary
+    total_primary = len(fragment_df[fragment_df['model_family'] == primary_model])
+    failure_count = len(failures)
+    failure_rate = failure_count / total_primary
+    
+    print(f"\n{primary_model.upper()} Failures for Coding:")
+    print(f"  Total {primary_model} fragment-model-prompt combinations: {total_primary}")
+    print(f"  Failures: {failure_count} ({failure_rate:.1%})")
+    print(f"  By prompt condition:")
+    
+    for prompt in failures['prompt_condition'].unique():
+        prompt_failures = failures[failures['prompt_condition'] == prompt]
+        print(f"    {prompt}: {len(prompt_failures)} failures")
+    
+    # Export for manual coding
+    failures.to_csv(f'{primary_model}_failures_for_coding.csv', index=False)
+    print(f"\nExported to {primary_model}_failures_for_coding.csv")
+    
+    return failures
+
+
+ 
+Appendix G.6: Scoring Matrices and Decision Tables
+Purpose: Document decision rules for run-level scoring, fragment-level adjudication, and edge case handling
+Table G.6.1: Run-Level Scoring Matrix
+Decision Rule: Pass requires BOTH coherent reasoning AND correct classification
+Coherence Status	Classification vs. Gold Standard	Run Outcome
+ Coherent	 Correct	 Pass
+ Coherent	 Incorrect	 Fail
+ Incoherent	 Correct	 Fail
+ Incoherent	 Incorrect	 Fail
+ Ambiguous	 (any)	 Fail
+
+
+
+
+Rationale: Coherence failure indicates the model cannot maintain logical reasoning between classification and rationale, making the classification unreliable even if accidentally correct.
+Table G.6.2: Fragment-Level Adjudication Matrix
+Decision Rule: Majority rule across 3 independent runs (≥2 of 3)
+Run 1	Run 2	Run 3	Pass Count	Fragment Outcome	Agreement Type
+Pass	Pass	Pass	3/3	Pass	Unanimous
+Pass	Pass	Fail	2/3	Pass	Majority
+Pass	Fail	Pass	2/3	Pass	Majority
+Fail	Pass	Pass	2/3	Pass	Majority
+Pass	Fail	Fail	1/3	Fail	Majority
+Fail	Pass	Fail	1/3	Fail	Majority
+Fail	Fail	Pass	1/3	Fail	Majority
+Fail	Fail	Fail	0/3	Fail	Unanimous
+Rationale: Triple-run protocol balances reliability (detecting consistent performance patterns) against efficiency (managing API costs and execution time).
+Table G.6.3: Edge Case Handling
+Scenario	Detection Logic	Handling Procedure	Outcome Type
+Refusals			
+Substantive refusal	Rationale contains: "cannot evaluate", "unable to assess", "insufficient information"	Score as Fail	Reasoning failure
+Technical timeout	API timeout error (>60s)	Exclude from analysis	Infrastructure issue
+Safety policy trigger	API returns safety flag or content policy message	Score as Fail, flag separately	Reasoning failure (flagged)
+Malformed Outputs			
+Format broken, content present	JSON parse error but extractable text with reasoning	Retry 2× → then exclude if still fails	Technical exclusion
+Format correct, nonsensical content	Valid format but rationale is gibberish, repetitive, or off-topic	Score as Fail	Reasoning failure
+Multi-Part Judgments			
+Clear final classification	Multiple discussion points but ends with explicit "sound" or "not sound"	Extract final classification → score normally	(depends on coherence/accuracy)
+Unresolved ambivalence	Presents both perspectives without reaching conclusion (e.g., "could be either...")	Score as Fail	Synthesis failure
+Contradictory claims	States "sound" in one sentence, "not sound" in another	Score as Fail	Coherence failure
+Missing Elements			
+Classification missing	Rationale present but no classification stated	Score as Fail	Incomplete output
+Rationale missing	Classification present but rationale <10 words or empty	Score as Fail	Incomplete output
+Both missing	Empty or near-empty response	Retry 2× → then score as Fail if persistent	Reasoning failure
+Implementation: Edge Case Detection
+python
+def detect_edge_case(response_dict):
+    """
+    Detect and categorize edge cases for appropriate handling.
+    
+    Args:
+        response_dict: Response dictionary with classification, rationale, error info
+        
+    Returns:
+        Tuple of (edge_case_type, handling_action, notes)
+    """
+    
+    classification = response_dict.get('classification_output')
+    rationale = response_dict.get('rationale_text', '')
+    error = response_dict.get('error_details', '')
+    
+    # Check for refusals
+    refusal_phrases = [
+        'cannot evaluate', 'unable to assess', 'insufficient information',
+        'not enough context', 'cannot determine', 'impossible to judge'
+    ]
+    if any(phrase in rationale.lower() for phrase in refusal_phrases):
+        return ('substantive_refusal', 'fail', 'Model refused to evaluate')
+    
+    # Check for timeout
+    if 'timeout' in error.lower():
+        return ('technical_timeout', 'exclude', 'API timeout - infrastructure issue')
+    
+    # Check for safety trigger
+    if 'safety' in error.lower() or 'content policy' in error.lower():
+        return ('safety_trigger', 'fail_flagged', 'Safety policy triggered')
+    
+    # Check for missing elements
+    if not classification:
+        return ('missing_classification', 'fail', 'No classification provided')
+    
+    if not rationale or len(rationale.split()) < 10:
+        return ('missing_rationale', 'fail', 'Rationale missing or too brief')
+    
+    # Check for nonsensical content
+    if is_nonsensical(rationale):
+        return ('nonsensical_content', 'fail', 'Rationale is gibberish or off-topic')
+    
+    # Check for multi-part ambivalence
+    ambivalence_phrases = [
+        'could be either', 'it depends', 'unclear whether', 
+        'difficult to say', 'both interpretations', 'on one hand'
+    ]
+    if any(phrase in rationale.lower() for phrase in ambivalence_phrases):
+        if not has_clear_final_classification(rationale, classification):
+            return ('unresolved_ambivalence', 'fail', 'No clear final judgment')
+    
+    # Check for contradictions
+    if has_contradictory_classifications(rationale):
+        return ('contradictory_claims', 'fail', 'Rationale contradicts itself')
+    
+    # No edge case detected
+    return (None, 'process_normally', '')
+
+
+def is_nonsensical(rationale):
+    """Detect gibberish or completely off-topic content."""
+    
+    # Check for excessive repetition
+    words = rationale.lower().split()
+    if len(words) > 10:
+        unique_ratio = len(set(words)) / len(words)
+        if unique_ratio < 0.3:  # Less than 30% unique words
+            return True
+    
+    # Check if rationale mentions evaluation-related concepts
+    evaluation_keywords = [
+        'evaluat', 'criterion', 'evidence', 'conclusion', 'judgment',
+        'assessment', 'reasoning', 'analysis', 'synthesis', 'standard'
+    ]
+    rationale_lower = rationale.lower()
+    if not any(keyword in rationale_lower for keyword in evaluation_keywords):
+        return True  # Likely off-topic
+    
+    return False
+
+
+def has_clear_final_classification(rationale, stated_classification):
+    """Check if ambivalent rationale still ends with clear classification."""
+    
+    # Look for explicit final statement
+    final_sentence = rationale.split('.')[-2] if len(rationale.split('.')) > 1 else rationale
+    
+    final_indicators = [
+        'therefore', 'thus', 'in conclusion', 'overall',
+        'ultimately', 'final judgment', 'verdict'
+    ]
+    
+    if any(indicator in final_sentence.lower() for indicator in final_indicators):
+        if stated_classification in final_sentence.lower():
+            return True
+    
+    return False
+
+
+def has_contradictory_classifications(rationale):
+    """Detect if rationale contains both 'sound' and 'not sound' judgments."""
+    
+    rationale_lower = rationale.lower()
+    
+    # Count occurrences
+    sound_count = rationale_lower.count('sound') - rationale_lower.count('not sound')
+    not_sound_count = rationale_lower.count('not sound')
+    
+    # If both appear substantially, likely contradictory
+    if sound_count > 0 and not_sound_count > 0:
+        return True
+    
+    return False
+
+Implementation: Apply Edge Case Handling
+python
+def apply_edge_case_handling(database_df):
+    """
+    Apply edge case detection and handling to all responses.
+    
+    Args:
+        database_df: Response database
+        
+    Returns:
+        Database with edge case columns added
+    """
+    
+    edge_case_results = []
+    
+    for idx, row in database_df.iterrows():
+        
+        response_dict = {
+            'classification_output': row['classification_output'],
+            'rationale_text': row['rationale_text'],
+            'error_details': row['error_details']
+        }
+        
+        edge_case_type, handling_action, notes = detect_edge_case(response_dict)
+        
+        edge_case_results.append({
+            'edge_case_type': edge_case_type,
+            'handling_action': handling_action,
+            'edge_case_notes': notes
+        })
+    
+    # Add to database
+    edge_df = pd.DataFrame(edge_case_results)
+    database_df = pd.concat([database_df, edge_df], axis=1)
+    
+    # Apply handling actions
+    database_df['exclude_from_analysis'] = (
+        database_df['handling_action'] == 'exclude'
+    )
+    
+    # Summary
+    edge_counts = database_df['edge_case_type'].value_counts()
+    print("\nEdge Case Summary:")
+    for edge_type, count in edge_counts.items():
+        if edge_type:  # Skip None values
+            print(f"  {edge_type}: {count}")
+    
+    return database_df
+
+
+Decision Rule Summary
+Run-Level Scoring:
+•	Single requirement for Pass: Coherent AND Correct
+•	Any violation → Fail
+Fragment-Level Adjudication:
+•	Majority rule: ≥2 of 3 runs determine outcome
+•	Unanimous agreement tracked separately for consistency analysis
+Edge Case Philosophy:
+•	Technical failures (timeout) → Exclude (not model's fault)
+•	Reasoning failures (refusal, nonsense) → Fail (model responsibility)
+•	Ambiguous cases (unclear format) → Retry with fallback to Fail
+•	Safety triggers → Fail but flagged for separate pattern analysis
+Alignment with Instrument #6: All decision rules implement the scoring protocol described in Instrumentation #6 (Model Output Capture and Scoring Instrument) and Section 2.4 (Automated Response Scoring).
+ 
