@@ -46,7 +46,7 @@ LOGS_DIR      = PROJECT_ROOT / "logs"
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from config.api_config import API_CONFIG  # noqa: E402
+from config.api_config import API_CONFIG, MODEL_API_FAMILY  # noqa: E402
 from config.model_params import COST_ESTIMATES, PROMPT_CONDITIONS  # noqa: E402
 
 # ---------------------------------------------------------------------------
@@ -124,6 +124,19 @@ def compute_call_cost(
     model's COST_ESTIMATES entry has no verified rate yet (see
     model_params.COST_ESTIMATES).
 
+    Whether reasoning_tokens should be ADDED to output_tokens for billing
+    depends on the provider's usage schema, and is NOT uniform across
+    models — CONFIRMED via the real pilot data (2026-08-03): for every
+    anthropic/openai_responses/openai_compatible call logged, reasoning_tokens
+    was always <= output_tokens (ratios 0.33x-0.96x), the signature of
+    output_tokens already being the total (reasoning + visible answer) with
+    reasoning_tokens merely a breakdown within it — adding it again would
+    double-bill. Only google_interactions_sdk (Gemini 3.1 Pro Preview High)
+    reports two genuinely separate pools (total_output_tokens vs.
+    total_thought_tokens, confirmed via SDK type introspection) — there,
+    reasoning routinely EXCEEDS output (ratios up to 11.9x in pilot data),
+    which is only possible if they're independent and must both be paid for.
+
     Args:
         model: Model identifier from API_CONFIG.
         input_tokens: Input token count for the call.
@@ -143,6 +156,9 @@ def compute_call_cost(
     if input_rate is None or output_rate is None:
         return None
 
-    billable_output_tokens = output_tokens + (reasoning_tokens or 0)
+    reasoning_is_separate_pool = MODEL_API_FAMILY.get(model) == "google_interactions_sdk"
+    billable_output_tokens = (
+        output_tokens + (reasoning_tokens or 0) if reasoning_is_separate_pool else output_tokens
+    )
     cost = (input_tokens / 1000) * input_rate + (billable_output_tokens / 1000) * output_rate
     return round(cost, 6)

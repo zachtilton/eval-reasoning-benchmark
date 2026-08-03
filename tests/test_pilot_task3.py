@@ -8,10 +8,34 @@ import numpy as np
 import pandas as pd
 import pytest
 
+from config.pilot_config import compute_call_cost
 from src.pilot.task3_cost_projection import (
     compute_updated_projection,
     flag_high_reasoning_models,
 )
+
+
+class TestComputeCallCost:
+    """
+    CONFIRMED via real pilot data (2026-08-03): reasoning_tokens is a
+    subset already included in output_tokens for anthropic/openai_responses/
+    openai_compatible models (reasoning always <= output, ratios 0.33x-0.96x
+    across every real call) — adding it again double-bills. Only Gemini's
+    google_interactions_sdk family reports two genuinely separate pools
+    (reasoning routinely EXCEEDS output there, up to 11.9x in pilot data).
+    """
+
+    def test_non_gemini_model_does_not_double_count_reasoning(self):
+        cost = compute_call_cost("claude_opus_5", input_tokens=1000, output_tokens=100, reasoning_tokens=50)
+        # billable = output_tokens only (100), NOT output + reasoning (150)
+        assert cost == pytest.approx(1.0 * 0.005 + 0.1 * 0.025)
+
+    def test_gemini_adds_reasoning_as_separate_pool(self):
+        cost = compute_call_cost(
+            "gemini_3_pro_preview_high", input_tokens=1000, output_tokens=100, reasoning_tokens=500
+        )
+        # billable = output_tokens + reasoning_tokens (600) — separate pools
+        assert cost == pytest.approx(1.0 * 0.002 + 0.6 * 0.012)
 
 
 def _task1_result():
