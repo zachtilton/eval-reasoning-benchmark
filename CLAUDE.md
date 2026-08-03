@@ -9,7 +9,7 @@ zero-shot and few-shot conditions. 5,400 total API calls.
 - GPT 5.2 is the primary diagnostic model; 5 others are comparison only
 - Coherence validation uses tiered approach: rule-based keywords (Tier 1),
   then Claude Haiku at temp 0 (Tier 2) for ambiguous cases
-- Exactly 4 calibration examples (2 sound, 2 not sound)
+- Exactly 2 calibration examples (1 sound, 1 not sound)
 - Only Type 1 failures (coherent but wrong) receive failure mode coding
 - RC2 validates automated coherence pipeline against human judgment
 - Framework/template analysis, not grounded theory

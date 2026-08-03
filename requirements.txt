@@ -1,0 +1,24 @@
+# Runtime dependencies (already imported without being declared — no
+# requirements.txt existed anywhere in this repo before the pilot work;
+# these worked previously only because Anaconda's default environment
+# happens to bundle them)
+requests>=2.31
+pandas>=2.0
+scipy>=1.10  # used by src/scoring — surfaced when testing in a clean venv
+
+# Pilot-only: cl100k_base token counting (Task 1 / calibration audit)
+tiktoken>=0.7
+
+# Gemini 3.1 Pro Preview High calls Google's Interactions API
+# (client.interactions.create), a different surface than the classic
+# generateContent REST endpoint the other models use. This requires
+# google-genai>=2.3.0, which in turn requires Python 3.10+ (confirmed via
+# `pip index versions`) — this is the first dependency that makes
+# CLAUDE.md's stated "Python 3.10+" a hard requirement rather than
+# aspirational. `pip install -r requirements.txt` will fail outright on
+# Python <3.10 because of this one line — run the benchmark (not just
+# tests) under a 3.10+ interpreter.
+google-genai>=2.3.0
+
+# Test/dev
+pytest>=8.0

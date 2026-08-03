@@ -14,7 +14,7 @@ Claude Code should reference this file when generating modules.
 
 **Sampling procedure:**
 - Three-tab spreadsheet: Tab 1 (Main) = filtered reports with metadata (ID, title/URL, type, country, year, budget, management response, joint eval, GEF indicators); Tab 2 (Randomizer) = 200 random numbers via =RANDARRAY(200,1,0,6864,TRUE); Tab 3 (Sample) = matched metadata via =FILTER(Main!A:Z, ISNUMBER(MATCH(Main!A:A, Randomizer!A:A, 0)))
-- 200-report oversample to accommodate ~85-95% fragment eligibility rate plus 4 calibration examples
+- 200-report oversample to accommodate ~85-95% fragment eligibility rate plus 2 calibration examples
 
 ### 1.2 Fragment Extraction
 
@@ -43,10 +43,10 @@ Claude Code should reference this file when generating modules.
 ### 1.3 Calibration Example Selection
 
 **Pool:** Continue extraction after 150 benchmark fragments until 10-15 additional eligible fragments identified
-**Selection:** 4 fragments via purposive sampling
+**Selection:** 2 fragments via purposive sampling
 
 **Balance requirements:**
-- 2 sound, 2 not sound
+- 1 sound, 1 not sound
 - Sound examples: vary strengths (argument structure, synthesis, qualification)
 - Not sound examples: vary deficiencies (weak warrants/Domain 3, inadequate evidence or synthesis/Domains 2 and 4, over-generalization/Domain 6)
 - Complexity range: single-paragraph straightforward to multi-paragraph moderate; avoid extreme boundary cases
@@ -95,7 +95,7 @@ Claude Code should reference this file when generating modules.
 
 **Two conditions:**
 - **Zero-shot:** Task instructions + abbreviated 6-domain checklist reference + response format specs (Appendix B)
-- **Few-shot:** Same as zero-shot + 4 calibration examples with expert classifications and rationales (Appendix C)
+- **Few-shot:** Same as zero-shot + 2 calibration examples with expert classifications and rationales (Appendix C)
 
 **Consistency rules:**
 - Identical prompt structure across all models and fragments within each condition
@@ -112,7 +112,7 @@ Claude Code should reference this file when generating modules.
 - Temperature: 0 (maximum determinism)
 - Max output tokens: 500
 - Expected input: ~750 tokens (prompt + fragment)
-- Expected output: ~250 tokens (classification + 2-4 sentence rationale)
+- Expected output: ~250 tokens (classification + 1-2 sentence rationale; pilot Task 1/3 supersedes this once measured)
 - Runs per fragment-model-prompt combination: 3 (for consistency analysis)
 - API versions documented at time of execution
 
@@ -422,7 +422,7 @@ Claude Code should reference this file when generating modules.
 
 | Column | Type | Valid Values | Notes |
 |--------|------|-------------|-------|
-| calibration_id | string | CAL_01–CAL_04 | |
+| calibration_id | string | CAL_01–CAL_02 | |
 | fragment_id | string | — | NOT in F_001–F_150 range |
 | fragment_text | string | — | |
 | classification | string | sound, not_sound | |
@@ -521,7 +521,7 @@ Source: Instrument 6 (Model Output Capture and Scoring Instrument)
 ### Expected Output Format
 
 - Binary classification: sound / not sound
-- Rationale: 2-4 sentences explaining judgment
+- Rationale: 1-2 sentences explaining judgment
 - Capture method: JSON for models supporting structured output; parsed text otherwise
 - Normalization: classification values normalized across model phrasings
 - Validation: rationale must contain ≥10 words of substantive reasoning (not mere restatement)

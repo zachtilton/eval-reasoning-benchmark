@@ -15,9 +15,18 @@ def extract_response_content(response_json: dict, model: str) -> str:
     """
     Extract the text content field from a raw API response dict.
 
-    Handles all three wire formats used in the benchmark:
-    - OpenAI-compatible (GPT, DeepSeek, Kimi, GLM): ``choices[0].message.content``
-    - Anthropic (Claude): ``content[0].text``
+    Handles all four wire formats used in the benchmark:
+    - OpenAI-compatible Chat Completions (DeepSeek, Kimi, GLM): ``choices[0].message.content``
+    - OpenAI Responses API (GPT-5.6 Sol): ``output[]`` — first item with
+      ``type == "message"``, then the first ``content[]`` block with
+      ``type == "output_text"``.
+    - Anthropic (Claude): ``content[]`` — the first block with
+      ``type == "text"``. NOT ``content[0]`` unconditionally — with
+      adaptive thinking on (the default for Claude Opus 5), a ``"thinking"``
+      block routinely precedes the text block (confirmed via live call:
+      ``['thinking', 'text']`` for a real fragment-classification prompt;
+      a trivial prompt like "Say OK." produced only ``['text']``, so this
+      is prompt-dependent, not something a fixed index can rely on).
     - Google Gemini: ``candidates[0].content.parts[0].text``
 
     Args:
@@ -28,13 +37,38 @@ def extract_response_content(response_json: dict, model: str) -> str:
         Extracted text string.
 
     Raises:
-        ValueError: If the response structure matches none of the known formats.
+        ValueError: If the response structure matches none of the known formats,
+            or no text-bearing block is found within a matched structure.
     """
     if "choices" in response_json:
         return response_json["choices"][0]["message"]["content"]
 
+    if "output" in response_json:
+        for item in response_json["output"]:
+            if item.get("type") == "message":
+                for block in item["content"]:
+                    if block.get("type") == "output_text":
+                        return block["text"]
+                raise ValueError(
+                    f"Responses API message item for model '{model}' contained "
+                    f"no 'output_text' block. Block types present: "
+                    f"{[block.get('type') for block in item['content']]}"
+                )
+        raise ValueError(
+            f"Responses API output[] for model '{model}' contained no "
+            f"'message' item. Item types present: "
+            f"{[item.get('type') for item in response_json['output']]}"
+        )
+
     if "content" in response_json:
-        return response_json["content"][0]["text"]
+        for block in response_json["content"]:
+            if block.get("type") == "text":
+                return block["text"]
+        raise ValueError(
+            f"Anthropic content[] for model '{model}' contained no 'text' "
+            f"block. Block types present: "
+            f"{[block.get('type') for block in response_json['content']]}"
+        )
 
     if "candidates" in response_json:
         return response_json["candidates"][0]["content"]["parts"][0]["text"]
@@ -145,8 +179,8 @@ def get_input_tokens(response_json: dict, model: str) -> int:  # noqa: ARG001
     Extract the prompt (input) token count from an API response.
 
     Handles:
-    - OpenAI-compatible: ``usage.prompt_tokens``
-    - Anthropic: ``usage.input_tokens``
+    - OpenAI-compatible Chat Completions: ``usage.prompt_tokens``
+    - OpenAI Responses API, Anthropic: ``usage.input_tokens``
     - Gemini: ``usageMetadata.promptTokenCount``
 
     Args:
@@ -171,8 +205,8 @@ def get_output_tokens(response_json: dict, model: str) -> int:  # noqa: ARG001
     Extract the completion (output) token count from an API response.
 
     Handles:
-    - OpenAI-compatible: ``usage.completion_tokens``
-    - Anthropic: ``usage.output_tokens``
+    - OpenAI-compatible Chat Completions: ``usage.completion_tokens``
+    - OpenAI Responses API, Anthropic: ``usage.output_tokens``
     - Gemini: ``usageMetadata.candidatesTokenCount``
 
     Args:
@@ -192,6 +226,48 @@ def get_output_tokens(response_json: dict, model: str) -> int:  # noqa: ARG001
     return 0
 
 
+def get_reasoning_tokens(response_json: dict, model: str) -> int | None:  # noqa: ARG001
+    """
+    Extract hidden reasoning/thinking token count, where the provider
+    reports it separately from visible output tokens.
+
+    Handles:
+    - OpenAI-compatible Chat Completions reasoning models:
+      ``usage.completion_tokens_details.reasoning_tokens``
+    - OpenAI Responses API (GPT-5.6 Sol):
+      ``usage.output_tokens_details.reasoning_tokens`` — a different
+      details-object name than Chat Completions, checked as a fallback
+      alongside ``completion_tokens_details`` under the same ``usage`` key.
+    - Anthropic (Claude): CONFIRMED via live call — IS separately reported,
+      contrary to earlier assumption, at
+      ``usage.output_tokens_details.thinking_tokens`` (a distinct field
+      name from OpenAI's ``reasoning_tokens``, same details-object name as
+      the Responses API). E.g. a real fragment-classification call
+      returned ``output_tokens_details: {"thinking_tokens": 259}`` — this
+      would previously have silently returned None despite real data
+      being available.
+    - Gemini: ``usageMetadata.thoughtsTokenCount`` (verify at execution —
+      field name unconfirmed for Gemini 3).
+
+    Args:
+        response_json: Raw JSON-decoded API response.
+        model: Model identifier (unused; kept for signature symmetry).
+
+    Returns:
+        Reasoning token count, or ``None`` if the provider doesn't report
+        this figure separately.
+    """
+    if "usage" in response_json:
+        usage = response_json["usage"]
+        details = usage.get("completion_tokens_details") or usage.get("output_tokens_details") or {}
+        return details.get("reasoning_tokens", details.get("thinking_tokens"))
+
+    if "usageMetadata" in response_json:
+        return response_json["usageMetadata"].get("thoughtsTokenCount")
+
+    return None
+
+
 def parse_api_response(response_json: dict, model: str) -> dict:
     """
     Parse a raw API response into a standardized intermediate dict.
@@ -209,11 +285,13 @@ def parse_api_response(response_json: dict, model: str) -> dict:
         - ``rationale`` (str or None)
         - ``token_count_input`` (int)
         - ``token_count_output`` (int)
+        - ``reasoning_tokens`` (int or None — see :func:`get_reasoning_tokens`)
         - ``parse_method`` (``'json'`` or ``'text'``)
     """
     content = extract_response_content(response_json, model)
     input_tokens = get_input_tokens(response_json, model)
     output_tokens = get_output_tokens(response_json, model)
+    reasoning_tokens = get_reasoning_tokens(response_json, model)
 
     try:
         parsed = parse_structured_json(content)
@@ -222,6 +300,7 @@ def parse_api_response(response_json: dict, model: str) -> dict:
             "rationale": parsed["rationale"],
             "token_count_input": input_tokens,
             "token_count_output": output_tokens,
+            "reasoning_tokens": reasoning_tokens,
             "parse_method": "json",
         }
     except (json.JSONDecodeError, KeyError, ValueError):
@@ -233,6 +312,7 @@ def parse_api_response(response_json: dict, model: str) -> dict:
         "rationale": parsed["rationale"],
         "token_count_input": input_tokens,
         "token_count_output": output_tokens,
+        "reasoning_tokens": reasoning_tokens,
         "parse_method": "text",
     }
 

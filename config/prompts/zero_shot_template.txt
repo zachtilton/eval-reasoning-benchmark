@@ -2,26 +2,55 @@ TASK: You are evaluating the quality of evaluative reasoning in a conclusion fra
 
 ASSESSMENT FRAMEWORK: Apply the Integrated Evaluative Reasoning Checklist below to assess whether this conclusion demonstrates sound evaluative reasoning.
 
-[IERC CHECKLIST — INSERT APPENDIX A CONTENT HERE]
-[Replace this block with the full 22-checkpoint Integrated Evaluative Reasoning Checklist
-across the following 6 domains:
-  Domain 1: Evaluative Framing
-  Domain 2: Evidence Base
-  Domain 3: Argument Structure
-  Domain 4: Synthesis & Integration
-  Domain 5: Evaluative Conclusion
-  Domain 6: Qualifications & Transparency
-Remove this placeholder before running the benchmark.]
+I. EVALUATIVE FRAMING: What is the evaluative basis for judgment?
+Checkpoints:
+1. Does the conclusion address an evaluative question (not merely descriptive)?
+2. Are explicit criteria or comparators present and justified?
+3. Are standards associated with performance levels referenced?
+
+II. EVIDENCE BASE: What factual foundation supports the evaluative claim?
+Checkpoints:
+4. Is performance evidence present (what the evaluand does/achieves)?
+5. Is the evidence sufficient to support the evaluative claim?
+6. Is the evidence base defensible within the fragment's scope?
+
+III. ARGUMENT STRUCTURE: How does the reasoning connect evidence to conclusion?
+Checkpoints:
+7. Is there a clear chain of reasoning from evidence to interpretation to conclusion?
+8. Are warrants (the "because" connection) explicit or clearly implied?
+9. Is backing provided for warrants (appeal to appropriate authority/principles)?
+10. Do warrants appeal to contextually appropriate authority for the evaluative domain?
+
+IV. SYNTHESIS & INTEGRATION: How are multiple dimensions combined into evaluative judgment?
+Checkpoints:
+11. Does the conclusion integrate criteria/comparators with performance evidence?
+12. If multiple sub-dimensions/sub-criteria are relevant, are they integrated?
+13. Does the synthesis represent non-algorithmic judgment (not just checklist)?
+
+V. EVALUATIVE CONCLUSION: Does the fragment reach and articulate an evaluative judgment?
+Checkpoints:
+14. Is there an explicit evaluative judgment about merit/worth/significance, etc.?
+15. Does the conclusion represent the culmination of prior reasoning steps?
+16. Are there coherent connections between the conclusion and other elements (objectives, criteria, evidence, argument)?
+
+VI. QUALIFICATIONS, TRANSPARENCY & LIMITATIONS: Are boundaries, assumptions, and reasoning made explicit?
+Checkpoints:
+17. Are qualifiers indicating strength/certainty of the claim appropriate?
+18. Are conditions of exception or boundary conditions acknowledged?
+19. Is scope appropriately limited (no unwarranted overgeneralization)?
+20. Are assumptions, interpretive frameworks, or values underlying the conclusion made explicit?
+21. Are limitations, uncertainties, or caveats acknowledged when relevant?
+22. When applicable, are plausible alternative interpretations or conclusions considered?
 
 IMPORTANT: These checkpoints are orienting heuristics, not algorithmic rules. Sound evaluative reasoning requires synthesis and professional judgment, not mechanical checklist completion. Consider how domains interact and how trade-offs are weighed. No single checkpoint is determinative — assess the conclusion holistically.
 
 YOUR TASK:
 1. Classification: Classify this conclusion as either sound or not sound based on the overall quality of evaluative reasoning.
-2. Rationale: Provide a 2-4 sentence rationale explaining your judgment. Identify which domains were most salient to your decision and how you weighed any trade-offs.
+2. Rationale: Provide a 1-2 sentence rationale explaining your judgment. Identify which domains were most salient to your decision and how you weighed any trade-offs.
 
 EVALUATIVE CONCLUSION FRAGMENT:
 [Fragment text will be inserted here]
 
 YOUR RESPONSE:
 Classification: [sound / not sound]
-Rationale: [2-4 sentences explaining your judgment]
+Rationale: [1-2 sentences explaining your judgment]

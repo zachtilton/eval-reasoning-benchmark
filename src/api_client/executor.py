@@ -13,6 +13,7 @@ Design notes:
 from __future__ import annotations
 
 import csv
+import json
 import os
 import time
 import uuid
@@ -27,10 +28,17 @@ from .config import (
     MODEL_API_FAMILY,
     PARAM_MAPPING,
     PROMPTS_DIR,
+    REQUEST_TIMEOUT_SECONDS,
     RESPONSE_DB_PATH,
     STANDARD_PARAMS,
 )
-from .parser import normalize_classification, parse_api_response, validate_rationale
+from .parser import (
+    normalize_classification,
+    parse_api_response,
+    parse_structured_json,
+    parse_unstructured_text,
+    validate_rationale,
+)
 
 # ---------------------------------------------------------------------------
 # Response database schema
@@ -75,7 +83,10 @@ def filter_params(model: str, universal_params: dict) -> dict:
     Translate universal parameter names to provider-specific names.
 
     Parameters whose provider-specific name is ``None`` are omitted (not
-    supported by that API family).
+    supported by that API family). Parameters listed in the model's own
+    ``unsupported_params`` (API_CONFIG) are dropped first — some models are
+    stricter than their family default (e.g. Claude Opus 5 rejects all
+    sampling params, unlike older Anthropic models under the same family).
 
     Args:
         model: Model identifier from ``API_CONFIG``.
@@ -84,6 +95,12 @@ def filter_params(model: str, universal_params: dict) -> dict:
     Returns:
         Dict with provider-specific parameter names, unsupported params dropped.
     """
+    model_config = API_CONFIG.get(model, {})
+    excluded = model_config.get("unsupported_params", frozenset())
+    universal_params = {
+        name: value for name, value in universal_params.items() if name not in excluded
+    }
+
     api_family = MODEL_API_FAMILY.get(model, "openai_compatible")
     mapping = PARAM_MAPPING[api_family]
     return {
@@ -189,6 +206,7 @@ def build_request_payload(config: dict, prompt: str, model: str) -> dict:
     """
     params = filter_params(model, STANDARD_PARAMS)
     api_family = MODEL_API_FAMILY.get(model, "openai_compatible")
+    reasoning_payload = config.get("reasoning_effort_payload", {})
 
     if api_family == "anthropic":
         # Anthropic requires max_tokens at the top level, not inside a params block
@@ -199,20 +217,37 @@ def build_request_payload(config: dict, prompt: str, model: str) -> dict:
             "max_tokens": max_tokens,
         }
         payload.update(params)
+        payload.update(reasoning_payload)
         return payload
 
     if api_family == "google":
+        generation_config = dict(params)
+        generation_config.update(reasoning_payload)
         return {
             "contents": [{"parts": [{"text": prompt}]}],
-            "generationConfig": params,
+            "generationConfig": generation_config,
         }
 
-    # OpenAI-compatible (GPT, DeepSeek, Kimi, GLM)
+    if api_family == "openai_responses":
+        # OpenAI's Responses API (GPT-5.6 Sol) — distinct from Chat
+        # Completions: single "input" string instead of a "messages" array.
+        # See the STRUCTURAL FLAG comment on gpt_5_6_sol in
+        # config/api_config.py for what else this family needed.
+        payload = {
+            "model": config["model_id"],
+            "input": prompt,
+        }
+        payload.update(params)
+        payload.update(reasoning_payload)
+        return payload
+
+    # OpenAI-compatible Chat Completions (DeepSeek, Kimi, GLM via Fireworks)
     payload = {
         "model": config["model_id"],
         "messages": [{"role": "user", "content": prompt}],
     }
     payload.update(params)
+    payload.update(reasoning_payload)
     return payload
 
 
@@ -295,6 +330,14 @@ def execute_api_request(
     """
     config = API_CONFIG[model]
     prompt = load_prompt_template(prompt_type, fragment["text"])
+
+    if MODEL_API_FAMILY.get(model) == "google_interactions_sdk":
+        # Gemini 3.1 Pro Preview High — Google's Interactions API, called
+        # via the google-genai SDK rather than raw requests.post(). See the
+        # STRUCTURAL FLAG comment on gemini_3_pro_preview_high in
+        # config/api_config.py.
+        return execute_google_interactions_request(config, prompt, model)
+
     headers = build_request_headers(config)
     payload = build_request_payload(config, prompt, model)
     endpoint = build_endpoint_url(config)
@@ -304,7 +347,7 @@ def execute_api_request(
         endpoint,
         headers=headers,
         json=payload,
-        timeout=60,
+        timeout=REQUEST_TIMEOUT_SECONDS,
     )
     latency = round(time.monotonic() - start, 3)
 
@@ -315,6 +358,110 @@ def execute_api_request(
     parsed["api_version"] = config["model_id"]
 
     return parsed
+
+
+def execute_google_interactions_request(config: dict, prompt: str, model: str) -> dict:
+    """
+    Execute a request against Google's Interactions API (google-genai SDK)
+    for Gemini 3.1 Pro Preview High.
+
+    Bypasses build_request_headers/build_request_payload/build_endpoint_url/
+    requests.post entirely — the SDK owns request construction and auth.
+    Requires google-genai>=2.3.0 (Python 3.10+; see requirements.txt).
+
+    Field names used here (output_text; usage.total_input_tokens/
+    total_output_tokens/total_thought_tokens) were confirmed by directly
+    introspecting the installed google-genai 2.16.0 SDK's pydantic type
+    definitions (Interaction.model_fields, Usage.model_fields) — real
+    source, not a guess, but not exercised against a live API response
+    either. Verify against one real call before trusting this at scale.
+
+    Args:
+        config: Model config dict from ``API_CONFIG`` (gemini_3_pro_preview_high).
+        prompt: Fully rendered prompt string.
+        model: Model identifier (used for filter_params' unsupported_params lookup).
+
+    Returns:
+        Dict with the same keys as the requests-based path: ``classification``,
+        ``rationale``, ``token_count_input``, ``token_count_output``,
+        ``reasoning_tokens``, ``parse_method``, ``latency_seconds``,
+        ``api_version``.
+
+    Raises:
+        ValueError: On missing API key.
+        Exception: Whatever google-genai raises for API errors — caught and
+            categorized by retry.make_api_call_with_retry's generic
+            exception handling (it already guards on ``hasattr(exc, "response")``
+            rather than assuming a ``requests``-shaped exception).
+    """
+    from google import genai  # deferred import — only this one model needs the SDK
+
+    api_key = os.getenv(config["api_key_env"])
+    if not api_key:
+        raise ValueError(
+            f"API key not found. Set the '{config['api_key_env']}' environment "
+            f"variable before running the benchmark."
+        )
+
+    client = genai.Client(api_key=api_key)
+
+    generation_config = filter_params(model, STANDARD_PARAMS)
+    generation_config.update(config.get("reasoning_effort_payload", {}))
+
+    start = time.monotonic()
+    interaction = client.interactions.create(
+        model=f"models/{config['model_id']}",
+        input=prompt,
+        generation_config=generation_config,
+    )
+    latency = round(time.monotonic() - start, 3)
+
+    if interaction.status != "completed":
+        # CONFIRMED via live diagnostic (2026-08-03): status is "incomplete"
+        # when max_output_tokens is exhausted by thinking tokens before any
+        # answer text is produced (same failure mode as DeepSeek V4 Pro's
+        # max_tokens=500 issue — see model_params.py). Raising here surfaces
+        # truncated responses as retryable errors instead of silently
+        # persisting partial/cut-off rationale text.
+        raise RuntimeError(
+            f"Interactions API response had status={interaction.status!r} "
+            f"(expected 'completed') — likely truncated by max_output_tokens. "
+            f"Full interaction object: {interaction!r}"
+        )
+
+    text = interaction.output_text
+    if not text:
+        raise RuntimeError(
+            "Interactions API response had no output_text. Full interaction "
+            f"object: {interaction!r}"
+        )
+
+    usage = interaction.usage
+    input_tokens = getattr(usage, "total_input_tokens", None) or 0
+    output_tokens = getattr(usage, "total_output_tokens", None) or 0
+    reasoning_tokens = getattr(usage, "total_thought_tokens", None) if usage else None
+
+    try:
+        parsed_text = parse_structured_json(text)
+        classification, rationale, parse_method = (
+            parsed_text["classification"], parsed_text["rationale"], "json",
+        )
+    except (json.JSONDecodeError, KeyError, ValueError):
+        parsed_text = parse_unstructured_text(text)
+        classification, rationale, parse_method = (
+            parsed_text["classification"], parsed_text["rationale"], "text",
+        )
+
+    return {
+        "classification": classification,
+        "rationale": rationale,
+        "token_count_input": input_tokens,
+        "token_count_output": output_tokens,
+        "reasoning_tokens": reasoning_tokens,
+        "parse_method": parse_method,
+        "latency_seconds": latency,
+        "api_version": config["model_id"],
+    }
 
 
 # ---------------------------------------------------------------------------
