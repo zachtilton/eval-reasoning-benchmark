@@ -125,8 +125,8 @@ EXPECTED_TOKENS: dict[str, int] = {
 
 COST_ESTIMATES: dict[str, dict[str, float | None]] = {
     "gpt_5_6_sol": {
-        "input_per_1k":  None,  # verify at execution — placeholder; pilot Task 3 supersedes once measured
-        "output_per_1k": None,  # verify at execution — placeholder
+        "input_per_1k":  0.005,  # $5/MTok, user-supplied (2026-08-03)
+        "output_per_1k": 0.03,   # $30/MTok, user-supplied (2026-08-03)
         "architecture":  "closed",
     },
     "claude_opus_5": {
@@ -135,23 +135,23 @@ COST_ESTIMATES: dict[str, dict[str, float | None]] = {
         "architecture":  "closed",
     },
     "gemini_3_pro_preview_high": {
-        "input_per_1k":  None,  # verify at execution — placeholder
-        "output_per_1k": None,  # verify at execution — placeholder
+        "input_per_1k":  0.002,  # $2/MTok, user-supplied (2026-08-03)
+        "output_per_1k": 0.012,  # $12/MTok, user-supplied (2026-08-03)
         "architecture":  "closed",
     },
     "kimi_k3": {
-        "input_per_1k":  None,  # verify at execution — placeholder
-        "output_per_1k": None,  # verify at execution — placeholder
+        "input_per_1k":  0.003,  # $3/MTok, user-supplied (2026-08-03)
+        "output_per_1k": 0.015,  # $15/MTok, user-supplied (2026-08-03)
         "architecture":  "open",
     },
     "deepseek_v4_pro": {
-        "input_per_1k":  None,  # verify at execution — placeholder
-        "output_per_1k": None,  # verify at execution — placeholder
+        "input_per_1k":  0.000435,  # $0.435/MTok, user-supplied (2026-08-03)
+        "output_per_1k": 0.00087,   # $0.87/MTok, user-supplied (2026-08-03)
         "architecture":  "open",
     },
     "glm_5_2": {
-        "input_per_1k":  None,  # verify at execution — placeholder
-        "output_per_1k": None,  # verify at execution — placeholder
+        "input_per_1k":  0.0014,  # $1.40/MTok, user-supplied (2026-08-03)
+        "output_per_1k": 0.0044,  # $4.40/MTok, user-supplied (2026-08-03)
         "architecture":  "open",
     },
 }

@@ -43,8 +43,11 @@ class TestComputeUpdatedProjection:
         assert row["total_cost"] == pytest.approx(row["cost_per_call"] * 450, abs=0.01)
 
     def test_unverified_rate_model_has_none_cost(self):
+        # All 6 real models now have verified COST_ESTIMATES rates (as of
+        # 2026-08-03) — use a model key absent from COST_ESTIMATES entirely
+        # to exercise the "no rate available" path.
         df = pd.DataFrame([
-            {"model": "gpt_5_6_sol", "prompt_condition": "few_shot", "report_id": "R1",
+            {"model": "unpriced_model", "prompt_condition": "few_shot", "report_id": "R1",
              "input_tokens": 900, "output_tokens": 70, "reasoning_tokens": 200, "cost": None},
         ])
         projection = compute_updated_projection(_task1_result(), df)
