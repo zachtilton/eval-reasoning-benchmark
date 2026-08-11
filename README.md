@@ -19,6 +19,7 @@ Dissertation research codebase: testing whether LLMs can replicate expert evalua
     │   └── responses/       # Model outputs
     ├── logs/                # Execution and session logs
     ├── appendices/          # Templates from E.1-E.4, D.1-D.3
+    ├── reliability/         # Standalone rater-agreement tools (not part of the pipeline)
     └── tests/               # Unit tests for scoring logic
 
 ## Environment Setup
