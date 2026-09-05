@@ -1,0 +1,41 @@
+report_id,rater_1,rater_2,anchor
+256,Sound,Sound,sound
+611,Sound,Sound,sound
+703,Not sound,Not sound,sound
+939,Not sound,Not sound,sound
+1001,Not sound,Not sound,sound
+1058,Not sound,Not sound,sound
+1071,Sound,Sound,not sound
+1286,Not sound,Sound,sound
+1367,Not sound,Not sound,sound
+1383,Sound,Sound,sound
+1942,Sound,Sound,not sound
+1977,Not sound,Sound,sound
+2019,Sound,Sound,not sound
+2172,Not sound,Sound,sound
+2515,Not sound,Sound,not sound
+2517,Not sound,Not sound,sound
+2952,Sound,Sound,sound
+2978,Sound,Sound,sound
+2988,Sound,Not sound,sound
+3006,Sound,Sound,sound
+3070,Sound,Sound,sound
+3515,Not sound,Sound,not sound
+3760,Sound,Not sound,not sound
+3784,Sound,Sound,sound
+3868,Not sound,Not sound,not sound
+4116,Not sound,Not sound,sound
+4254,Sound,Sound,sound
+4328,Not sound,Not sound,not sound
+4425,Sound,Sound,not sound
+4576,Sound,Not sound,not sound
+4843,Not sound,Not sound,not sound
+4922,Not sound,Not sound,not sound
+5285,Sound,Sound,not sound
+5769,Not sound,not sound,not sound
+5896,Not sound,Sound,not sound
+5946,Not sound,Not sound,sound
+6279,Not sound,Not sound,sound
+6782,Sound,Sound,sound
+6806,Not sound,Not sound,not sound
+6834,Not sound,Sound,not sound
