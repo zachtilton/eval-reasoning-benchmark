@@ -17,6 +17,7 @@ import json
 import os
 import time
 import uuid
+from concurrent.futures import ThreadPoolExecutor, TimeoutError as FutureTimeoutError
 from datetime import datetime
 from pathlib import Path
 
@@ -204,7 +205,20 @@ def build_request_payload(config: dict, prompt: str, model: str) -> dict:
     Returns:
         Dict suitable for the ``json=`` argument of ``requests.post()``.
     """
-    params = filter_params(model, STANDARD_PARAMS)
+    universal_params = dict(STANDARD_PARAMS)
+    max_tokens_override = config.get("max_tokens_override")
+    if max_tokens_override is not None:
+        # Applied here (at the universal-name level, before filter_params'
+        # family-specific name mapping) rather than patched onto the
+        # already-filtered dict -- the provider-side key for this same
+        # universal "max_tokens" value differs by family ("max_tokens" for
+        # anthropic/openai_compatible, "max_output_tokens" for
+        # openai_responses/google_interactions_sdk, "maxOutputTokens" for
+        # google), so overriding post-filter would silently no-op for every
+        # family except anthropic/openai_compatible.
+        universal_params["max_tokens"] = max_tokens_override
+
+    params = filter_params(model, universal_params)
     api_family = MODEL_API_FAMILY.get(model, "openai_compatible")
     reasoning_payload = config.get("reasoning_effort_payload", {})
 
@@ -299,6 +313,44 @@ def load_prompt_template(
 # ---------------------------------------------------------------------------
 # API call execution
 # ---------------------------------------------------------------------------
+
+def call_with_hard_timeout(fn, timeout_seconds: float, *args, **kwargs):
+    """
+    Call ``fn(*args, **kwargs)`` in a worker thread and enforce a hard wall-
+    clock timeout, for SDK calls (like google-genai's client.interactions.
+    create) that accept no timeout parameter of their own.
+
+    Not implemented with ``ThreadPoolExecutor`` as a context manager: its
+    ``__exit__`` calls ``shutdown(wait=True)``, which blocks until the
+    submitted call finishes -- exactly the hang this function exists to cut
+    off. The pool is shut down with ``wait=False`` instead, so a timed-out
+    call's thread is abandoned (Python has no safe way to kill a running
+    thread) and its eventual result silently discarded.
+
+    Args:
+        fn: Callable to invoke.
+        timeout_seconds: Hard wall-clock budget for ``fn`` to return.
+        *args: Positional arguments passed to ``fn``.
+        **kwargs: Keyword arguments passed to ``fn``.
+
+    Returns:
+        Whatever ``fn`` returns, if it completes within the budget.
+
+    Raises:
+        TimeoutError: ``fn`` did not return within ``timeout_seconds``.
+    """
+    pool = ThreadPoolExecutor(max_workers=1)
+    future = pool.submit(fn, *args, **kwargs)
+    try:
+        return future.result(timeout=timeout_seconds)
+    except FutureTimeoutError as exc:
+        raise TimeoutError(
+            f"Call to {getattr(fn, '__qualname__', fn)} timed out after "
+            f"{timeout_seconds}s with no response"
+        ) from exc
+    finally:
+        pool.shutdown(wait=False)
+
 
 def execute_api_request(
     fragment: dict,
@@ -408,8 +460,19 @@ def execute_google_interactions_request(config: dict, prompt: str, model: str) -
     generation_config = filter_params(model, STANDARD_PARAMS)
     generation_config.update(config.get("reasoning_effort_payload", {}))
 
+    # client.interactions.create() takes no timeout parameter of its own
+    # (unlike every other model's requests.post(..., timeout=...) path) --
+    # CONFIRMED via a real hung call during the first live benchmark session
+    # (2026-10-20): the SDK call sat open for 40+ minutes against a live
+    # Google endpoint with no response and no exception, bypassing
+    # make_api_call_with_retry's retry/backoff entirely since that logic
+    # only runs once this call returns or raises. call_with_hard_timeout
+    # enforces the same REQUEST_TIMEOUT_SECONDS budget via a worker thread --
+    # a seam this SDK version doesn't otherwise expose.
     start = time.monotonic()
-    interaction = client.interactions.create(
+    interaction = call_with_hard_timeout(
+        client.interactions.create,
+        REQUEST_TIMEOUT_SECONDS,
         model=f"models/{config['model_id']}",
         input=prompt,
         generation_config=generation_config,

@@ -28,11 +28,14 @@ class TestVerifiedModelValues:
     def test_deepseek_model_id(self):
         assert API_CONFIG["deepseek_v4_pro"]["model_id"] == "deepseek-v4-pro"
 
-    def test_glm_5_2_uses_fireworks(self):
+    def test_glm_5_2_uses_zai_directly(self):
+        # Switched 2026-10-21 from Fireworks (3rd-party host) to Z.ai
+        # directly, after the Fireworks model slug started 404ing during
+        # the first live benchmark session.
         config = API_CONFIG["glm_5_2"]
-        assert config["endpoint"] == "https://api.fireworks.ai/inference/v1/chat/completions"
-        assert config["model_id"] == "accounts/fireworks/models/glm-5p2"
-        assert config["api_key_env"] == "FIREWORKS_API_KEY"
+        assert config["endpoint"] == "https://api.z.ai/api/paas/v4/chat/completions"
+        assert config["model_id"] == "glm-5.2"
+        assert config["api_key_env"] == "ZAI_API_KEY"
 
 
 class TestFilterParamsUnsupported:
@@ -110,3 +113,49 @@ class TestBuildRequestPayloadReasoningEffort:
         assert payload["reasoning_effort"] == "max"
         # Fireworks rejects requests combining reasoning_effort with "thinking"
         assert "thinking" not in payload
+
+
+class TestMaxTokensOverride:
+    """
+    deepseek_v4_pro's max_tokens_override (2026-10-21): added after a live
+    diagnostic showed 9/66 real calls burning the global 4000-token budget
+    entirely on reasoning with zero visible answer. kimi_k3's override (same
+    date): 1/66 real calls showed the identical failure signature -- a more
+    modest, precautionary raise given only 1 data point. See the inline
+    comments on each model's config entry for the full rationale.
+    """
+
+    def test_deepseek_v4_pro_payload_uses_override_not_global_default(self):
+        config = API_CONFIG["deepseek_v4_pro"]
+        payload = build_request_payload(config, "prompt text", "deepseek_v4_pro")
+        assert payload["max_tokens"] == 16000
+        assert payload["max_tokens"] != STANDARD_PARAMS["max_tokens"]
+
+    def test_kimi_k3_payload_uses_override_not_global_default(self):
+        config = API_CONFIG["kimi_k3"]
+        payload = build_request_payload(config, "prompt text", "kimi_k3")
+        assert payload["max_tokens"] == 10000
+        assert payload["max_tokens"] != STANDARD_PARAMS["max_tokens"]
+
+    def test_models_without_override_keep_global_default(self):
+        for model in ("claude_opus_5", "glm_5_2"):
+            config = API_CONFIG[model]
+            assert "max_tokens_override" not in config
+            payload = build_request_payload(config, "prompt text", model)
+            assert payload["max_tokens"] == STANDARD_PARAMS["max_tokens"]
+
+    def test_override_translates_through_family_specific_param_name(self):
+        """
+        The override is applied at the universal "max_tokens" level, before
+        filter_params' family-specific renaming -- this proves it survives
+        that rename for a family where the provider-side name actually
+        differs (openai_responses: "max_output_tokens"), not just for
+        deepseek's family where the name happens to stay "max_tokens".
+        """
+        synthetic_config = dict(API_CONFIG["gpt_5_6_sol"])
+        synthetic_config["max_tokens_override"] = 9999
+
+        payload = build_request_payload(synthetic_config, "prompt text", "gpt_5_6_sol")
+
+        assert payload["max_output_tokens"] == 9999
+        assert "max_tokens" not in payload

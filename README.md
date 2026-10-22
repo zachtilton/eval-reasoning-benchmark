@@ -43,7 +43,7 @@ source .venv/bin/activate
 
 ## API Key Setup
 
-The benchmark calls 6 model providers. Each needs its API key set as a plain environment variable before running — the codebase uses `os.getenv()` directly, with no `.env`-file loading (`.env` is gitignored but unused by convention).
+The benchmark calls 6 model providers. Each needs its API key set as a plain environment variable before running — the codebase's modules use `os.getenv()` directly with no `.env`-file loading of their own; `src/api_client/run_benchmark.py` (the real-run driver) loads `.env` via `python-dotenv` at import time, so keys placed there reach every model's `os.getenv()` call once that module is imported.
 
 | Env var | Provider | Model |
 |---|---|---|
@@ -52,7 +52,7 @@ The benchmark calls 6 model providers. Each needs its API key set as a plain env
 | `GOOGLE_API_KEY` | Google | Gemini 3 Pro Preview High |
 | `DEEPSEEK_API_KEY` | DeepSeek | DeepSeek V4 Pro |
 | `MOONSHOT_API_KEY` | Moonshot AI | Kimi K3 |
-| `FIREWORKS_API_KEY` | Fireworks | GLM 5.2 (served via Fireworks, not Zhipu/BigModel) |
+| `ZAI_API_KEY` | Z.ai (direct) | GLM 5.2 (switched 2026-10-21 from Fireworks after its model slug started 404ing) |
 
 See `config/api_config.py` for the authoritative model/provider mapping. Most `model_id`/`endpoint`/reasoning-effort values are now verified against provider docs; a few remaining `# verify at execution` markers and inline `STRUCTURAL FLAG` comments there call out shapes worth double-checking before a real run (notably GPT-5.6 Sol's Responses API response envelope and Kimi K3's exact endpoint path).
 

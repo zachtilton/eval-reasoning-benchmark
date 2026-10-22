@@ -17,7 +17,9 @@ ENVIRONMENT VARIABLES REQUIRED:
     GOOGLE_API_KEY      — Gemini 3 Pro Preview High (Google)
     DEEPSEEK_API_KEY    — DeepSeek V4 Pro (DeepSeek)
     MOONSHOT_API_KEY    — Kimi K3 (Moonshot AI)
-    FIREWORKS_API_KEY   — GLM 5.2 (served via Fireworks, not Zhipu/BigModel)
+    ZAI_API_KEY         — GLM 5.2 (served directly by Z.ai, not Fireworks --
+                           switched 2026-10-21 after the Fireworks model
+                           slug started 404ing; see glm_5_2's inline note)
 """
 
 from __future__ import annotations
@@ -162,6 +164,17 @@ API_CONFIG: dict[str, dict] = {
             "temperature": 1,
             "top_p": 0.95,
         },
+        # RAISED from the global 4000 to 10000, 2026-10-21 -- 1/66 kimi_k3
+        # calls in the first 11-fragment validation session hit the exact
+        # same failure signature confirmed for deepseek_v4_pro
+        # (token_count_output == 4000 exactly, rationale empty): the whole
+        # budget consumed by "thinking," which per the comment above can
+        # never be turned off for this model. Only 1 data point so far (vs.
+        # 9 for deepseek_v4_pro's diagnostic), so this is a modest,
+        # precautionary raise rather than one grounded in an observed worst
+        # case -- re-evaluate against real failure data as the full run
+        # progresses, same as deepseek_v4_pro's 16000 was derived.
+        "max_tokens_override": 10000,
     },
     "deepseek_v4_pro": {
         # Endpoint not supplied — kept as the prior selection, still unverified.
@@ -179,18 +192,56 @@ API_CONFIG: dict[str, dict] = {
             "reasoning_effort": "high",
             "thinking": {"type": "enabled"},
         },
+        # RAISED from the global 4000 (model_params.STANDARD_PARAMS) to
+        # 16000, 2026-10-21 -- CONFIRMED via a live diagnostic (9 real calls,
+        # the exact combos that failed in the first 11-fragment validation
+        # session): at 4000, 9/66 deepseek_v4_pro calls (13.6%) burned the
+        # entire budget on reasoning with zero visible answer produced
+        # (token_count_output == 4000 exactly, rationale empty every time).
+        # Re-run at a 16000 ceiling, all 9 completed cleanly -- max real
+        # output was 9480 tokens (one clear outlier; the other 8 ranged
+        # 1005-3720), so 16000 leaves real margin above the worst case seen
+        # so far, not just the mean. Model-specific override (not raised in
+        # STANDARD_PARAMS) because this is deepseek_v4_pro's own
+        # reasoning-token appetite, not a corpus-wide requirement -- at
+        # deepseek's $0.00087/1k output-token rate, worst-case cost impact
+        # across all 900 of its real-run calls is trivial (~$12).
+        "max_tokens_override": 16000,
     },
     "glm_5_2": {
-        # STRUCTURAL FLAG: provider switched from Zhipu/BigModel to
-        # Fireworks — different endpoint AND different auth env var
-        # (FIREWORKS_API_KEY, not ZHIPU_API_KEY). Cascades to the module
-        # docstring above, README.md's API Key Setup table, and CLAUDE.md.
-        "endpoint": "https://api.fireworks.ai/inference/v1/chat/completions",
-        "model_id": "accounts/fireworks/models/glm-5p2",
+        # STRUCTURAL FLAG: switched 2026-10-21 from Fireworks (3rd-party
+        # host) to Z.ai directly, after the Fireworks model slug
+        # ("accounts/fireworks/models/glm-5p2") started 404ing during the
+        # first live benchmark session -- CONFIRMED 6/6 real calls failed
+        # identically with "404 Client Error: Not Found" on that exact
+        # slug/endpoint. Endpoint, model_id, and auth env var below are
+        # grounded in Z.ai's own docs (docs.z.ai/api-reference/llm/
+        # chat-completion and docs.z.ai/guides/llm/glm-5.2), not guessed --
+        # but like every model_id in this file, re-verify at execution time
+        # (see module docstring). Different auth env var than the old
+        # Fireworks config (ZAI_API_KEY, not FIREWORKS_API_KEY) --
+        # cascades to the module docstring above, README.md's API Key Setup
+        # table, and CLAUDE.md.
+        "endpoint": "https://api.z.ai/api/paas/v4/chat/completions",
+        "model_id": "glm-5.2",
         "auth_type": "bearer",
-        "api_key_env": "FIREWORKS_API_KEY",
-        # Do not add a "thinking" key alongside reasoning_effort here —
-        # Fireworks rejects requests that set both.
+        "api_key_env": "ZAI_API_KEY",
+        # Z.ai's own docs document temperature and top_p as supported
+        # (with real range/default values) but do not mention
+        # frequency_penalty or presence_penalty at all -- excluded here
+        # rather than assumed supported, consistent with how this file
+        # treats other models whose provider docs don't document a
+        # universal param.
+        "unsupported_params": frozenset({"frequency_penalty", "presence_penalty"}),
+        # Z.ai's docs show BOTH a "thinking": {"type": "enabled"/"disabled"}
+        # object AND a "reasoning_effort" string field. Using
+        # reasoning_effort only (not also "thinking") preserves the same
+        # one-field-only convention the old Fireworks config required ("do
+        # not add a 'thinking' key alongside reasoning_effort -- Fireworks
+        # rejects requests that set both") -- not re-verified against Z.ai
+        # specifically that combining them is rejected, but there's no
+        # upside to sending both when reasoning_effort alone is documented
+        # to control the same behavior.
         "reasoning_effort_payload": {
             "reasoning_effort": "max",
         },

@@ -18,7 +18,23 @@ tiktoken>=0.7
 # aspirational. `pip install -r requirements.txt` will fail outright on
 # Python <3.10 because of this one line — run the benchmark (not just
 # tests) under a 3.10+ interpreter.
-google-genai>=2.3.0
+#
+# RAISED from >=2.3.0 to >=2.26.0 (2026-10-21): 2.16.0 (installed during the
+# pilot, 2026-08-03) silently hung for 300s+ with zero response on every
+# real gemini_3_pro_preview_high call during the first live benchmark
+# session, despite the same model_id, same API key, and healthy basic
+# connectivity to Google's API host. Traced to known SDK bugs in exactly
+# this window: v2.17.0 added an errors array to the Interaction resource
+# (2.16.0 predates it -- may not have been able to surface an API-side
+# error at all), and v2.26.0 fixed "Vertex AI interactions client
+# defaulting to a 5s timeout instead of None." Pinning to >=2.26.0 as the
+# floor that includes that fix; installed and verified at 2.32.0.
+google-genai>=2.26.0
+
+# Loads API keys from .env into os.environ -- executor.py's os.getenv()
+# calls have no .env-loading of their own, so run_benchmark.py calls
+# load_dotenv() at import time and needs this to be installed.
+python-dotenv>=1.0
 
 # Test/dev
 pytest>=8.0
