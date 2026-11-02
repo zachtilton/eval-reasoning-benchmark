@@ -29,24 +29,32 @@ FAILURE_CODES_PATH     = ANALYSIS_DIR  / "failure_codes_gpt5.csv"
 # ---------------------------------------------------------------------------
 
 # Centralized map — do NOT duplicate in individual analysis modules.
+# RENAMED 2026-11-02: these were the model generation named in the original
+# proposal (gpt_5, claude_opus_4_6, gemini_3_pro, deepseek_v3, kimi_k2,
+# glm_4_7); the real run executed against the current-generation models
+# actually available at execution time (per api_config.py's "models are
+# selected as top-3 SOTA -- IDs may change between now and execution").
+# These keys must match response_database.csv's model_family values
+# exactly, or every lookup here (ARCHITECTURE_MAP.get, MODEL_ORDER
+# iteration, PRIMARY_MODEL targeting) silently fails to match real data.
 ARCHITECTURE_MAP: dict[str, str] = {
-    "gpt_5":          "closed",
-    "claude_opus_4_6": "closed",
-    "gemini_3_pro":   "closed",
-    "deepseek_v3":    "open",
-    "kimi_k2":        "open",
-    "glm_4_7":        "open",
+    "gpt_5_6_sol":                "closed",
+    "claude_opus_5":              "closed",
+    "gemini_3_pro_preview_high":  "closed",
+    "deepseek_v4_pro":            "open",
+    "kimi_k3":                    "open",
+    "glm_5_2":                    "open",
 }
 
 # Canonical display order for tables and charts
 MODEL_ORDER: list[str] = [
-    "gpt_5", "claude_opus_4_6", "gemini_3_pro",   # closed
-    "deepseek_v3", "kimi_k2", "glm_4_7",           # open
+    "gpt_5_6_sol", "claude_opus_5", "gemini_3_pro_preview_high",  # closed
+    "kimi_k3", "deepseek_v4_pro", "glm_5_2",                       # open
 ]
 
 PROMPT_ORDER: list[str] = ["zero_shot", "few_shot"]
 
-PRIMARY_MODEL: str = "gpt_5"
+PRIMARY_MODEL: str = "gpt_5_6_sol"
 
 # ---------------------------------------------------------------------------
 # Domain labels (spec Section 3.1 / Appendix D.1)

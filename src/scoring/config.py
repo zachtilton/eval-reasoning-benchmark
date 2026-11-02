@@ -54,7 +54,10 @@ RC2_KAPPA_TARGET = 0.80
 # Primary diagnostic model (spec Section 2.2)
 # ---------------------------------------------------------------------------
 
-PRIMARY_MODEL = "gpt_5"   # full diagnostic treatment: performance + failure coding
+# RENAMED 2026-11-02: was "gpt_5" (the proposal-stage model generation name).
+# Must match the real model_family value in response_database.csv -- see
+# src/analysis/config.py's ARCHITECTURE_MAP comment for the full context.
+PRIMARY_MODEL = "gpt_5_6_sol"   # full diagnostic treatment: performance + failure coding
 
 # ---------------------------------------------------------------------------
 # Strength indicators — signals of quality for "sound" classifications
