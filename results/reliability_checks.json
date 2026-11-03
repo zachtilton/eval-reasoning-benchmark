@@ -1,0 +1,13 @@
+{
+  "rc1": {
+    "kappa": 0.7,
+    "met_target": false,
+    "sample_size": 20,
+    "agreement_rate": 0.85,
+    "standard_error": 0.16,
+    "ci_95_lower": 0.387,
+    "ci_95_upper": 1.0,
+    "description": "Expert temporal consistency (spec Section 1.4): 20 randomly selected fragments reassessed without viewing initial judgments.",
+    "note": "Below kappa >= 0.80 target. Per spec, a diagnostic screen rather than a formal reliability study given small N. 3 discordant fragments (report_id 2517, 4694, 4978) documented in reliability/rc1_expert_temporal_consistency.csv for discrepancy review."
+  }
+}
