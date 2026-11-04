@@ -17,6 +17,15 @@ data/responses/*
 data/raw/*
 !data/raw/.gitkeep
 !data/responses/.gitkeep
+# The real 5,400-call run and its scoring outputs -- small (<5MB each),
+# expensive/slow to regenerate (response_database.csv alone represents
+# ~$99 and several days of real API calls), and otherwise unbacked-up.
+# data/responses/pilot/ stays ignored -- not part of the official run.
+!data/responses/response_database.csv
+!data/responses/scored_database.csv
+!data/responses/fragment_outcomes.csv
+!data/responses/performance_matrix.csv
+!data/responses/gpt_5_6_sol_failures_for_coding.csv
 
 # OS files
 .DS_Store
