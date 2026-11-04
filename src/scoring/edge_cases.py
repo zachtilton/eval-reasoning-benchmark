@@ -153,7 +153,14 @@ def detect_edge_case(response_dict: dict) -> tuple[str | None, str, str]:
         edge_case_type matches the scored_database schema values.
     """
     classification = response_dict.get("classification_output")
-    rationale = response_dict.get("rationale_text") or ""
+    # NaN is truthy in Python (bool(float('nan')) is True), so `x or ""`
+    # does NOT catch a NaN rationale_text from a CSV read -- it passes the
+    # NaN through, and rationale.lower() below then crashes with
+    # AttributeError: 'float' object has no attribute 'lower'. pd.isna()
+    # handles None and NaN uniformly; a real empty/whitespace string still
+    # falls through correctly via the `or ""` on the next line.
+    rationale_raw = response_dict.get("rationale_text")
+    rationale = "" if pd.isna(rationale_raw) else (rationale_raw or "")
     # Coerce error_details to str — CSV reads produce NaN for empty cells
     error = str(response_dict.get("error_details") or "").lower()
 

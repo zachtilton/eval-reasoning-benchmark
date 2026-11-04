@@ -179,6 +179,33 @@ class TestDetectEdgeCaseMissingElements:
         edge_type, _, _ = _detect(classification="sound", rationale=ten_words)
         assert edge_type != "missing_rationale"
 
+    def test_nan_rationale_from_csv_read_does_not_crash(self):
+        """
+        Regression test: a real pd.read_csv() read of response_database.csv
+        represents a missing rationale_text cell as float('nan'), not
+        Python None. NaN is truthy (bool(float('nan')) is True), so the old
+        `response_dict.get("rationale_text") or ""` fallback let the NaN
+        float pass through unchanged, and rationale.lower() downstream
+        crashed with AttributeError: 'float' object has no attribute
+        'lower'. Hit this exact case running the real scoring pipeline on
+        5,400 real responses (5 of them had a NaN rationale_text) before
+        any fix existed. Must behave identically to an empty string.
+        """
+        edge_type, action, _ = _detect(
+            classification="sound",
+            rationale=float("nan"),
+        )
+        assert edge_type == "missing_rationale"
+        assert action == "fail"
+
+    def test_nan_rationale_matches_apply_edge_case_handling_via_dataframe(self):
+        """Same regression, through the real DataFrame.iterrows() path apply_edge_case_handling uses."""
+        df = pd.DataFrame([
+            {"classification_output": "sound", "rationale_text": float("nan"), "error_details": None},
+        ])
+        result = apply_edge_case_handling(df)
+        assert result.loc[0, "edge_case_type"] == "missing_rationale"
+
 
 class TestDetectEdgeCaseNonsensical:
     """Correct format + nonsensical content → fail, reasoning failure."""
