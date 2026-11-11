@@ -178,3 +178,29 @@ Does the rationale logically support the classification? Consider:
 
 Respond with ONLY one word: "coherent" or "incoherent"\
 """
+
+# ---------------------------------------------------------------------------
+# Gold-standard rating/rationale audit (see gold_label_audit.py)
+# Blind: Haiku sees ONLY the expert's rationale -- not the expert's label,
+# the fragment, or any model output -- and reports which label it implies.
+# ---------------------------------------------------------------------------
+
+GOLD_AUDIT_PROMPT: str = """\
+An evaluation expert read a fragment of a program evaluation report and rated \
+the quality of its evaluative reasoning as either SOUND or NOT SOUND, then \
+wrote the rationale below explaining that rating. You are shown only the \
+rationale, not the rating.
+
+Based solely on what the rationale says, which rating does it support?
+
+Rationale:
+\"\"\"{rationale}\"\"\"
+
+On the first line, respond with exactly one of: SOUND, NOT_SOUND, UNCLEAR \
+(use UNCLEAR only if the rationale genuinely does not indicate either rating). \
+On the second line, give one short sentence explaining why.\
+"""
+GOLD_AUDIT_MAX_TOKENS = 120
+GOLD_AUDIT_RAW_PATH = LOGS_DIR / "gold_label_audit_haiku.csv"
+GOLD_ADJUDICATION_PATH = DATA_DIR / "analysis" / "gold_label_adjudication.csv"
+FAILURE_CODES_GPT5_PATH = DATA_DIR / "analysis" / "failure_codes_gpt5.csv"

@@ -1,0 +1,451 @@
+fragment_id,haiku_implied_label,haiku_raw_response,model_id,audited_at
+256,sound,"SOUND
+
+The rationale explicitly states the evidence is ""sufficient,"" which indicates the evaluative reasoning meets the threshold for soundness despite being minimal.",claude-haiku-4-5-20251001,2026-11-10T22:04:47
+611,sound,"SOUND
+
+The rationale explicitly states ""this is another bare bones example of sufficient soundness,"" which directly indicates the evaluative reasoning met the threshold for sound quality.",claude-haiku-4-5-20251001,2026-11-10T22:04:48
+703,not_sound,"NOT_SOUND
+
+The rationale indicates that only the ""least required elements"" are present, suggesting the evaluation lacks adequate depth, rigor, or completeness in its reasoning structure.",claude-haiku-4-5-20251001,2026-11-10T22:04:49
+939,sound,"SOUND
+
+The rationale lists three positive evaluative criteria (coverage, judgment, and evidence) without noting significant deficiencies, suggesting the reasoning met acceptable standards.",claude-haiku-4-5-20251001,2026-11-10T22:04:50
+1001,sound,"SOUND
+
+The rationale acknowledges that while ""mixed"" is not a preferred judgment category, it is being applied validly here because the evidence itself is genuinely mixed regarding the evaluand's performance on this criterion.",claude-haiku-4-5-20251001,2026-11-10T22:04:52
+1058,sound,"SOUND
+
+The rationale explicitly states ""Yes, there are 22 items on the checklist, but is the segment sound? Yes, despite it's brevity,"" directly affirming that the evaluative reasoning is sound.",claude-haiku-4-5-20251001,2026-11-10T22:04:53
+1071,not_sound,"NOT_SOUND
+
+The rationale identifies a fundamental flaw: evidence that is ""confused"" cannot adequately support a claim, which undermines the quality of evaluative reasoning.",claude-haiku-4-5-20251001,2026-11-10T22:04:54
+1286,sound,"SOUND
+
+The rationale indicates that multiple checkpoints were met across domains and that an actual judgment with a standard was made, which are positive indicators of sound evaluative reasoning.",claude-haiku-4-5-20251001,2026-11-10T22:04:55
+1367,sound,"SOUND
+
+The rationale explicitly states the claim and evidence are ""sound,"" despite being unstandardized, which directly supports a SOUND rating.",claude-haiku-4-5-20251001,2026-11-10T22:04:56
+1383,sound,"SOUND
+
+The rationale indicates that sufficient evidence exists to support an explicit and standardized judgment, which are hallmarks of sound evaluative reasoning.",claude-haiku-4-5-20251001,2026-11-10T22:04:57
+1942,not_sound,"NOT_SOUND
+
+The rationale identifies confusion in how judgments are presented and notes that evidence is inconsistent (""sufficient in some regards and less in others""), with the confusion being described as ""the biggest sticking point,"" indicating fundamental problems with the evaluative reasoning.",claude-haiku-4-5-20251001,2026-11-10T22:04:58
+1977,sound,"SOUND
+
+The rationale explicitly states the judgment is ""supported by sufficient evidence,"" which is the hallmark of sound evaluative reasoning.",claude-haiku-4-5-20251001,2026-11-10T22:04:59
+2019,not_sound,"NOT_SOUND
+
+The rationale identifies multiple critical deficiencies in the evaluative reasoning (missing warrants, synthesis, caveats, and assumptions), which are fundamental components of sound reasoning.",claude-haiku-4-5-20251001,2026-11-10T22:05:00
+2172,sound,"SOUND
+
+The rationale indicates that sufficient evidence exists to support an explicit and standardized judgment, which are hallmarks of sound evaluative reasoning.",claude-haiku-4-5-20251001,2026-11-10T22:05:01
+2515,not_sound,"NOT_SOUND
+
+The rationale identifies critical deficiencies in the evaluative reasoning—missing checkpoints and an absent domain—which are fundamental flaws that undermine the validity of conclusions.",claude-haiku-4-5-20251001,2026-11-10T22:05:02
+2517,sound,"SOUND
+
+The rationale explicitly states ""there is enough here for a sound rating,"" directly indicating the expert assigned a SOUND rating.",claude-haiku-4-5-20251001,2026-11-10T22:05:03
+2952,sound,"SOUND
+
+The rationale explicitly states that there is both a standardized judgment and supporting evidence for the claim, which are hallmarks of sound evaluative reasoning.",claude-haiku-4-5-20251001,2026-11-10T22:05:04
+2978,sound,"SOUND
+
+The rationale identifies three positive qualities (explicit judgment, marshalled evidence, good domain coverage) that support sound evaluative reasoning.",claude-haiku-4-5-20251001,2026-11-10T22:05:04
+2988,not_sound,"NOT_SOUND
+
+The evaluator acknowledges insufficient evidence for the claim but proceeds to accept it anyway, which represents a logical inconsistency in evaluative reasoning.",claude-haiku-4-5-20251001,2026-11-10T22:05:06
+3006,sound,"SOUND
+
+The rationale explicitly states the judgment is ""supported by sufficient evidence,"" which is the hallmark of sound evaluative reasoning.",claude-haiku-4-5-20251001,2026-11-10T22:05:06
+3070,sound,"SOUND
+
+The rationale identifies positive elements of evaluative reasoning (good coverage across domains, evidence, and judgment), which supports a sound rating.",claude-haiku-4-5-20251001,2026-11-10T22:05:07
+3515,not_sound,"NOT_SOUND
+
+The rationale identifies ""equivocation in judgment with limited evidence,"" which are fundamental flaws in evaluative reasoning that undermine the quality and reliability of conclusions.",claude-haiku-4-5-20251001,2026-11-10T22:05:08
+3760,not_sound,"NOT_SOUND
+
+The rationale criticizes the reasoning for presenting evidence without proper contextualization or interpretation, which undermines the quality of evaluative reasoning.",claude-haiku-4-5-20251001,2026-11-10T22:05:09
+4116,sound,"SOUND
+
+The rationale identifies positive qualities (good domain coverage, standardized judgment, well-supported warrants and backings) that indicate strong evaluative reasoning.",claude-haiku-4-5-20251001,2026-11-10T22:05:10
+4254,sound,"SOUND
+
+The rationale indicates that the three essential components of evaluative reasoning are present: a judgment has been made, evidence has been provided, and that evidence is sufficient given the segment's length.",claude-haiku-4-5-20251001,2026-11-10T22:05:11
+4328,not_sound,"NOT_SOUND
+
+The rationale indicates that a judgment was made without supporting evidence, which is a fundamental flaw in evaluative reasoning.",claude-haiku-4-5-20251001,2026-11-10T22:05:12
+4425,not_sound,"NOT_SOUND
+
+The rationale explicitly states that evidence is insufficient to support a claim, which is a fundamental flaw in evaluative reasoning.",claude-haiku-4-5-20251001,2026-11-10T22:05:13
+4576,not_sound,"NOT_SOUND
+
+The rationale identifies critical deficiencies: absence of judgment despite qualifications and insufficient/unclear impact evidence, both of which undermine evaluative reasoning quality.",claude-haiku-4-5-20251001,2026-11-10T22:05:14
+4843,not_sound,"NOT_SOUND
+
+The rationale identifies a critical flaw: claims lack sufficient supporting evidence, which is a fundamental problem in evaluative reasoning.",claude-haiku-4-5-20251001,2026-11-10T22:05:15
+4922,not_sound,"NOT_SOUND
+
+The rationale indicates that the evaluative reasoning lacks a clear judgment supported by evidence, and that the discussion became tangential (shifting to Paris Declaration coherence), suggesting weak or incoherent reasoning.",claude-haiku-4-5-20251001,2026-11-10T22:05:17
+5285,not_sound,"NOT_SOUND
+
+The rationale indicates a critical flaw: the evaluative reasoning is based on insufficient evidence, which undermines the validity of any conclusions drawn about program impact.",claude-haiku-4-5-20251001,2026-11-10T22:05:18
+5769,not_sound,"NOT_SOUND
+
+The rationale indicates that the evaluative reasoning lacks adequate evidence to support its conclusions, which is a fundamental flaw in sound reasoning.",claude-haiku-4-5-20251001,2026-11-10T22:05:19
+5896,not_sound,"NOT_SOUND
+
+The rationale criticizes the reasoning for lacking sufficient evidence and relying too heavily on conjecture rather than substantiated claims, which are hallmarks of unsound evaluative reasoning.",claude-haiku-4-5-20251001,2026-11-10T22:05:20
+5946,sound,"SOUND
+
+The rationale explicitly states ""Good coverage, judgment, and evidence to support,"" which are positive indicators of sound evaluative reasoning.",claude-haiku-4-5-20251001,2026-11-10T22:05:21
+6279,sound,"SOUND
+
+The rationale indicates that despite the judgment being implicit rather than explicit, there is adequate evidentiary support for the claims made in the segment.",claude-haiku-4-5-20251001,2026-11-10T22:05:22
+6782,sound,"SOUND
+
+The rationale identifies three positive elements of evaluative reasoning: a claim exists, evidence supports it, and the evidence adequately covers the relevant domain for the population being evaluated.",claude-haiku-4-5-20251001,2026-11-10T22:05:23
+6806,not_sound,"NOT_SOUND
+
+The rationale explicitly identifies two critical flaws in evaluative reasoning: absence of judgment and insufficient supporting evidence, both of which are fundamental requirements for sound evaluation.",claude-haiku-4-5-20251001,2026-11-10T22:05:24
+6834,not_sound,"NOT_SOUND
+
+The rationale identifies a lack of judgment and insufficient evidence, which are fundamental flaws in evaluative reasoning that undermine the quality of the evaluation.",claude-haiku-4-5-20251001,2026-11-10T22:05:25
+25,not_sound,"NOT_SOUND
+
+The rationale indicates that while judgments are supported by evidence, they are ""not standardized,"" which suggests a deficiency in the evaluative reasoning's quality or rigor.",claude-haiku-4-5-20251001,2026-11-10T22:05:26
+96,sound,"SOUND
+
+The rationale explicitly states that judgments were ""supported by a sufficient rationale,"" which indicates the evaluative reasoning met the quality standard.",claude-haiku-4-5-20251001,2026-11-10T22:05:27
+122,sound,"SOUND
+
+The rationale describes positive evaluative practices: multiple dimensions considered, mixed evidence types used, explicit standardized judgments applied, and integration into an overall conclusion—all hallmarks of rigorous evaluative reasoning.",claude-haiku-4-5-20251001,2026-11-10T22:05:28
+151,not_sound,"NOT_SOUND
+
+The rationale identifies a critical flaw: the results lack a clear evaluative judgment or standard against which to assess them, and their relevance to the efficiency question is mixed/unclear, both of which undermine sound evaluative reasoning.",claude-haiku-4-5-20251001,2026-11-10T22:05:30
+160,not_sound,"NOT_SOUND
+
+The rationale identifies critical deficiencies: insufficient evidence on the key criterion (efficiency), lack of explicit judgment, and absence of clear standards—all fundamental requirements for sound evaluative reasoning.",claude-haiku-4-5-20251001,2026-11-10T22:05:31
+177,sound,"SOUND
+
+The rationale describes positive structural elements of evaluative reasoning: organized sub-dimensions, an overarching conclusion, and evidence supporting claims—all hallmarks of rigorous evaluation logic.",claude-haiku-4-5-20251001,2026-11-10T22:05:32
+218,not_sound,"NOT_SOUND
+
+The rationale indicates that evidence was presented without evaluative judgment, which is a fundamental flaw in program evaluation reasoning—evaluation requires interpreting evidence against criteria to reach conclusions.",claude-haiku-4-5-20251001,2026-11-10T22:05:33
+233,not_sound,"NOT_SOUND
+
+The rationale identifies a significant weakness (lack of clear grand judgment) that outweighs the positive aspects mentioned, suggesting the evaluative reasoning has notable deficiencies.",claude-haiku-4-5-20251001,2026-11-10T22:05:34
+295,sound,"SOUND
+
+The rationale explicitly states ""I think this is fine"" and ""the segment is sound"" with justification that there is ""good domain coverage"" for the sustainability of impact judgment.",claude-haiku-4-5-20251001,2026-11-10T22:05:35
+347,sound,"SOUND
+
+The rationale indicates that most key domains of evaluative reasoning were met, including strong evidence base and explicit judgment/standards, with only the assumption domain falling short.",claude-haiku-4-5-20251001,2026-11-10T22:05:36
+381,not_sound,"NOT_SOUND
+
+The rationale indicates that while evidence is present, the evaluative reasoning fails to draw conclusions or make judgments from that evidence, which is a fundamental requirement of sound evaluative reasoning.",claude-haiku-4-5-20251001,2026-11-10T22:05:38
+392,sound,"SOUND
+
+The rationale explicitly states that the combination of multiple judgments, evidence, and domain coverage ""leads to sound result,"" directly supporting a SOUND rating.",claude-haiku-4-5-20251001,2026-11-10T22:05:38
+452,sound,"SOUND
+
+The rationale lists three positive qualities (""Solid judgment,"" ""supporting argument,"" ""domain coverage"") without mentioning any deficiencies, indicating approval of the evaluative reasoning.",claude-haiku-4-5-20251001,2026-11-10T22:05:40
+547,not_sound,"NOT_SOUND
+
+The rationale identifies a missing judgment to the criterion (coherence), which is a fundamental flaw that prevents the reasoning from being sound despite otherwise good qualities.",claude-haiku-4-5-20251001,2026-11-10T22:05:41
+554,not_sound,"NOT_SOUND
+
+The rationale identifies multiple critical flaws in the evaluative reasoning: incomplete judgments (""half judgments""), absence of clear conclusions, and contradictory evidence, all of which undermine sound reasoning.",claude-haiku-4-5-20251001,2026-11-10T22:05:42
+583,sound,"SOUND
+
+The rationale indicates that multiple checkpoints are met, a judgment has been made with standards included, and there is excellent performance evidence—all markers of rigorous evaluative reasoning.",claude-haiku-4-5-20251001,2026-11-10T22:05:43
+901,sound,"SOUND
+
+The rationale identifies positive elements of evaluative reasoning (good coverage across domains, evidence, and judgment), which supports a sound rating.",claude-haiku-4-5-20251001,2026-11-10T22:05:44
+932,sound,"SOUND
+
+The rationale acknowledges that while standardization could be clearer, there is a judgment present with sufficient evidence to support it, which are the key requirements for sound evaluative reasoning.",claude-haiku-4-5-20251001,2026-11-10T22:05:45
+949,not_sound,"NOT_SOUND
+
+The rationale indicates that evidence is presented without a corresponding evaluative judgment or conclusion, which is a fundamental flaw in evaluative reasoning.",claude-haiku-4-5-20251001,2026-11-10T22:05:46
+955,not_sound,"NOT_SOUND
+
+The rationale identifies critical flaws in the evaluative reasoning: absence of judgment and conceptual confusion from conflating distinct evaluation criteria (efficacy vs. efficiency) and improperly combining disparate measures.",claude-haiku-4-5-20251001,2026-11-10T22:05:47
+956,not_sound,"NOT_SOUND
+
+The rationale contains a typo (""Acttual"") and is too fragmented to clearly articulate sound evaluative reasoning; it appears to be incomplete or poorly expressed.",claude-haiku-4-5-20251001,2026-11-10T22:05:48
+962,sound,"SOUND
+
+The rationale explicitly states there is ""sufficient evidence to support"" the judgment and praises the ""good domain coverage,"" both of which are positive indicators of sound evaluative reasoning.",claude-haiku-4-5-20251001,2026-11-10T22:05:49
+1006,sound,"SOUND
+
+The rationale explicitly states ""Good domain coverage with a judgment and supporting evidence,"" which are positive indicators of sound evaluative reasoning.",claude-haiku-4-5-20251001,2026-11-10T22:05:50
+1122,sound,"SOUND
+
+The rationale lists three positive evaluative criteria (coverage, judgment, and evidence) without noting significant deficiencies, suggesting the reasoning met acceptable standards.",claude-haiku-4-5-20251001,2026-11-10T22:05:51
+1135,not_sound,"NOT_SOUND
+
+The rationale identifies problems with the evaluative reasoning: non-standardized judgments applied inconsistently, and insufficient synthesis into a grand judgment despite adequate evidence being available.",claude-haiku-4-5-20251001,2026-11-10T22:05:52
+1168,not_sound,"NOT_SOUND
+
+The rationale identifies multiple critical deficiencies in evaluative reasoning (underrepresented domains, missing explicit judgment, absent standards), which are fundamental flaws that undermine sound evaluation.",claude-haiku-4-5-20251001,2026-11-10T22:05:53
+1171,sound,"SOUND
+
+The rationale describes positive qualities of the evaluative reasoning: a culminating judgment supported by multiple evidence lines with good coverage across relevant domains, which are hallmarks of sound evaluation.",claude-haiku-4-5-20251001,2026-11-10T22:05:54
+1173,sound,"SOUND
+
+The rationale explicitly praises the reasoning, judgment, evidence, and domain coverage, which are key indicators of sound evaluative reasoning.",claude-haiku-4-5-20251001,2026-11-10T22:05:55
+1329,sound,"SOUND
+
+The rationale identifies positive qualities (good domain coverage, standardized judgment, well-supported warrants and backings) that indicate strong evaluative reasoning.",claude-haiku-4-5-20251001,2026-11-10T22:05:56
+1351,not_sound,"NOT_SOUND
+
+The rationale indicates that evidence is presented without being connected to any actual evaluative judgment, which represents a failure in evaluative reasoning—evidence must be linked to conclusions to constitute sound evaluation.",claude-haiku-4-5-20251001,2026-11-10T22:05:57
+1360,sound,"SOUND
+
+The rationale explicitly states that the conclusion is ""supported by the evidence and sufficient,"" which are key criteria for sound evaluative reasoning.",claude-haiku-4-5-20251001,2026-11-10T22:05:58
+1359,sound,"SOUND
+
+The rationale indicates that coverage across domains is ""sufficient for sound"" judgments, which directly supports a SOUND rating.",claude-haiku-4-5-20251001,2026-11-10T22:05:59
+1361,sound,"SOUND
+
+The rationale explicitly states ""strong judgment with strong supporting evidence,"" which directly indicates that the evaluative reasoning meets quality standards.",claude-haiku-4-5-20251001,2026-11-10T22:06:00
+1399,not_sound,"NOT_SOUND
+
+The rationale describes significant deficiencies in evaluative reasoning: evidence lacking connection to conclusions, weak judgments, and incomplete analysis—all hallmarks of unsound reasoning.",claude-haiku-4-5-20251001,2026-11-10T22:06:01
+1407,sound,"SOUND
+
+The rationale identifies three positive qualities of the evaluative reasoning: standardized judgment (systematic approach), supporting evidence (empirical basis), and good domain coverage (comprehensive scope).",claude-haiku-4-5-20251001,2026-11-10T22:06:02
+1433,not_sound,"NOT_SOUND
+
+The rationale identifies critical deficiencies in evaluative reasoning (weak argument structure, poor synthesis, and absence of judgment), which are fundamental requirements for sound evaluative reasoning.",claude-haiku-4-5-20251001,2026-11-10T22:06:03
+1438,sound,"SOUND
+
+The rationale indicates that despite the judgment being incomplete (""truncated""), it is present and supported by sufficient evidence across the relevant sub-dimensions, which supports a sound rating.",claude-haiku-4-5-20251001,2026-11-10T22:06:04
+1478,sound,"SOUND
+
+The rationale acknowledges some flaws (""outcome nonsequiturs"") but concludes the reasoning is ""sound for the most part,"" indicating an overall positive assessment of the evaluative reasoning quality.",claude-haiku-4-5-20251001,2026-11-10T22:06:06
+1527,sound,"SOUND
+
+The rationale explicitly states ""Good coverage, judgment, and evidence to support,"" which are positive indicators of sound evaluative reasoning.",claude-haiku-4-5-20251001,2026-11-10T22:06:06
+1628,unclear,"UNCLEAR
+
+The rationale is too fragmented and unclear to definitively indicate whether the reasoning was judged as sound or not sound.",claude-haiku-4-5-20251001,2026-11-10T22:06:07
+1725,sound,"SOUND
+
+The rationale indicates that multiple claims of relevance are adequately supported and well-integrated, which are positive indicators of sound evaluative reasoning.",claude-haiku-4-5-20251001,2026-11-10T22:06:08
+1782,not_sound,"NOT_SOUND
+
+Evaluative reasoning requires both evidence and judgment; presenting evidence without making an evaluative judgment fails to constitute sound evaluative reasoning.",claude-haiku-4-5-20251001,2026-11-10T22:06:09
+1840,sound,"SOUND
+
+The rationale indicates that while not all checkpoints were met, ""enough of the ones that count are met,"" which suggests the evaluative reasoning meets the necessary standards for quality despite some gaps.",claude-haiku-4-5-20251001,2026-11-10T22:06:10
+1841,not_sound,"NOT_SOUND
+
+The rationale identifies critical flaws in the evaluative reasoning: mixed/contradictory evidence combined with an unclear or unsupported conclusion (""generally cost effective"") makes the reasoning weak and unconvincing.",claude-haiku-4-5-20251001,2026-11-10T22:06:12
+1846,sound,"SOUND
+
+The rationale explicitly states ""it is sound"" despite noting the evidence is minimal and sparse.",claude-haiku-4-5-20251001,2026-11-10T22:06:13
+1877,sound,"SOUND
+
+The rationale indicates that while the judgment could be more prominent, it is present and backed by adequate supporting evidence, which are the key criteria for sound evaluative reasoning.",claude-haiku-4-5-20251001,2026-11-10T22:06:14
+1992,sound,"SOUND
+
+The rationale explicitly states there is ""sufficient evidence to support"" the judgment and praises the ""good domain coverage,"" both of which are positive indicators of sound evaluative reasoning.",claude-haiku-4-5-20251001,2026-11-10T22:06:15
+2147,not_sound,"NOT_SOUND
+
+The rationale identifies a significant gap (failure to meet checkpoints in an entire domain) without explaining whether this undermines the overall evaluative conclusion or how it affects the validity of the reasoning.",claude-haiku-4-5-20251001,2026-11-10T22:06:16
+2221,not_sound,"NOT_SOUND
+
+The rationale identifies a lack of evidence for a positive claim, which is a valid critical observation, but this critique of insufficient evidence itself represents sound evaluative reasoning rather than unsound reasoning.",claude-haiku-4-5-20251001,2026-11-10T22:06:17
+2336,sound,"SOUND
+
+The rationale identifies good coverage across domains and well-represented synthesis and evaluative conclusion, with only a minor gap in assumptions, suggesting overall positive evaluative reasoning quality.",claude-haiku-4-5-20251001,2026-11-10T22:06:18
+2352,sound,"SOUND
+
+The rationale identifies multiple positive evaluative elements (explicit judgments, standards, sub-criterion integration) that indicate strong evaluative reasoning quality, despite a minor writing issue.",claude-haiku-4-5-20251001,2026-11-10T22:06:19
+2429,not_sound,"NOT_SOUND
+
+The rationale indicates uncertainty about whether outcomes meet impact-level standards and relies on ""benefit of the doubt"" rather than rigorous evaluation, which undermines sound evaluative reasoning.",claude-haiku-4-5-20251001,2026-11-10T22:06:21
+2478,not_sound,"NOT_SOUND
+
+The rationale identifies a critical flaw: the evaluation is measuring output and effectiveness when it should be measuring impact, indicating deficient evaluative reasoning.",claude-haiku-4-5-20251001,2026-11-10T22:06:22
+2479,not_sound,"NOT_SOUND
+
+The rationale identifies multiple critical flaws: lack of clarity about effectiveness measurement, absence of evaluative judgment beyond initial critique, missing discussion of goals/objectives needed to measure criteria, and unexplained inclusion of financial sustainability.",claude-haiku-4-5-20251001,2026-11-10T22:06:23
+2694,sound,"SOUND
+
+The rationale lists four positive indicators of evaluative reasoning quality: the judgment is present, standardized methods were used, sufficient evidence was provided, and the argument was well-constructed.",claude-haiku-4-5-20251001,2026-11-10T22:06:24
+2721,sound,"SOUND
+
+The rationale describes explicit standardized judgment that follows from well-reasoned evidence, which are hallmarks of sound evaluative reasoning.",claude-haiku-4-5-20251001,2026-11-10T22:06:25
+2748,not_sound,"NOT_SOUND
+
+The rationale identifies two critical flaws: absence of a clear judgment and insufficient evidence, both of which are fundamental requirements for sound evaluative reasoning.",claude-haiku-4-5-20251001,2026-11-10T22:06:26
+2842,sound,"SOUND
+
+The rationale indicates positive qualities: comprehensive coverage (""well covered across domains""), explicit and standardized judgment criteria, and adequate evidentiary support (""sufficient evidence"").",claude-haiku-4-5-20251001,2026-11-10T22:06:27
+2925,sound,"SOUND
+
+The rationale explicitly states there is ""sufficient evidence to support"" the judgment and praises the ""good domain coverage,"" both of which are positive indicators of sound evaluative reasoning.",claude-haiku-4-5-20251001,2026-11-10T22:06:28
+2929,sound,"SOUND
+
+The rationale indicates that despite allocating space to explanation and recommendation, the evaluative reasoning was adequately supported by evidence, which is a positive assessment of the reasoning quality.",claude-haiku-4-5-20251001,2026-11-10T22:06:29
+2930,sound,"SOUND
+
+The rationale highlights positive aspects of the evaluation (good domain coverage, integration of sub-dimensions, explicit standardized judgment) that outweigh the noted limitation (weak coverage of assumptions).",claude-haiku-4-5-20251001,2026-11-10T22:06:30
+3010,sound,"SOUND
+
+The rationale describes standardized judgment backed by sufficient evidence in a logical argument, which are hallmarks of sound evaluative reasoning, despite acknowledging some qualifications.",claude-haiku-4-5-20251001,2026-11-10T22:06:31
+3034,sound,"SOUND
+
+The rationale explicitly states ""This is another bare minimum example of a sound segment,"" directly indicating the SOUND rating despite acknowledging some weaknesses like missing backings for warrants.",claude-haiku-4-5-20251001,2026-11-10T22:06:32
+3224,not_sound,"NOT_SOUND
+
+The rationale identifies critical flaws in evaluative reasoning: absence of judgment/standard and insufficient evidence that relies too heavily on one source, making conclusions unclear and unreliable.",claude-haiku-4-5-20251001,2026-11-10T22:06:33
+3309,sound,"SOUND
+
+The rationale indicates that a judgment was made and that supporting evidence was provided, which are the hallmarks of sound evaluative reasoning.",claude-haiku-4-5-20251001,2026-11-10T22:06:34
+3367,not_sound,"NOT_SOUND
+
+The rationale identifies a flaw in the evaluative reasoning—the failure to synthesize mixed evidence into an explicit conclusion—which indicates unsound reasoning.",claude-haiku-4-5-20251001,2026-11-10T22:06:35
+3375,not_sound,"NOT_SOUND
+
+The rationale identifies critical flaws in evaluative reasoning: a judgment that is unclear (""buried""), qualified or weakened (""equivocated""), and inadequately supported (""insufficient evidence""), all of which undermine sound reasoning.",claude-haiku-4-5-20251001,2026-11-10T22:06:36
+3381,not_sound,"NOT_SOUND
+
+The rationale identifies a logical flaw: the evaluator conflates timeliness with efficiency and fails to make a proper judgment against the stated criterion, undermining the validity of the evaluative reasoning.",claude-haiku-4-5-20251001,2026-11-10T22:06:38
+3427,sound,"SOUND
+
+The rationale identifies three key components of sound evaluative reasoning: a judgment is present, evidence supports it, and the domain coverage is good.",claude-haiku-4-5-20251001,2026-11-10T22:06:39
+3470,sound,"SOUND
+
+The rationale explicitly describes positive qualities of the evaluative reasoning: sufficient evidence, structured presentation, and good domain coverage—all indicators of sound reasoning.",claude-haiku-4-5-20251001,2026-11-10T22:06:40
+3493,sound,"SOUND
+
+The rationale indicates that the evaluative reasoning includes both sound judgment and sufficient evidence, which are hallmarks of sound evaluative reasoning.",claude-haiku-4-5-20251001,2026-11-10T22:06:41
+3507,not_sound,"NOT_SOUND
+
+The rationale identifies critical deficiencies in the evaluative reasoning: inadequate domain coverage and insufficient evidence supporting impact claims, both of which undermine sound evaluation logic.",claude-haiku-4-5-20251001,2026-11-10T22:06:42
+3517,not_sound,"NOT_SOUND
+
+The rationale identifies multiple critical deficiencies in the evaluative reasoning (missing warrants, synthesis, caveats, and assumptions), which are fundamental components of sound reasoning.",claude-haiku-4-5-20251001,2026-11-10T22:06:43
+3568,not_sound,"NOT_SOUND
+
+The absence of judgment means the reasoning lacks evaluative conclusions, which is essential to sound evaluative reasoning.",claude-haiku-4-5-20251001,2026-11-10T22:06:44
+3634,not_sound,"NOT_SOUND
+
+The rationale indicates that the evaluative reasoning lacks clarity and presents conflicting evidence without reaching a definitive conclusion, which are hallmarks of unsound reasoning.",claude-haiku-4-5-20251001,2026-11-10T22:06:45
+3798,not_sound,"NOT_SOUND
+
+The rationale indicates the evaluation ""just barely"" meets the threshold and contains ""soft claims of judgment without explicit judgment,"" suggesting it falls short of sound evaluative reasoning standards.",claude-haiku-4-5-20251001,2026-11-10T22:06:46
+3801,sound,"SOUND
+
+The rationale indicates that evidence exists and supports the explicit claim and standard judgment, which are the hallmarks of sound evaluative reasoning.",claude-haiku-4-5-20251001,2026-11-10T22:06:47
+3853,not_sound,"NOT_SOUND
+
+The rationale identifies critical flaws: buried/unclear judgments, lack of contextualizing evidence, and inadequate support for conclusions about impact.",claude-haiku-4-5-20251001,2026-11-10T22:06:48
+3858,not_sound,"NOT_SOUND
+
+The rationale expresses reservations about the reasoning quality, noting ""likely a little more conjecture than I would like,"" which indicates the evaluator found the evaluative reasoning to be insufficiently rigorous or evidence-based.",claude-haiku-4-5-20251001,2026-11-10T22:06:49
+3905,not_sound,"NOT_SOUND
+
+The rationale identifies a critical flaw in the evaluative reasoning: the evidence presented only demonstrates activities and outputs rather than the outcomes and impacts that should have been demonstrated, indicating weak or invalid evaluative logic.",claude-haiku-4-5-20251001,2026-11-10T22:06:51
+3917,sound,"SOUND
+
+The rationale identifies positive elements of evaluative reasoning (good coverage across domains, evidence, and judgment), which supports a sound rating.",claude-haiku-4-5-20251001,2026-11-10T22:06:52
+3977,not_sound,"NOT_SOUND
+
+The rationale indicates that evidence is insufficient to support the judgment being made, which is a fundamental flaw in evaluative reasoning.",claude-haiku-4-5-20251001,2026-11-10T22:06:53
+3980,not_sound,"NOT_SOUND
+
+The rationale identifies a critical flaw: the absence of judgment and unclear evaluative standards regarding whether planned events support sustainability evidence, which are essential components of sound evaluative reasoning.",claude-haiku-4-5-20251001,2026-11-10T22:06:54
+4038,sound,"SOUND
+
+The rationale explicitly states ""Right rating for the evidence"" and praises ""Good domain coverage, with judgment,"" which are positive indicators of sound evaluative reasoning.",claude-haiku-4-5-20251001,2026-11-10T22:06:55
+4209,not_sound,"NOT_SOUND
+
+The rationale identifies a critical flaw: the presence of ""two judgments that bookend the analysis"" rather than a single standardized judgment, which undermines the coherence and validity of the evaluative reasoning.",claude-haiku-4-5-20251001,2026-11-10T22:06:57
+4327,sound,"SOUND
+
+The rationale explicitly states ""establishes this as sound"" and identifies multiple positive features: multiple lines of evidence, multiple sub-dimensions, explicit grand judgment, and an established standard.",claude-haiku-4-5-20251001,2026-11-10T22:06:58
+4372,sound,"SOUND
+
+The rationale identifies a clear decision rule for aggregating sub-judgments, notes that evidence supports the claims, and indicates the evidence is sufficient.",claude-haiku-4-5-20251001,2026-11-10T22:06:59
+4396,not_sound,"NOT_SOUND
+
+The rationale ""No judgment"" indicates that the evaluative reasoning lacks substantive judgment or analysis, which is a fundamental requirement for sound evaluative reasoning.",claude-haiku-4-5-20251001,2026-11-10T22:07:00
+4443,not_sound,"NOT_SOUND
+
+The rationale identifies two critical flaws: absence of judgment and insufficient evidence, both of which are fundamental problems in evaluative reasoning.",claude-haiku-4-5-20251001,2026-11-10T22:07:01
+4508,not_sound,"NOT_SOUND
+
+The rationale identifies multiple critical flaws: inadequate justification (""missing warrants""), lack of integration of evidence (""missing synthesis""), and insufficient acknowledgment of limitations (""caveats read more as excuses""), all of which indicate weak evaluative reasoning.",claude-haiku-4-5-20251001,2026-11-10T22:07:02
+4605,not_sound,"NOT_SOUND
+
+The rationale ""No judgment"" indicates that the evaluative reasoning lacks substantive judgment or analysis, which is a fundamental requirement for sound evaluative reasoning.",claude-haiku-4-5-20251001,2026-11-10T22:07:03
+4694,not_sound,"NOT_SOUND
+
+The rationale ""No judgment"" indicates that the evaluative reasoning lacks substantive judgment or analysis, which is a fundamental requirement for sound evaluative reasoning.",claude-haiku-4-5-20251001,2026-11-10T22:07:04
+4715,sound,"SOUND
+
+The rationale indicates that positive evidence of national ownership supports an inclusive approach judgment, establishing a logical connection between evidence and evaluative conclusion.",claude-haiku-4-5-20251001,2026-11-10T22:07:05
+4778,sound,"SOUND
+
+The rationale indicates that the evaluative reasoning demonstrated multiple lines of evidence supporting its claim, which constitutes sound reasoning even though the evaluator personally dislikes the ""mixed"" judgment format.",claude-haiku-4-5-20251001,2026-11-10T22:07:06
+4891,not_sound,"NOT_SOUND
+
+The rationale indicates that the evaluator failed to perform their core responsibility—contextualizing findings against standards and making judgments—which is a fundamental flaw in evaluative reasoning.",claude-haiku-4-5-20251001,2026-11-10T22:07:07
+4897,not_sound,"NOT_SOUND
+
+The rationale indicates that the evaluative reasoning lacks a critical component—the author's judgment—and fails to provide readers with necessary context and comparators to form their own evaluation, which are fundamental requirements for sound evaluative reasoning.",claude-haiku-4-5-20251001,2026-11-10T22:07:09
+4934,sound,"SOUND
+
+The rationale identifies three key components of sound evaluative reasoning: a judgment is present, evidence supports it, and the domain coverage is good.",claude-haiku-4-5-20251001,2026-11-10T22:07:10
+4978,sound,"SOUND
+
+The rationale explicitly states the evidence is ""sufficient,"" which indicates the evaluative reasoning meets the threshold for soundness despite being minimal.",claude-haiku-4-5-20251001,2026-11-10T22:07:11
+5219,not_sound,"NOT_SOUND
+
+The rationale indicates insufficient evidence has been presented to support the evaluative judgment being made.",claude-haiku-4-5-20251001,2026-11-10T22:07:12
+5366,not_sound,"NOT_SOUND
+
+The rationale identifies critical deficiencies in evaluative reasoning: lack of explicit judgment and absence of standards to evaluate evidence against, both of which are fundamental requirements for sound evaluation.",claude-haiku-4-5-20251001,2026-11-10T22:07:13
+5377,sound,"SOUND
+
+The rationale describes positive structural elements of evaluative reasoning: a clear initial judgment, supporting evidence, organized sub-dimensions, and comprehensive domain coverage—all hallmarks of sound evaluation methodology.",claude-haiku-4-5-20251001,2026-11-10T22:07:14
+5422,not_sound,"NOT_SOUND
+
+The rationale indicates that a key evaluative component—an actual evaluative judgment or claim—is missing, which is essential for sound evaluative reasoning.",claude-haiku-4-5-20251001,2026-11-10T22:07:15
+5597,not_sound,"NOT_SOUND
+
+The rationale identifies critical deficiencies in evaluative reasoning: lack of explicit judgment and absence of a clear standard, which are fundamental requirements for sound evaluation.",claude-haiku-4-5-20251001,2026-11-10T22:07:16
+5863,not_sound,"NOT_SOUND
+
+The rationale identifies multiple critical flaws: the conclusion is actually a recommendation rather than a judgment, no actual judgment was made, and the evidence presented does not adequately support the stated claims about sustainability.",claude-haiku-4-5-20251001,2026-11-10T22:07:17
+6000,sound,"SOUND
+
+The rationale explicitly states ""Sufficient evidence to support a positive rating,"" which directly indicates the evaluative reasoning meets the standard for soundness.",claude-haiku-4-5-20251001,2026-11-10T22:07:18
+6018,sound,"SOUND
+
+The rationale indicates that a judgment was made and that supporting evidence was provided, which are the hallmarks of sound evaluative reasoning.",claude-haiku-4-5-20251001,2026-11-10T22:07:19
+6063,sound,"SOUND
+
+The rationale praises the reasoning as ""well reasoned"" with appropriate caveats and qualifications, and notes only minor missing elements (""only missing 5 checkpoints""), indicating the evaluative reasoning meets the standard for soundness despite not being perfect.",claude-haiku-4-5-20251001,2026-11-10T22:07:20
+6487,not_sound,"NOT_SOUND
+
+The rationale identifies critical missing components (synthesis, integration, and evaluative conclusion) that are essential to sound evaluative reasoning.",claude-haiku-4-5-20251001,2026-11-10T22:07:21
+6666,not_sound,"NOT_SOUND
+
+The rationale identifies multiple critical flaws: reliance on description rather than analysis, weak logical connections to conclusions, lack of clear evaluative claims or standards, and improper inclusion of recommendations, all of which undermine sound evaluative reasoning.",claude-haiku-4-5-20251001,2026-11-10T22:07:23
+6807,sound,"SOUND
+
+The rationale indicates that multiple dimensions were integrated with evidence, explicit judgments were made, and standards were applied—all hallmarks of rigorous evaluative reasoning.",claude-haiku-4-5-20251001,2026-11-10T22:07:23
+6824,sound,"SOUND
+
+The rationale indicates that sufficient evidence exists to support an explicit and standardized judgment, which are hallmarks of sound evaluative reasoning.",claude-haiku-4-5-20251001,2026-11-10T22:07:24
+6845,not_sound,"NOT_SOUND
+
+The rationale explicitly states that evidence is insufficient to support a key claim about project impact, which is a fundamental flaw in evaluative reasoning.",claude-haiku-4-5-20251001,2026-11-10T22:07:25

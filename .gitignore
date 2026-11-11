@@ -72,3 +72,5 @@ logs/*
 
 # Jupyter
 .ipynb_checkpoints/
+# Blind Haiku audit of gold rationale/label consistency (raw responses).
+!logs/gold_label_audit_haiku.csv
