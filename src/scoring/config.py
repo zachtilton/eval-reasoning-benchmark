@@ -78,6 +78,17 @@ TRIANGULATION_ENDPOINT = "https://api.openai.com/v1/responses"
 TRIANGULATION_RESULTS_PATH = RESPONSES_DIR / "triangulation_luna_ambiguous.csv"
 
 # ---------------------------------------------------------------------------
+# Secondary (label-substitution) analyses -- see reviewer_substitution.py.
+# Never overwrite the locked gold standard or the *_corrected primary outputs.
+# ---------------------------------------------------------------------------
+RESULTS_DIR = PROJECT_ROOT / "results"
+SCORED_DB_CORRECTED_INPUT_PATH = RESPONSES_DIR / "scored_database_corrected.csv"
+CONTESTED_REVIEW_RESOLVED_PATH = RESPONSES_DIR / "contested_fragments_review_resolved.csv"
+SCORED_DB_TRIANGULATED_PATH = RESPONSES_DIR / "scored_database_triangulated.csv"
+FRAGMENT_OUTCOMES_TRIANGULATED_PATH = RESPONSES_DIR / "fragment_outcomes_triangulated.csv"
+H2_TRIANGULATED_RESULTS_PATH = RESULTS_DIR / "H2_statistical_tests_triangulated.json"
+
+# ---------------------------------------------------------------------------
 # RC2 stratified sample sizes (spec Section 2.4, Step 1)
 # ---------------------------------------------------------------------------
 
