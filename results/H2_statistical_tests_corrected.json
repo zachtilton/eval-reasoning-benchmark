@@ -1,0 +1,218 @@
+{
+  "test_1_mcnemar": {
+    "overall": {
+      "contingency_table": {
+        "both_pass": 460,
+        "zero_only": 67,
+        "few_only": 91,
+        "both_fail": 282
+      },
+      "n_paired": 900,
+      "n_discordant": 158,
+      "zero_shot_pass_rate": 0.5856,
+      "few_shot_pass_rate": 0.6122,
+      "test_type": "chi_squared_corrected",
+      "statistic": 3.348101265822785,
+      "p_value": 0.067283,
+      "significant_at_05": false,
+      "odds_ratio": 0.7363,
+      "odds_ratio_ci": [
+        0.537,
+        1.0094
+      ],
+      "direction": "few_shot_better"
+    },
+    "gpt_5_6_sol": {
+      "contingency_table": {
+        "both_pass": 74,
+        "zero_only": 19,
+        "few_only": 21,
+        "both_fail": 36
+      },
+      "n_paired": 150,
+      "n_discordant": 40,
+      "zero_shot_pass_rate": 0.62,
+      "few_shot_pass_rate": 0.6333,
+      "test_type": "chi_squared_corrected",
+      "statistic": 0.025,
+      "p_value": 0.874367,
+      "significant_at_05": false,
+      "odds_ratio": 0.9048,
+      "odds_ratio_ci": [
+        0.4864,
+        1.6829
+      ],
+      "direction": "few_shot_better"
+    },
+    "claude_opus_5": {
+      "contingency_table": {
+        "both_pass": 81,
+        "zero_only": 11,
+        "few_only": 15,
+        "both_fail": 43
+      },
+      "n_paired": 150,
+      "n_discordant": 26,
+      "zero_shot_pass_rate": 0.6133,
+      "few_shot_pass_rate": 0.64,
+      "test_type": "chi_squared_corrected",
+      "statistic": 0.34615384615384615,
+      "p_value": 0.556298,
+      "significant_at_05": false,
+      "odds_ratio": 0.7333,
+      "odds_ratio_ci": [
+        0.3368,
+        1.5966
+      ],
+      "direction": "few_shot_better"
+    },
+    "gemini_3_pro_preview_high": {
+      "contingency_table": {
+        "both_pass": 81,
+        "zero_only": 2,
+        "few_only": 8,
+        "both_fail": 59
+      },
+      "n_paired": 150,
+      "n_discordant": 10,
+      "zero_shot_pass_rate": 0.5533,
+      "few_shot_pass_rate": 0.5933,
+      "test_type": "exact_binomial",
+      "statistic": null,
+      "p_value": 0.109375,
+      "significant_at_05": false,
+      "odds_ratio": 0.25,
+      "odds_ratio_ci": [
+        0.0531,
+        1.1773
+      ],
+      "direction": "few_shot_better"
+    },
+    "kimi_k3": {
+      "contingency_table": {
+        "both_pass": 73,
+        "zero_only": 16,
+        "few_only": 13,
+        "both_fail": 48
+      },
+      "n_paired": 150,
+      "n_discordant": 29,
+      "zero_shot_pass_rate": 0.5933,
+      "few_shot_pass_rate": 0.5733,
+      "test_type": "chi_squared_corrected",
+      "statistic": 0.13793103448275862,
+      "p_value": 0.710347,
+      "significant_at_05": false,
+      "odds_ratio": 1.2308,
+      "odds_ratio_ci": [
+        0.592,
+        2.5587
+      ],
+      "direction": "zero_shot_better"
+    },
+    "deepseek_v4_pro": {
+      "contingency_table": {
+        "both_pass": 74,
+        "zero_only": 8,
+        "few_only": 23,
+        "both_fail": 45
+      },
+      "n_paired": 150,
+      "n_discordant": 31,
+      "zero_shot_pass_rate": 0.5467,
+      "few_shot_pass_rate": 0.6467,
+      "test_type": "chi_squared_corrected",
+      "statistic": 6.32258064516129,
+      "p_value": 0.011921,
+      "significant_at_05": true,
+      "odds_ratio": 0.3478,
+      "odds_ratio_ci": [
+        0.1556,
+        0.7776
+      ],
+      "direction": "few_shot_better"
+    },
+    "glm_5_2": {
+      "contingency_table": {
+        "both_pass": 77,
+        "zero_only": 11,
+        "few_only": 11,
+        "both_fail": 51
+      },
+      "n_paired": 150,
+      "n_discordant": 22,
+      "zero_shot_pass_rate": 0.5867,
+      "few_shot_pass_rate": 0.5867,
+      "test_type": "exact_binomial",
+      "statistic": null,
+      "p_value": 1.0,
+      "significant_at_05": false,
+      "odds_ratio": 1.0,
+      "odds_ratio_ci": [
+        0.4336,
+        2.3065
+      ],
+      "direction": "no_difference"
+    }
+  },
+  "test_2_chi_squared": {
+    "omnibus": {
+      "chi_squared": 3.2378,
+      "p_value": 0.663383,
+      "degrees_of_freedom": 5,
+      "n_total": 1800,
+      "significant_at_05": false,
+      "cramers_v": 0.0424,
+      "contingency_table": {
+        "fail": {
+          "claude_opus_5": 112,
+          "deepseek_v4_pro": 121,
+          "gemini_3_pro_preview_high": 128,
+          "glm_5_2": 124,
+          "gpt_5_6_sol": 112,
+          "kimi_k3": 125
+        },
+        "pass": {
+          "claude_opus_5": 188,
+          "deepseek_v4_pro": 179,
+          "gemini_3_pro_preview_high": 172,
+          "glm_5_2": 176,
+          "gpt_5_6_sol": 188,
+          "kimi_k3": 175
+        }
+      },
+      "expected_frequencies": {
+        "fail": {
+          "claude_opus_5": 120.33333333333333,
+          "deepseek_v4_pro": 120.33333333333333,
+          "gemini_3_pro_preview_high": 120.33333333333333,
+          "glm_5_2": 120.33333333333333,
+          "gpt_5_6_sol": 120.33333333333333,
+          "kimi_k3": 120.33333333333333
+        },
+        "pass": {
+          "claude_opus_5": 179.66666666666666,
+          "deepseek_v4_pro": 179.66666666666666,
+          "gemini_3_pro_preview_high": 179.66666666666666,
+          "glm_5_2": 179.66666666666666,
+          "gpt_5_6_sol": 179.66666666666666,
+          "kimi_k3": 179.66666666666666
+        }
+      }
+    },
+    "pairwise": {}
+  },
+  "test_3_z_test": {
+    "closed_pass_rate": 0.6089,
+    "open_pass_rate": 0.5889,
+    "difference": 0.02,
+    "n_closed": 900,
+    "n_open": 900,
+    "z_statistic": 0.8656,
+    "p_value": 0.386695,
+    "significant_at_05": false,
+    "cohens_h": 0.0408,
+    "cohens_h_magnitude": "small",
+    "higher_performer": "closed"
+  }
+}

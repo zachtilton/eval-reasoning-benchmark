@@ -26,6 +26,26 @@ FRAGMENT_OUTCOMES_PATH = RESPONSES_DIR / "fragment_outcomes.csv"
 RC2_SAMPLE_PATH = LOGS_DIR / "rc2_manual_review_sample.csv"
 
 # ---------------------------------------------------------------------------
+# RC2-corrected scoring (provisional-final; see src/scoring/corrected_scoring.py)
+# ---------------------------------------------------------------------------
+# RC2's blind human review (2026-11-05, logs/human_review_blinded.csv +
+# human_review_key.csv) found 0% agreement between the automated coherence
+# pipeline's "incoherent"/"ambiguous" calls and human judgment across every
+# tested sub-stratum (incoherent_confident 64/64 overridden, all three
+# ambiguous sub-groups 153/153 overridden) -- including the 7 cases where
+# Tier 2 (Haiku) independently agreed with Tier 1, which were overridden too.
+# Only the coherent_confident bucket held up (94/94). No sub-component of
+# the pipeline's "not coherent" determination survived validation, so these
+# outputs stop using coherence_final as a scoring gate (Step 2) and instead
+# score classification accuracy for every response. Written to separate
+# *_corrected paths -- the original scored_database.csv / fragment_outcomes
+# .csv / performance_matrix.csv are left untouched as the as-designed,
+# pre-RC2 historical results.
+SCORED_DB_CORRECTED_PATH = RESPONSES_DIR / "scored_database_corrected.csv"
+FRAGMENT_OUTCOMES_CORRECTED_PATH = RESPONSES_DIR / "fragment_outcomes_corrected.csv"
+PERFORMANCE_MATRIX_CORRECTED_PATH = RESPONSES_DIR / "performance_matrix_corrected.csv"
+
+# ---------------------------------------------------------------------------
 # Coherence validation parameters (spec Section 2.4, Step 1)
 # ---------------------------------------------------------------------------
 
@@ -42,11 +62,42 @@ HAIKU_MODEL_ID = "claude-haiku-4-5-20251001"
 ANTHROPIC_API_VERSION = "2023-06-01"
 
 # ---------------------------------------------------------------------------
+# Triangulation check (supplementary — not part of the official scoring
+# pipeline; see src/scoring/triangulation.py)
+# ---------------------------------------------------------------------------
+# Deliberately NOT claude-haiku-4-5-20251001 (already Tier 2) and NOT
+# gpt_5_6_sol (one of the 6 benchmarked models under study — using it would
+# have a model grade its own study's outputs). gpt-5.6-luna is the cheapest
+# tier of the same model generation as the primary diagnostic model, from a
+# vendor entirely outside Tier 2's Anthropic lineage — maximizes
+# independence from both the existing automated judge and the subject
+# models. CONFIRMED live (2026-11-04): /v1/responses, 200 OK, clean
+# single-word output, 0 reasoning tokens on a trivial coherence judgment.
+TRIANGULATION_MODEL_ID = "gpt-5.6-luna"
+TRIANGULATION_ENDPOINT = "https://api.openai.com/v1/responses"
+TRIANGULATION_RESULTS_PATH = RESPONSES_DIR / "triangulation_luna_ambiguous.csv"
+
+# ---------------------------------------------------------------------------
 # RC2 stratified sample sizes (spec Section 2.4, Step 1)
 # ---------------------------------------------------------------------------
 
-RC2_COHERENT_SAMPLE = 20
-RC2_INCOHERENT_SAMPLE = 20
+# RAISED from the original spec's flat 20/20/10, 2026-11-04: those sizes
+# give a ~±22pp worst-case margin of error (95% CI, p=0.5) on each bucket's
+# population (coherent N=3,967; incoherent N=216; ambiguous N=1,217) -- not
+# enough precision to support a validity claim. Sized instead to a ~±10pp
+# margin (95% CI, p=0.5, finite-population-corrected):
+#   coherent:   n = 1.96^2*0.25/0.01, FPC-adjusted for N=3,967  -> ~94
+#   incoherent: n = 1.96^2*0.25/0.01, FPC-adjusted for N=216    -> ~67
+# The ambiguous arm is no longer a flat random draw of RC2_AMBIGUOUS_MAX --
+# see triangulation.py::select_stratified_human_review_sample, which
+# stratifies it using the Luna triangulation triage (full census of the
+# 64 three-way-split cases + a precision-sized proportional sample of the
+# rest) instead of treating "ambiguous" as one undifferentiated bucket.
+RC2_COHERENT_SAMPLE = 94
+RC2_INCOHERENT_SAMPLE = 67
+# Kept for select_rc2_sample's original spec-literal behavior (and its
+# existing tests) -- not used by the triangulation-informed ambiguous
+# sampling actually run in practice; see comment above.
 RC2_AMBIGUOUS_MAX = 10    # "or all ambiguous if < 10"
 RC2_KAPPA_TARGET = 0.80
 

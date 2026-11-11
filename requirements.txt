@@ -6,6 +6,11 @@ requests>=2.31
 pandas>=2.0
 scipy>=1.10  # used by src/scoring — surfaced when testing in a clean venv
 
+# cohen_kappa_score / confusion_matrix for RC1/RC2 reliability checks
+# (src/scoring/coherence.py::calculate_rc2_reliability) — installed during
+# the RC1 kappa cross-verification session but never added here.
+scikit-learn>=1.3
+
 # Pilot-only: cl100k_base token counting (Task 1 / calibration audit)
 tiktoken>=0.7
 
