@@ -33,6 +33,15 @@ data/raw/*
 !data/responses/performance_matrix_corrected.csv
 !data/responses/gpt_5_6_sol_failures_for_coding_corrected.csv
 !data/responses/triangulation_luna_ambiguous.csv
+# Human-rater data (de-identified) and analyses built on it: the failure
+# coding worksheet and the external-reviewer secondary analysis of the 35
+# contested fragments. Irreplaceable human judgment -- tracked for backup
+# and reproducibility.
+!data/responses/gpt_5_6_sol_failure_coding_worksheet.csv
+!data/responses/contested_fragments_model_vs_anchor.csv
+!data/responses/contested_fragments_review_resolved.csv
+!data/responses/scored_database_triangulated.csv
+!data/responses/fragment_outcomes_triangulated.csv
 
 # OS files
 .DS_Store
@@ -51,6 +60,15 @@ logs/*
 !logs/failed_calls.jsonl
 !logs/corpus_token_audit.csv
 !logs/calibration_token_audit.csv
+# RC2 blind human review and the contested-fragment external review packet,
+# returned ratings (original .numbers + CSV conversion), and blinding keys.
+!logs/human_review_blinded.csv
+!logs/human_review_key.csv
+!logs/contested_fragments_review_blinded.csv
+!logs/contested_fragments_review_blinded_2.numbers
+!logs/contested_fragments_review_returned.csv
+!logs/contested_fragments_review_key.csv
+!logs/contested_fragments_review_instructions.md
 
 # Jupyter
 .ipynb_checkpoints/
