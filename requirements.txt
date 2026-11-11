@@ -11,6 +11,9 @@ scipy>=1.10  # used by src/scoring — surfaced when testing in a clean venv
 # the RC1 kappa cross-verification session but never added here.
 scikit-learn>=1.3
 
+# Poster/figure output for src/analysis/coding_synthesis.py
+matplotlib>=3.8
+
 # Pilot-only: cl100k_base token counting (Task 1 / calibration audit)
 tiktoken>=0.7
 

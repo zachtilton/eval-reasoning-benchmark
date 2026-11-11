@@ -89,3 +89,20 @@ KAPPA_TARGET: float = 0.80
 
 ALPHA: float = 0.05
 MCNEMAR_SMALL_N: int = 25   # Use exact binomial when n_discordant < 25
+
+# ---------------------------------------------------------------------------
+# Failure-coding synthesis (see coding_synthesis.py)
+# ---------------------------------------------------------------------------
+
+SCORED_DB_CORRECTED_PATH = RESPONSES_DIR / "scored_database_corrected.csv"
+FRAGMENT_OUTCOMES_CORRECTED_PATH = RESPONSES_DIR / "fragment_outcomes_corrected.csv"
+CONTESTED_REVIEW_RESOLVED_PATH = RESPONSES_DIR / "contested_fragments_review_resolved.csv"
+GOLD_RATIONALE_SUPPLEMENT_PATH = GOLD_STD_DIR / "gold_standard_rationale_supplement.csv"
+CODING_SYNTHESIS_RESULTS_PATH = RESULTS_DIR / "failure_coding_synthesis.json"
+FIGURES_DIR = RESULTS_DIR / "figures"
+
+# DAC criteria reported individually; anything else is grouped as "other".
+CORE_CRITERIA: list[str] = [
+    "relevance", "coherence", "effectiveness", "efficiency", "impact", "sustainability",
+]
+FIGURE_DPI: int = 300
