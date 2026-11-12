@@ -733,6 +733,139 @@
       "note": "Treats the 12 outcomes per fragment as independent; anti-conservative. Read with the clustered CIs."
     }
   },
+  "criterion_checks": {
+    "stratified": {
+      "unit": "fragment (mean of 12 model x condition outcomes)",
+      "label_effect_F": 35.37,
+      "label_effect_p": 1.88e-08,
+      "criterion_given_label_F": 0.286,
+      "criterion_given_label_df": [
+        6,
+        142
+      ],
+      "criterion_given_label_p": 0.943,
+      "criterion_given_label_permutation_p": 0.9414,
+      "fail_pct_gold_not_sound_vs_sound": [
+        55.9,
+        24.8
+      ]
+    },
+    "gold_composition": {
+      "not_sound_pct": {
+        "coherence": 57.1,
+        "effectiveness": 35.3,
+        "efficiency": 56.0,
+        "impact": 70.6,
+        "other": 59.1,
+        "relevance": 33.3,
+        "sustainability": 45.7
+      },
+      "n": {
+        "coherence": 7,
+        "effectiveness": 17,
+        "efficiency": 25,
+        "impact": 17,
+        "other": 22,
+        "relevance": 27,
+        "sustainability": 35
+      },
+      "chi2": 8.82,
+      "dof": 6,
+      "chi2_p": 0.1842,
+      "permutation_p": 0.1826,
+      "impact_vs_relevance_fisher_p": 0.0291,
+      "impact_vs_relevance_odds_ratio": 4.8
+    },
+    "models_view": {
+      "model_not_sound_pct": {
+        "coherence": 28.6,
+        "effectiveness": 32.8,
+        "efficiency": 33.3,
+        "impact": 37.6,
+        "other": 36.4,
+        "relevance": 28.0,
+        "sustainability": 39.0
+      },
+      "model_not_sound_pct_within_gold_label": {
+        "coherence": {
+          "not_sound": 33.3,
+          "sound": 22.2
+        },
+        "effectiveness": {
+          "not_sound": 45.8,
+          "sound": 25.8
+        },
+        "efficiency": {
+          "not_sound": 47.6,
+          "sound": 15.2
+        },
+        "impact": {
+          "not_sound": 40.0,
+          "sound": 31.7
+        },
+        "other": {
+          "not_sound": 44.2,
+          "sound": 25.0
+        },
+        "relevance": {
+          "not_sound": 41.7,
+          "sound": 21.2
+        },
+        "sustainability": {
+          "not_sound": 47.9,
+          "sound": 31.4
+        }
+      },
+      "criterion_permutation_p": 0.9434,
+      "correlation_with_gold_pattern_r": 0.434,
+      "correlation_p": 0.331,
+      "n_criteria": 7
+    },
+    "rc2_raters": {
+      "coherence": {
+        "n": 1,
+        "gold_not_sound": 1,
+        "rater_1_not_sound": 1,
+        "rater_2_not_sound": 1
+      },
+      "effectiveness": {
+        "n": 4,
+        "gold_not_sound": 1,
+        "rater_1_not_sound": 3,
+        "rater_2_not_sound": 3
+      },
+      "efficiency": {
+        "n": 4,
+        "gold_not_sound": 3,
+        "rater_1_not_sound": 4,
+        "rater_2_not_sound": 3
+      },
+      "impact": {
+        "n": 4,
+        "gold_not_sound": 3,
+        "rater_1_not_sound": 2,
+        "rater_2_not_sound": 2
+      },
+      "other": {
+        "n": 8,
+        "gold_not_sound": 4,
+        "rater_1_not_sound": 4,
+        "rater_2_not_sound": 3
+      },
+      "relevance": {
+        "n": 8,
+        "gold_not_sound": 2,
+        "rater_1_not_sound": 1,
+        "rater_2_not_sound": 0
+      },
+      "sustainability": {
+        "n": 9,
+        "gold_not_sound": 5,
+        "rater_1_not_sound": 6,
+        "rater_2_not_sound": 5
+      }
+    }
+  },
   "shared_failures": {
     "per_model_any_condition_fail_rate_pct": {
       "gpt_5_6_sol": 50.7,

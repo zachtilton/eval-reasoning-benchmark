@@ -443,6 +443,137 @@ def criterion_variation(outcomes: pd.DataFrame, gold: pd.DataFrame) -> dict:
             "note": "Treats the 12 outcomes per fragment as independent; anti-conservative. Read with the clustered CIs."}}
 
 
+def _nested_f(y: np.ndarray, x_reduced: np.ndarray, x_full: np.ndarray) -> float:
+    """F statistic comparing nested OLS models (full adds columns to reduced)."""
+    def rss(x):
+        beta, *_ = np.linalg.lstsq(x, y, rcond=None)
+        return float(((y - x @ beta) ** 2).sum())
+    r0, r1 = rss(x_reduced), rss(x_full)
+    df1 = x_full.shape[1] - x_reduced.shape[1]
+    df2 = len(y) - x_full.shape[1]
+    return ((r0 - r1) / df1) / (r1 / df2)
+
+
+def criterion_checks(outcomes: pd.DataFrame, maj: pd.DataFrame, gold: pd.DataFrame, retest: pd.DataFrame,
+                     n_perm: int = BOOTSTRAP_RESAMPLES, seed: int = FINDINGS_SEED) -> dict:
+    """
+    Is apparent criterion difficulty more than gold-label composition, and is
+    the gold's criterion pattern corroborated without the gold?
+
+    (a) Stratified check: fragment-level fail proportion (12 outcomes each;
+        fragments are independent units) regressed on gold label, then on
+        label + criterion; nested F test, with a permutation p-value that
+        shuffles criterion within gold-label strata.
+    (b) Gold composition: share of not-sound labels by criterion; chi-squared
+        and a permutation p-value (small expected counts), plus impact vs
+        relevance Fisher exact.
+    (c) Gold-independent: models' own share of not-sound majority labels per
+        fragment, by criterion (permutation test across criteria), and its
+        correlation with the gold's criterion pattern.
+    (d) RC2 raters' not-sound share by criterion on shared fragments.
+
+    Args:
+        outcomes: Corrected fragment outcomes.
+        maj: Output of majority_labels.
+        gold: Locked gold with criterion.
+        retest: RC2 blind retest.
+        n_perm: Permutations.
+        seed: RNG seed.
+
+    Returns:
+        Dict with the four checks.
+    """
+    from scipy.stats import chi2_contingency, f as f_dist, fisher_exact, pearsonr
+
+    from .config import CORE_CRITERIA
+
+    rng = np.random.default_rng(seed)
+    g = gold[["fragment_id", "expert_classification", "criterion"]].copy()
+    g["crit"] = g["criterion"].where(g["criterion"].isin(CORE_CRITERIA), "other")
+    crits = sorted(g["crit"].unique())
+
+    # (a) stratified check
+    fr = outcomes.assign(f=(outcomes["fragment_outcome"] == "fail").astype(float)).groupby("fragment_id")["f"].mean().rename("fail").reset_index().merge(g, on="fragment_id")
+    y = fr["fail"].to_numpy()
+    label = (fr["expert_classification"] == "not_sound").astype(float).to_numpy()
+    x_red = np.column_stack([np.ones(len(y)), label])
+
+    def design(c):
+        return np.column_stack([x_red] + [(c == k).astype(float) for k in crits[1:]])
+
+    crit_arr = fr["crit"].to_numpy()
+    f_obs = _nested_f(y, x_red, design(crit_arr))
+    df1, df2 = len(crits) - 1, len(y) - (2 + len(crits) - 1)
+    perm = []
+    for _ in range(n_perm):
+        c = crit_arr.copy()
+        for lab in (0.0, 1.0):
+            idx = np.where(label == lab)[0]
+            c[idx] = rng.permutation(c[idx])
+        perm.append(_nested_f(y, x_red, design(c)))
+    f_label_only = _nested_f(y, np.ones((len(y), 1)), x_red)
+    stratified = {
+        "unit": "fragment (mean of 12 model x condition outcomes)",
+        "label_effect_F": round(f_label_only, 2),
+        "label_effect_p": float(f"{f_dist.sf(f_label_only, 1, len(y) - 2):.2e}"),
+        "criterion_given_label_F": round(f_obs, 3),
+        "criterion_given_label_df": [df1, df2],
+        "criterion_given_label_p": round(float(f_dist.sf(f_obs, df1, df2)), 4),
+        "criterion_given_label_permutation_p": round(float((np.array(perm) >= f_obs).mean()), 4),
+        "fail_pct_gold_not_sound_vs_sound": [_pct(y[label == 1].mean()), _pct(y[label == 0].mean())],
+    }
+
+    # (b) gold composition
+    tab = pd.crosstab(g["crit"], g["expert_classification"]).reindex(crits)
+    chi2, p_chi, dof, _ = chi2_contingency(tab.to_numpy())
+    perm_chi = []
+    labs = g["expert_classification"].to_numpy()
+    for _ in range(n_perm):
+        pt = pd.crosstab(g["crit"].to_numpy(), rng.permutation(labs))
+        perm_chi.append(chi2_contingency(pt.to_numpy())[0])
+    imp, rel = tab.loc["impact"], tab.loc["relevance"]
+    odds, p_fish = fisher_exact([[imp["not_sound"], imp["sound"]], [rel["not_sound"], rel["sound"]]])
+    gold_comp = {
+        "not_sound_pct": {k: _pct(tab.loc[k, "not_sound"] / tab.loc[k].sum()) for k in crits},
+        "n": {k: int(tab.loc[k].sum()) for k in crits},
+        "chi2": round(float(chi2), 2), "dof": int(dof), "chi2_p": round(float(p_chi), 4),
+        "permutation_p": round(float((np.array(perm_chi) >= chi2).mean()), 4),
+        "impact_vs_relevance_fisher_p": round(float(p_fish), 4),
+        "impact_vs_relevance_odds_ratio": round(float(odds), 2),
+    }
+
+    # (c) models' own not-sound calls (gold-independent)
+    mm = maj[maj["pred"] != "none"].assign(ns=lambda d: (d["pred"] == "not_sound").astype(float))
+    fm = mm.groupby("fragment_id")["ns"].mean().rename("model_ns").reset_index().merge(g, on="fragment_id")
+    by_crit = fm.groupby("crit")["model_ns"].mean()
+    def between_var(vals, groups):
+        return float(pd.Series(vals).groupby(groups).mean().var())
+    obs_bv = between_var(fm["model_ns"].to_numpy(), fm["crit"].to_numpy())
+    perm_bv = [between_var(fm["model_ns"].to_numpy(), rng.permutation(fm["crit"].to_numpy())) for _ in range(n_perm)]
+    r, p_r = pearsonr([gold_comp["not_sound_pct"][k] for k in crits], [100 * by_crit[k] for k in crits])
+    within = fm.groupby(["crit", "expert_classification"])["model_ns"].mean().unstack()
+    models_view = {
+        "model_not_sound_pct": {k: _pct(by_crit[k]) for k in crits},
+        "model_not_sound_pct_within_gold_label": {k: {lab: _pct(within.loc[k, lab]) for lab in within.columns} for k in crits},
+        "criterion_permutation_p": round(float((np.array(perm_bv) >= obs_bv).mean()), 4),
+        "correlation_with_gold_pattern_r": round(float(r), 3),
+        "correlation_p": round(float(p_r), 4),
+        "n_criteria": len(crits),
+    }
+
+    # (d) RC2 raters
+    h = retest.rename(columns={"report_id": "fragment_id"}).copy()
+    for c in ("rater_1", "rater_2"):
+        h[c] = _norm_label(h[c])
+    h = h.merge(g, on="fragment_id")
+    raters = {
+        k: {"n": int(len(d)), "gold_not_sound": int((d["expert_classification"] == "not_sound").sum()),
+            "rater_1_not_sound": int((d["rater_1"] == "not_sound").sum()), "rater_2_not_sound": int((d["rater_2"] == "not_sound").sum())}
+        for k, d in h.groupby("crit")
+    }
+    return {"stratified": stratified, "gold_composition": gold_comp, "models_view": models_view, "rc2_raters": raters}
+
+
 def unanimity(outcomes: pd.DataFrame) -> dict:
     """
     Run-to-run consistency: share of combinations with 3/3 agreement.
@@ -737,6 +868,7 @@ def run_findings_metrics(output_path: Path = FINDINGS_METRICS_PATH) -> dict:
         "unanimity_by_condition_pct": {c: _pct(outcomes.loc[outcomes["prompt_condition"] == c, "unanimous_agreement"].astype(bool).mean()) for c in PROMPT_ORDER},
         "few_shot_shift": few_shot_shift(maj, gold),
         "criterion_variation": criterion_variation(outcomes, gold),
+        "criterion_checks": criterion_checks(outcomes, maj, gold, retest),
         "shared_failures": shared_failures(outcomes, gold, resolved, frags),
         "challenge_cases": challenge_case_summary(outcomes, rows),
         "contested_review": {
