@@ -988,6 +988,55 @@
       "criterion_given_label_p": 0.9504
     }
   },
+  "leniency_ratio_uncertainty": {
+    "bootstrap_ci_locked_gold": {
+      "zero_shot": {
+        "ratio": 1.52,
+        "ci_95": [
+          1.14,
+          2.01
+        ],
+        "share_of_resamples_below_1_pct": 0.2
+      },
+      "few_shot": {
+        "ratio": 3.79,
+        "ci_95": [
+          2.67,
+          5.89
+        ],
+        "share_of_resamples_below_1_pct": 0.0
+      },
+      "pooled": {
+        "ratio": 2.27,
+        "ci_95": [
+          1.73,
+          3.07
+        ],
+        "share_of_resamples_below_1_pct": 0.0
+      }
+    },
+    "zero_shot_subset_simulation": {
+      "subset_size": 38,
+      "subset_not_sound": 19,
+      "observed_rc2_subset_ratio": 0.78,
+      "random_subsets_free": {
+        "share_below_1_pct": 4.0,
+        "share_at_or_below_observed_pct": 0.4,
+        "middle_95": [
+          0.94,
+          2.59
+        ]
+      },
+      "random_subsets_same_label_mix": {
+        "share_below_1_pct": 4.2,
+        "share_at_or_below_observed_pct": 0.2,
+        "middle_95": [
+          0.94,
+          2.56
+        ]
+      }
+    }
+  },
   "shared_failures": {
     "per_model_any_condition_fail_rate_pct": {
       "gpt_5_6_sol": 50.7,

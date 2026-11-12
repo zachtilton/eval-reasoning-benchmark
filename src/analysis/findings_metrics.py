@@ -624,6 +624,74 @@ def criterion_by_condition(outcomes: pd.DataFrame, gold: pd.DataFrame) -> dict:
     return out
 
 
+def leniency_ratio_uncertainty(maj: pd.DataFrame, gold: pd.DataFrame, retest: pd.DataFrame,
+                               n: int = BOOTSTRAP_RESAMPLES, seed: int = FINDINGS_SEED) -> dict:
+    """
+    How certain is the leniency ratio, and is the RC2-subset reversal unusual?
+
+    (a) Fragment-clustered bootstrap 95% CI for the missed-flaw / wrongly-
+        rejected ratio against the locked gold, per condition and pooled.
+    (b) For zero-shot, the distribution of the ratio across random subsets of
+        the same size as the RC2 overlap (38), drawn (i) freely and (ii) with
+        the same sound / not-sound mix, giving the share of subsets with a
+        ratio below 1 and the percentile of the observed RC2-subset ratio.
+
+    Args:
+        maj: Output of majority_labels.
+        gold: Locked gold.
+        retest: RC2 blind retest (defines the observed subset).
+        n: Resamples.
+        seed: RNG seed.
+
+    Returns:
+        Dict with CIs and the subset simulation.
+    """
+    rng = np.random.default_rng(seed)
+    m = maj[maj["pred"] != "none"].merge(gold[["fragment_id", "expert_classification"]], on="fragment_id")
+    m = m.assign(missed=(m["expert_classification"] == "not_sound") & (m["pred"] == "sound"),
+                 rejected=(m["expert_classification"] == "sound") & (m["pred"] == "not_sound"),
+                 is_ns=m["expert_classification"] == "not_sound")
+
+    def per_fragment(d: pd.DataFrame) -> pd.DataFrame:
+        return d.groupby("fragment_id").agg(missed=("missed", "sum"), rejected=("rejected", "sum"), n=("pred", "size"),
+                                            is_ns=("is_ns", "first"))
+
+    def ratio(fr: pd.DataFrame) -> float:
+        ns, s = fr[fr["is_ns"]], fr[~fr["is_ns"]]
+        missed = ns["missed"].sum() / ns["n"].sum()
+        rejected = s["rejected"].sum() / s["n"].sum()
+        return float(missed / rejected) if rejected > 0 else float("inf")
+
+    cis = {}
+    for name, d in [("zero_shot", m[m["prompt_condition"] == "zero_shot"]), ("few_shot", m[m["prompt_condition"] == "few_shot"]), ("pooled", m)]:
+        fr = per_fragment(d)
+        arr = fr.reset_index(drop=True)
+        boots = [ratio(arr.iloc[rng.integers(0, len(arr), len(arr))]) for _ in range(n)]
+        cis[name] = {"ratio": round(ratio(fr), 2), "ci_95": [round(x, 2) for x in np.percentile(boots, [2.5, 97.5])],
+                     "share_of_resamples_below_1_pct": _pct(np.mean(np.array(boots) < 1))}
+
+    zs = per_fragment(m[m["prompt_condition"] == "zero_shot"])
+    rc2_ids = set(retest["report_id"]) & set(zs.index)
+    k = len(rc2_ids)
+    observed = ratio(zs.loc[sorted(rc2_ids)])
+    ns_ids, s_ids = zs.index[zs["is_ns"]].to_numpy(), zs.index[~zs["is_ns"]].to_numpy()
+    k_ns = int(zs.loc[sorted(rc2_ids), "is_ns"].sum())
+    free, strat = [], []
+    for _ in range(n):
+        free.append(ratio(zs.loc[rng.choice(zs.index.to_numpy(), k, replace=False)]))
+        strat.append(ratio(zs.loc[np.concatenate([rng.choice(ns_ids, k_ns, replace=False), rng.choice(s_ids, k - k_ns, replace=False)])]))
+    free, strat = np.array(free), np.array(strat)
+    subset = {
+        "subset_size": k, "subset_not_sound": k_ns,
+        "observed_rc2_subset_ratio": round(observed, 2),
+        "random_subsets_free": {"share_below_1_pct": _pct((free < 1).mean()), "share_at_or_below_observed_pct": _pct((free <= observed).mean()),
+                                "middle_95": [round(x, 2) for x in np.percentile(free, [2.5, 97.5])]},
+        "random_subsets_same_label_mix": {"share_below_1_pct": _pct((strat < 1).mean()), "share_at_or_below_observed_pct": _pct((strat <= observed).mean()),
+                                          "middle_95": [round(x, 2) for x in np.percentile(strat, [2.5, 97.5])]},
+    }
+    return {"bootstrap_ci_locked_gold": cis, "zero_shot_subset_simulation": subset}
+
+
 def unanimity(outcomes: pd.DataFrame) -> dict:
     """
     Run-to-run consistency: share of combinations with 3/3 agreement.
@@ -920,6 +988,7 @@ def run_findings_metrics(output_path: Path = FINDINGS_METRICS_PATH) -> dict:
         "criterion_variation": criterion_variation(outcomes, gold),
         "criterion_checks": criterion_checks(outcomes, maj, gold, retest),
         "criterion_by_condition": criterion_by_condition(outcomes, gold),
+        "leniency_ratio_uncertainty": leniency_ratio_uncertainty(maj, gold, retest),
         "shared_failures": shared_failures(outcomes, gold, resolved, frags),
         "challenge_cases": challenge_case_summary(outcomes, rows),
         "contested_review": {
