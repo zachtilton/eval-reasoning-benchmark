@@ -61,6 +61,10 @@
     "scored_db_as_designed": {
       "path": "data/responses/scored_database.csv",
       "description": "5,400 runs under the pre-registered scoring, with coherence_final"
+    },
+    "few_shot_template": {
+      "path": "config/prompts/few_shot_template.txt",
+      "description": "Few-shot prompt with the two calibration examples"
     }
   },
   "findings": [
@@ -934,6 +938,302 @@
           ],
           "code": "src/analysis/findings_metrics.py:leniency_vs_human_raters",
           "caveat": "n = 38; ratios on this subset differ from the full 150 for every judge, the locked gold included, so it speaks to judge-dependence, not to overall size."
+        }
+      ]
+    },
+    {
+      "id": "RQ2.3",
+      "research_question": "What systematic failure patterns emerge from the LLM artifacts?",
+      "status": "agreed",
+      "document": "docs/findings/rq2.md",
+      "headline": "A balanced, expert-written pair of calibration examples shifted five of six models toward calling reasoning sound, without reliably improving accuracy.",
+      "claims": [
+        {
+          "id": "RQ2.3.a",
+          "text": "142 of 156 verdict changes between conditions (91%) went from not sound to sound; strong for four models (p < .0001), modest for GLM (p = .04), absent for Gemini.",
+          "values": [
+            {
+              "metric": "findings_metrics.json:few_shot_shift.pooled.flips_to_sound",
+              "value": 142
+            },
+            {
+              "metric": "findings_metrics.json:few_shot_shift.pooled.flips_to_not_sound",
+              "value": 14
+            },
+            {
+              "metric": "findings_metrics.json:few_shot_shift.pooled.share_of_flips_to_sound_pct",
+              "value": 91.0
+            },
+            {
+              "metric": "findings_metrics.json:few_shot_shift.models_significant_at_05",
+              "value": [
+                "gpt_5_6_sol",
+                "claude_opus_5",
+                "kimi_k3",
+                "deepseek_v4_pro",
+                "glm_5_2"
+              ]
+            },
+            {
+              "metric": "findings_metrics.json:few_shot_shift.by_model.gpt_5_6_sol.zero_shot_calls_sound_pct",
+              "value": 44.7
+            },
+            {
+              "metric": "findings_metrics.json:few_shot_shift.by_model.gpt_5_6_sol.few_shot_calls_sound_pct",
+              "value": 71.3
+            },
+            {
+              "metric": "findings_metrics.json:few_shot_shift.by_model.gpt_5_6_sol.flips_to_sound",
+              "value": 40
+            },
+            {
+              "metric": "findings_metrics.json:few_shot_shift.by_model.gpt_5_6_sol.flips_to_not_sound",
+              "value": 0
+            },
+            {
+              "metric": "findings_metrics.json:few_shot_shift.by_model.gpt_5_6_sol.mcnemar_exact_p",
+              "value": 0.0
+            },
+            {
+              "metric": "findings_metrics.json:few_shot_shift.by_model.gpt_5_6_sol.flips_fixed_error",
+              "value": 21
+            },
+            {
+              "metric": "findings_metrics.json:few_shot_shift.by_model.gpt_5_6_sol.flips_created_error",
+              "value": 19
+            },
+            {
+              "metric": "findings_metrics.json:few_shot_shift.by_model.deepseek_v4_pro.zero_shot_calls_sound_pct",
+              "value": 34.7
+            },
+            {
+              "metric": "findings_metrics.json:few_shot_shift.by_model.deepseek_v4_pro.few_shot_calls_sound_pct",
+              "value": 55.3
+            },
+            {
+              "metric": "findings_metrics.json:few_shot_shift.by_model.deepseek_v4_pro.flips_to_sound",
+              "value": 31
+            },
+            {
+              "metric": "findings_metrics.json:few_shot_shift.by_model.deepseek_v4_pro.flips_to_not_sound",
+              "value": 0
+            },
+            {
+              "metric": "findings_metrics.json:few_shot_shift.by_model.deepseek_v4_pro.mcnemar_exact_p",
+              "value": 0.0
+            },
+            {
+              "metric": "findings_metrics.json:few_shot_shift.by_model.deepseek_v4_pro.flips_fixed_error",
+              "value": 23
+            },
+            {
+              "metric": "findings_metrics.json:few_shot_shift.by_model.deepseek_v4_pro.flips_created_error",
+              "value": 8
+            },
+            {
+              "metric": "findings_metrics.json:few_shot_shift.by_model.kimi_k3.zero_shot_calls_sound_pct",
+              "value": 71.3
+            },
+            {
+              "metric": "findings_metrics.json:few_shot_shift.by_model.kimi_k3.few_shot_calls_sound_pct",
+              "value": 89.3
+            },
+            {
+              "metric": "findings_metrics.json:few_shot_shift.by_model.kimi_k3.flips_to_sound",
+              "value": 28
+            },
+            {
+              "metric": "findings_metrics.json:few_shot_shift.by_model.kimi_k3.flips_to_not_sound",
+              "value": 1
+            },
+            {
+              "metric": "findings_metrics.json:few_shot_shift.by_model.kimi_k3.mcnemar_exact_p",
+              "value": 0.0
+            },
+            {
+              "metric": "findings_metrics.json:few_shot_shift.by_model.kimi_k3.flips_fixed_error",
+              "value": 13
+            },
+            {
+              "metric": "findings_metrics.json:few_shot_shift.by_model.kimi_k3.flips_created_error",
+              "value": 16
+            },
+            {
+              "metric": "findings_metrics.json:few_shot_shift.by_model.claude_opus_5.zero_shot_calls_sound_pct",
+              "value": 45.3
+            },
+            {
+              "metric": "findings_metrics.json:few_shot_shift.by_model.claude_opus_5.few_shot_calls_sound_pct",
+              "value": 60.0
+            },
+            {
+              "metric": "findings_metrics.json:few_shot_shift.by_model.claude_opus_5.flips_to_sound",
+              "value": 24
+            },
+            {
+              "metric": "findings_metrics.json:few_shot_shift.by_model.claude_opus_5.flips_to_not_sound",
+              "value": 2
+            },
+            {
+              "metric": "findings_metrics.json:few_shot_shift.by_model.claude_opus_5.mcnemar_exact_p",
+              "value": 1e-05
+            },
+            {
+              "metric": "findings_metrics.json:few_shot_shift.by_model.claude_opus_5.flips_fixed_error",
+              "value": 15
+            },
+            {
+              "metric": "findings_metrics.json:few_shot_shift.by_model.claude_opus_5.flips_created_error",
+              "value": 11
+            },
+            {
+              "metric": "findings_metrics.json:few_shot_shift.by_model.glm_5_2.zero_shot_calls_sound_pct",
+              "value": 78.9
+            },
+            {
+              "metric": "findings_metrics.json:few_shot_shift.by_model.glm_5_2.few_shot_calls_sound_pct",
+              "value": 85.7
+            },
+            {
+              "metric": "findings_metrics.json:few_shot_shift.by_model.glm_5_2.flips_to_sound",
+              "value": 15
+            },
+            {
+              "metric": "findings_metrics.json:few_shot_shift.by_model.glm_5_2.flips_to_not_sound",
+              "value": 5
+            },
+            {
+              "metric": "findings_metrics.json:few_shot_shift.by_model.glm_5_2.mcnemar_exact_p",
+              "value": 0.041389
+            },
+            {
+              "metric": "findings_metrics.json:few_shot_shift.by_model.glm_5_2.flips_fixed_error",
+              "value": 10
+            },
+            {
+              "metric": "findings_metrics.json:few_shot_shift.by_model.glm_5_2.flips_created_error",
+              "value": 10
+            },
+            {
+              "metric": "findings_metrics.json:few_shot_shift.by_model.gemini_3_pro_preview_high.zero_shot_calls_sound_pct",
+              "value": 76.7
+            },
+            {
+              "metric": "findings_metrics.json:few_shot_shift.by_model.gemini_3_pro_preview_high.few_shot_calls_sound_pct",
+              "value": 75.3
+            },
+            {
+              "metric": "findings_metrics.json:few_shot_shift.by_model.gemini_3_pro_preview_high.flips_to_sound",
+              "value": 4
+            },
+            {
+              "metric": "findings_metrics.json:few_shot_shift.by_model.gemini_3_pro_preview_high.flips_to_not_sound",
+              "value": 6
+            },
+            {
+              "metric": "findings_metrics.json:few_shot_shift.by_model.gemini_3_pro_preview_high.mcnemar_exact_p",
+              "value": 0.753906
+            },
+            {
+              "metric": "findings_metrics.json:few_shot_shift.by_model.gemini_3_pro_preview_high.flips_fixed_error",
+              "value": 8
+            },
+            {
+              "metric": "findings_metrics.json:few_shot_shift.by_model.gemini_3_pro_preview_high.flips_created_error",
+              "value": 2
+            }
+          ],
+          "procedure": "Paired by fragment within model: majority labels zero-shot vs few-shot; exact McNemar (binomial) test on the direction of discordant pairs.",
+          "sources": [
+            "scored_db_corrected",
+            "few_shot_template"
+          ],
+          "code": "src/analysis/findings_metrics.py:few_shot_shift",
+          "caveat": "Does not use the gold standard. GLM's p would not survive a six-test correction."
+        },
+        {
+          "id": "RQ2.3.b",
+          "text": "Accuracy barely moved because changes cut both ways: across all 156 changes, 90 fixed an error and 66 created one; pooled pass rate 58.6% to 61.2% (p = .067); only DeepSeek gained significantly.",
+          "values": [
+            {
+              "metric": "findings_metrics.json:few_shot_shift.pooled.flips_fixed_error",
+              "value": 90
+            },
+            {
+              "metric": "findings_metrics.json:few_shot_shift.pooled.flips_created_error",
+              "value": 66
+            },
+            {
+              "metric": "H2_statistical_tests_corrected.json:test_1_mcnemar.overall.zero_shot_pass_rate",
+              "value": 0.5856
+            },
+            {
+              "metric": "H2_statistical_tests_corrected.json:test_1_mcnemar.overall.few_shot_pass_rate",
+              "value": 0.6122
+            },
+            {
+              "metric": "H2_statistical_tests_corrected.json:test_1_mcnemar.overall.p_value",
+              "value": 0.067283
+            },
+            {
+              "metric": "H2_statistical_tests_corrected.json:test_1_mcnemar.deepseek_v4_pro.p_value",
+              "value": 0.011921
+            }
+          ],
+          "procedure": "Each changed verdict scored against the locked gold; H.2 McNemar on paired fragment pass/fail.",
+          "sources": [
+            "scored_db_corrected",
+            "gold_locked",
+            "fragment_outcomes_corrected"
+          ],
+          "code": "src/analysis/findings_metrics.py:few_shot_shift; src/analysis/statistics.py:mcnemars_test_prompt_effects"
+        },
+        {
+          "id": "RQ2.3.c",
+          "text": "With examples, models converged at a more lenient level: spread in share called sound 44 to 34 points; model-model kappa 0.45 to 0.49; run-to-run unanimity 85.9% to 87.7%; 55-89% called sound vs the expert's 51%.",
+          "values": [
+            {
+              "metric": "findings_metrics.json:few_shot_shift.spread_calls_sound_pct.zero_shot_range_pp",
+              "value": 44.2
+            },
+            {
+              "metric": "findings_metrics.json:few_shot_shift.spread_calls_sound_pct.few_shot_range_pp",
+              "value": 34.0
+            },
+            {
+              "metric": "findings_metrics.json:few_shot_shift.spread_calls_sound_pct.few_shot",
+              "value": [
+                55.3,
+                89.3
+              ]
+            },
+            {
+              "metric": "findings_metrics.json:model_model_kappa.zero_shot.mean",
+              "value": 0.446
+            },
+            {
+              "metric": "findings_metrics.json:model_model_kappa.few_shot.mean",
+              "value": 0.49
+            },
+            {
+              "metric": "findings_metrics.json:unanimity_by_condition_pct.zero_shot",
+              "value": 85.9
+            },
+            {
+              "metric": "findings_metrics.json:unanimity_by_condition_pct.few_shot",
+              "value": 87.7
+            },
+            {
+              "metric": "findings_metrics.json:model_anchor_agreement.gold_sound_pct",
+              "value": 50.7
+            }
+          ],
+          "procedure": "Range of per-model share called sound by condition; mean pairwise Cohen's kappa between models; share of combinations with 3/3 run agreement.",
+          "sources": [
+            "scored_db_corrected",
+            "fragment_outcomes_corrected"
+          ],
+          "code": "src/analysis/findings_metrics.py:few_shot_shift, model_model_kappa"
         }
       ]
     }

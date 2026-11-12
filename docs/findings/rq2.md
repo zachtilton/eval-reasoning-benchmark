@@ -181,6 +181,87 @@ fragments confirmed genuine (62.8%); strict 1/33 (3.0%).
 
 ---
 
+## Finding 2.3 — Calibration examples shifted verdicts, not accuracy (agreed 2026-11-12)
+
+### Headline
+
+> **A balanced, expert-written pair of calibration examples shifted five of
+> six models toward calling reasoning sound, without reliably improving
+> accuracy.**
+
+### Expanded
+
+> Adding two calibration examples (one sound, one not sound) changed models'
+> verdicts on the same passages almost entirely in one direction: 142 of 156
+> changes (91%) went from "not sound" to "sound." The shift was strong for
+> four models (GPT, DeepSeek, Kimi, Claude; p < .0001), modest for GLM
+> (p = .04), and absent for Gemini. GPT, for example, changed 40 verdicts, all
+> toward "sound." Accuracy barely moved because the changes cut both ways: of
+> GPT's 40 changes, 21 corrected an unfair rejection and 19 let a flawed
+> passage through; across all 156 changes, 90 fixed an error and 66 created
+> one. Only DeepSeek gained meaningfully (+10 points). This is why the planned
+> pass/fail comparisons found no overall prompting effect: they register how
+> many verdicts are right, not which way they move. With examples, models
+> also became more alike and more consistent run to run, converging at a
+> more lenient level. Because one fixed pair of examples was tested, this
+> demonstrates what a calibration set *can* do, not what few-shot prompting
+> does in general.
+
+### Plain-language version
+
+> Showing the AI models two worked examples didn't make them better judges.
+> It made them more generous ones. They fixed some unfair rejections but let
+> through about as many flawed passages, so their scores barely changed while
+> their judgments shifted noticeably.
+
+### Practical implications
+
+1. **Calibration examples can introduce bias that accuracy scores hide.**
+   Anyone building AI evaluation tools should check which way errors fall,
+   not just how many there are.
+2. **Examples don't necessarily carry their author's standard.** Examples
+   written by the expert moved models *away* from that standard: with
+   examples, models called 55–89% of passages sound, against the expert's 51%.
+3. **"Balanced" examples aren't neutral.** One example of each label still
+   produced a strong one-way push. Balancing the labels doesn't balance the
+   lessons.
+
+### Possible mechanism (hypothesis, for RQ3)
+
+The "sound" example's rationale openly concedes a flaw ("There may be a
+mismatch in the evidence… but there is a grand judgment here"); the "not
+sound" example lacks both a judgment and evidence. Together they may teach
+that only passages missing *everything* are "not sound." Recency bias would
+predict a pull toward "not sound" (the last example), so it does not explain
+the shift. Source: `config/prompts/few_shot_template.txt`.
+
+### Evidence
+
+| Model | Sound, zero-shot | Sound, few-shot | → sound | → not sound | Exact McNemar p | Changes fixing / creating an error |
+|---|---|---|---|---|---|---|
+| GPT 5.6 Sol | 44.7% | 71.3% | 40 | 0 | < .0001 | 21 / 19 |
+| DeepSeek V4 Pro | 34.7% | 55.3% | 31 | 0 | < .0001 | 23 / 8 |
+| Kimi K3 | 71.3% | 89.3% | 28 | 1 | < .0001 | 13 / 16 |
+| Claude Opus 5 | 45.3% | 60.0% | 24 | 2 | < .0001 | 15 / 11 |
+| GLM 5.2 | 78.9% | 85.7% | 15 | 5 | .041 | 10 / 10 |
+| Gemini 3 Pro | 76.7% | 75.3% | 4 | 6 | .75 | 8 / 2 |
+
+- Pooled pass rate (H.2 McNemar on pass/fail): 58.6% → 61.2%, p = .067;
+  DeepSeek 54.7% → 64.7%, p = .012 (the only significant model).
+- Convergence: spread in share called sound 44 → 34 points (35–79% → 55–89%);
+  model–model κ 0.45 → 0.49; run-to-run unanimity 85.9% → 87.7%.
+- GLM paired n = 147 (3 fragments lack a majority in one condition).
+
+### Caveats
+
+- Existence proof only: presence of examples, their content, their order and
+  prompt length all change together (stimulus sampling).
+- The verdict shift does not use the gold standard; the fixed/created
+  counts and pass rates do.
+- GLM's p = .041 would not survive a correction for six tests.
+
+---
+
 ## Still to discuss
 
 - GPT close-up: disposition (28/76 confirmed), failure-code profile

@@ -339,7 +339,8 @@ def few_shot_shift(maj: pd.DataFrame, gold: pd.DataFrame) -> dict:
     How the two calibration examples change each model's verdicts.
 
     Paired by fragment within model: label flips between conditions, an exact
-    McNemar (binomial) test on flip direction, change in share called sound,
+    McNemar (binomial) test on flip direction, whether each flip fixed or
+    created an error against the gold, change in share called sound,
     accuracy within each gold label by condition, and between-model spread.
     The label-shift statistics do not use the gold standard.
 
@@ -360,6 +361,8 @@ def few_shot_shift(maj: pd.DataFrame, gold: pd.DataFrame) -> dict:
         to_sound = int(((d["zero_shot"] == "not_sound") & (d["few_shot"] == "sound")).sum())
         to_not = int(((d["zero_shot"] == "sound") & (d["few_shot"] == "not_sound")).sum())
         n_flip = to_sound + to_not
+        flipped = d[d["zero_shot"] != d["few_shot"]]
+        fixed = int((flipped["few_shot"] == flipped["expert_classification"]).sum())
         acc = {}
         for cond in PROMPT_ORDER:
             for lab in LABELS:
@@ -373,6 +376,8 @@ def few_shot_shift(maj: pd.DataFrame, gold: pd.DataFrame) -> dict:
             "flips_to_sound": to_sound,
             "flips_to_not_sound": to_not,
             "flip_rate_pct": _pct(n_flip / len(d)),
+            "flips_fixed_error": fixed,
+            "flips_created_error": int(len(flipped) - fixed),
             "mcnemar_exact_p": round(binomtest(to_sound, n_flip, 0.5).pvalue, 6) if n_flip else 1.0,
             **acc,
         }
@@ -382,7 +387,9 @@ def few_shot_shift(maj: pd.DataFrame, gold: pd.DataFrame) -> dict:
     tot_n = sum(v["flips_to_not_sound"] for v in per.values())
     return {
         "by_model": per,
-        "pooled": {"flips_to_sound": tot_s, "flips_to_not_sound": tot_n, "share_of_flips_to_sound_pct": _pct(tot_s / (tot_s + tot_n))},
+        "pooled": {"flips_to_sound": tot_s, "flips_to_not_sound": tot_n, "share_of_flips_to_sound_pct": _pct(tot_s / (tot_s + tot_n)),
+                   "flips_fixed_error": sum(v["flips_fixed_error"] for v in per.values()),
+                   "flips_created_error": sum(v["flips_created_error"] for v in per.values())},
         "models_more_lenient_with_examples": [m for m, v in per.items() if v["shift_pp"] > 0],
         "models_significant_at_05": [m for m, v in per.items() if v["mcnemar_exact_p"] < 0.05],
         "spread_calls_sound_pct": {"zero_shot": [min(zs), max(zs)], "few_shot": [min(fs), max(fs)],
