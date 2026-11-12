@@ -774,6 +774,54 @@ def length_moderation(maj: pd.DataFrame, gold: pd.DataFrame, retest: pd.DataFram
     }
 
 
+def gpt_failures_by_length(frags: pd.DataFrame, gold: pd.DataFrame, outcomes: pd.DataFrame) -> dict:
+    """
+    Do GPT's confirmed lenient failures concentrate in long passages, and are
+    they mostly "evaluative judgment absent" (F5.1)?
+
+    Per length bin: GPT fragment-level failure counts by direction and
+    disposition, the confirmed-lenient rate among gold-not-sound fragments,
+    and F5.1 (primary and any-position) among confirmed failures.
+
+    Args:
+        frags: Fragment-level GPT coding (to_fragment_level).
+        gold: Locked gold with paragraph_count.
+        outcomes: Corrected fragment outcomes (for GPT failures per bin).
+
+    Returns:
+        Dict per length bin plus totals.
+    """
+    g = gold[["fragment_id", "expert_classification", "paragraph_count"]].copy()
+    g["bin"] = None
+    for lo, hi, name in LENGTH_BINS:
+        g.loc[g["paragraph_count"].between(lo, hi), "bin"] = name
+    f = frags.merge(g[["fragment_id", "bin"]], on="fragment_id")
+    code_cols = ["primary_code", "secondary_code", "tertiary_code"]
+    f["any_f51"] = f[code_cols].astype(str).apply(lambda r: "F5.1" in set(r), axis=1)
+    out = {}
+    for _, _, name in LENGTH_BINS:
+        gb = g[g["bin"] == name]
+        d = f[f["bin"] == name]
+        len_ = d[d["direction"] == "lenient"]
+        conf = d[d["genuine"]]
+        conf_len = len_[len_["genuine"]]
+        n_ns = int((gb["expert_classification"] == "not_sound").sum())
+        out[name] = {
+            "n_fragments": int(len(gb)),
+            "gold_not_sound": n_ns,
+            "gpt_failed_fragments": int(len(d)),
+            "lenient_failures": int(len(len_)),
+            "lenient_confirmed": int(len(conf_len)),
+            "strict_failures": int((d["direction"] == "strict").sum()),
+            "strict_confirmed": int(((d["direction"] == "strict") & d["genuine"]).sum()),
+            "confirmed_lenient_pct_of_gold_not_sound": _pct(len(conf_len) / n_ns) if n_ns else None,
+            "confirmed_failures": int(len(conf)),
+            "confirmed_with_f51_primary": int((conf["primary_code"] == "F5.1").sum()),
+            "confirmed_with_f51_any": int(conf["any_f51"].sum()),
+        }
+    return out
+
+
 def unanimity(outcomes: pd.DataFrame) -> dict:
     """
     Run-to-run consistency: share of combinations with 3/3 agreement.
@@ -1072,6 +1120,7 @@ def run_findings_metrics(output_path: Path = FINDINGS_METRICS_PATH) -> dict:
         "criterion_by_condition": criterion_by_condition(outcomes, gold),
         "leniency_ratio_uncertainty": leniency_ratio_uncertainty(maj, gold, retest),
         "length_moderation": length_moderation(maj, gold, retest),
+        "gpt_failures_by_length": gpt_failures_by_length(frags, gold, outcomes),
         "shared_failures": shared_failures(outcomes, gold, resolved, frags),
         "challenge_cases": challenge_case_summary(outcomes, rows),
         "contested_review": {

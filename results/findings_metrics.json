@@ -1137,6 +1137,47 @@
       "ratio": 1.15
     }
   },
+  "gpt_failures_by_length": {
+    "1-3 paragraphs": {
+      "n_fragments": 55,
+      "gold_not_sound": 28,
+      "gpt_failed_fragments": 32,
+      "lenient_failures": 15,
+      "lenient_confirmed": 10,
+      "strict_failures": 17,
+      "strict_confirmed": 1,
+      "confirmed_lenient_pct_of_gold_not_sound": 35.7,
+      "confirmed_failures": 11,
+      "confirmed_with_f51_primary": 5,
+      "confirmed_with_f51_any": 5
+    },
+    "4-6 paragraphs": {
+      "n_fragments": 46,
+      "gold_not_sound": 19,
+      "gpt_failed_fragments": 20,
+      "lenient_failures": 11,
+      "lenient_confirmed": 5,
+      "strict_failures": 9,
+      "strict_confirmed": 0,
+      "confirmed_lenient_pct_of_gold_not_sound": 26.3,
+      "confirmed_failures": 5,
+      "confirmed_with_f51_primary": 2,
+      "confirmed_with_f51_any": 2
+    },
+    "7+ paragraphs": {
+      "n_fragments": 49,
+      "gold_not_sound": 27,
+      "gpt_failed_fragments": 24,
+      "lenient_failures": 17,
+      "lenient_confirmed": 12,
+      "strict_failures": 7,
+      "strict_confirmed": 0,
+      "confirmed_lenient_pct_of_gold_not_sound": 44.4,
+      "confirmed_failures": 12,
+      "confirmed_with_f51_primary": 6,
+      "confirmed_with_f51_any": 6
+    }
+  },
   "shared_failures": {
     "per_model_any_condition_fail_rate_pct": {
       "gpt_5_6_sol": 50.7,
