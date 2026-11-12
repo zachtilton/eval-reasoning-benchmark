@@ -6,15 +6,20 @@
 
 ## RQ2 — in progress (`rq2.md`)
 - [x] 2.1 Shared failures
-- [x] 2.2 Leniency (open: headline leads with its weaker, zero-shot half)
+- [x] 2.2 Leniency (open: headline wording — zero-shot half is length-dependent; consider whether length belongs in the headline)
 - [x] 2.3 Calibration examples shifted verdicts, not accuracy
-- [ ] #4 Failure by evaluation criterion
+- [x] #4 Failure by evaluation criterion — folded into 2.2 (criterion explains nothing once gold label is held constant)
+- [x] Passage-length moderation — folded into 2.2 (leniency grows with length; explains RC2-subset reversal)
 - [ ] #5 / #9 GPT failures shared; recurring codes ⊂ cross-model failures — confirm absorbed into 2.1
 - [ ] GPT close-up (#6 disposition, #7 confirmed errors lenient, #8 code profile / F5.1) — likely 2.4
 - [ ] RQ2 mainline answer + conclusion-level rating
 
 ## RQ3 — not started
-Domain profile and theory linkage; framework adequacy (0 emergent codes);
+Domain profile and theory linkage; **parked lexicon test**: do surface
+evaluative features (evaluative-term density, rating scales, criterion
+references; pre-specified) predict models' sound calls beyond length and
+gold label? Hypothesis about impact conclusions being weaker (gold 71% vs
+33% relevance; suggestive only); framework adequacy (0 emergent codes);
 "looks evaluative" mechanism hypothesis; contested reference standard;
 proposal construct-validity questions (Domain 4 vs 2; few-shot and Domain 6;
 challenge cases by criterion). Mostly interpretive writing by the author.

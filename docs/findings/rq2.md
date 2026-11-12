@@ -81,7 +81,7 @@ clusters are largely missed flaws.
 
 ---
 
-## Finding 2.2 — Leniency (agreed 2026-11-12; revised to Option A 2026-11-12)
+## Finding 2.2 — Leniency (agreed 2026-11-12; Option A; length and criterion checks added 2026-11-12)
 
 ### Headline
 
@@ -92,38 +92,57 @@ clusters are largely missed flaws.
 ### Expanded
 
 > Without examples, models called flawed passages sound 50% of the time and
-> sound passages flawed 33% of the time, a ratio of 1.5 to 1. That baseline
-> held under all three versions of the reference labels (1.4 to 1.5) but
-> came from half the models: Gemini, GLM and Kimi were lenient, while GPT,
-> Claude and DeepSeek leaned strict. It is also sample-dependent: on the 38
-> passages also rated by two independent trained evaluators, models without
-> examples leaned slightly strict against every judge, the locked gold
-> included (0.8 to 1). With the study's two calibration examples, the gap
-> widened to 62% vs 16%, nearly 4 to 1, as all three strict models turned
-> lenient; that lean held under every label version (3.6 to 4.7) and
-> against every human judge on the 38-passage subset (2.0 to 3.1). Because
-> only one set of examples was tested, the amplification shows what a
-> particular calibration set can do, not what few-shot prompting does in
-> general. The expert's own re-review of the primary model's errors points
-> toward leniency as well (27 of 43 lenient errors confirmed, against 1 of
-> 33 strict errors), though that review is not independent of the expert's
-> labels.
+> sound passages flawed 33% of the time, a ratio of 1.5 to 1 (95% CI 1.1–2.0).
+> That lean depended on passage length: there was no clear lean on short
+> passages (1–3 paragraphs: 0.87, CI 0.56–1.28) and a clear one on long
+> passages (7+ paragraphs: 2.26, CI 1.41–4.18). The models' own share of
+> "sound" verdicts rose with length (47% → 62% → 68%) while the expert's did
+> not (49%, 59%, 45%), so it was the models, not the expert, that treated
+> longer passages as sounder. Length also explains why the 38 passages rated
+> by two independent evaluators — all of them short — showed no zero-shot
+> lean against any judge. Without examples the lean came mainly from Gemini,
+> GLM and Kimi; GPT, Claude and DeepSeek leaned strict, and on re-review the
+> expert judged GPT's strict calls defensible in 32 of 33 cases. With the
+> study's two calibration examples, the gap widened to 62% vs 16%, nearly 4
+> to 1 (CI 2.7–5.9), as all three strict models turned lenient; that lean
+> held under every label version (3.6–4.7), against every human judge on the
+> short subset (2.0–3.1), within every evaluation criterion, and at every
+> length (2.6 short → 5.4 long). Because only one set of examples was tested,
+> the amplification shows what a particular calibration set can do, not what
+> few-shot prompting does in general. Leniency also accounts for apparent
+> differences between evaluation criteria: impact looked hardest and
+> relevance easiest, but once the share of flawed passages was taken into
+> account, criterion explained nothing (p = .94).
 
 ### Evidence
 
 Error rates are conditional on the reference label (rate within each group),
 not shares of all errors. Ratio = missed flaws ÷ wrongly rejected (> 1
-lenient, < 1 strict).
+lenient, < 1 strict). CIs are fragment-clustered bootstraps (5,000, seed 42).
 
 **By reference-label version and condition (all 150 fragments)**
 
 | Reference labels | Zero-shot: missed vs rejected (ratio) | Few-shot: missed vs rejected (ratio) | Pooled ratio |
 |---|---|---|---|
-| Locked gold | 50.0% vs 33.0% (1.52) | 61.6% vs 16.3% (3.79) | 2.27 |
+| Locked gold | 50.0% vs 33.0% (1.52; CI 1.14–2.01) | 61.6% vs 16.3% (3.79; CI 2.67–5.89) | 2.27 (CI 1.73–3.07) |
 | Pre-revision ratings (18 pre-lock revisions undone) | 44.1% vs 31.1% (1.42) | 56.5% vs 15.7% (3.59) | 2.15 |
 | Triangulated (35 contested → third reviewer) | 32.2% vs 23.3% (1.39) | 48.1% vs 10.3% (4.67) | 2.39 |
 
-**Against independent human judges (38 RC2 fragments in the benchmark)**
+**By passage length (locked gold)**
+
+| Length | Passages | Median words | Gold not sound | Zero-shot ratio (CI) | Few-shot ratio (CI) | Models call sound, zero → few |
+|---|---|---|---|---|---|---|
+| 1–3 paragraphs | 55 | 191 | 51% | 0.87 (0.56–1.28) | 2.64 (1.59–5.33) | 47% → 67% |
+| 4–6 paragraphs | 46 | 495 | 41% | 1.80 (0.96–3.48) | 3.86 (1.98–9.47) | 62% → 73% |
+| 7+ paragraphs | 49 | 815 | 55% | 2.26 (1.41–4.18) | 5.43 (2.74–20.49) | 68% → 80% |
+
+Word count vs models' share of sound calls per fragment: Spearman ρ = .32
+(p = .0001) zero-shot, .29 (p = .0003) few-shot. All 38 RC2 passages are
+1–3 paragraphs; the other 17 short passages show a zero-shot ratio of 1.15.
+In 5,000 random 38-passage subsets (any length), only 0.2–0.4% had a
+zero-shot ratio as low as the RC2 subset's 0.78.
+
+**Against independent human judges (38 RC2 fragments, all 1–3 paragraphs)**
 
 | Reference | Calls sound | Zero-shot ratio | Few-shot ratio | Pooled ratio |
 |---|---|---|---|---|
@@ -132,10 +151,26 @@ lenient, < 1 strict).
 | Locked gold | 50.0% | 0.78 | 2.63 | 1.32 |
 | Rater 2 | 55.3% | 0.83 | 1.98 | 1.25 |
 
-Models' share called sound on these fragments: 44.6% zero-shot, 66.6%
-few-shot (mean across models). Within each condition the ratios are similar
-whichever judge is the reference, so the judge matters little; the
-condition and the sample matter a lot.
+**By evaluation criterion (locked gold; fragment-level fail rate)**
+
+| Criterion | n | Gold not sound | Zero-shot: flawed vs sound | Few-shot: flawed vs sound |
+|---|---|---|---|---|
+| Impact | 17 | 71% | 53% vs 40% | 68% vs 23% |
+| Coherence | 7 | 57% | 63% vs 33% | 71% vs 11% |
+| Other | 22 | 59% | 46% vs 33% | 65% vs 17% |
+| Sustainability | 35 | 46% | 49% vs 40% | 55% vs 23% |
+| Efficiency | 25 | 56% | 44% vs 24% | 61% vs 6% |
+| Effectiveness | 17 | 35% | 50% vs 35% | 58% vs 17% |
+| Relevance | 27 | 33% | 57% vs 28% | 59% vs 15% |
+
+Lenient gap present in 7/7 criteria in both conditions. Criterion given gold
+label: F(6, 142) = 0.29, p = .94 (stratified permutation p = .94); zero-shot
+p = .91, few-shot p = .95. Gold not-sound share across criteria: χ²(6) =
+8.8, p = .18 (impact vs relevance Fisher p = .029, chosen post hoc as the
+extremes — not interpreted). Models' own not-sound share by criterion
+(gold-independent): permutation p = .94; correlation with the gold's
+criterion pattern r = .43, p = .33. RC2 raters: same direction for impact vs
+relevance on 4 and 8 fragments.
 
 **By model and condition (locked gold)**
 
@@ -163,16 +198,27 @@ DeepSeek at zero-shot, and all three flip lenient with few-shot.
 | Kimi K3 | 71.3% | 89.3% |
 
 **Expert re-review (GPT failure coding)** — lenient errors 27/43
-fragments confirmed genuine (62.8%); strict 1/33 (3.0%).
-`results/failure_coding_synthesis.json`.
+fragments confirmed genuine (62.8%); strict 1/33 (3.0%). By length:
+confirmed lenient as share of gold-not-sound passages 36% / 26% / 44%
+(short / medium / long); strict failures 17 / 9 / 7 with the gold doubted on
+16 / 9 / 7; F5.1 in about half of confirmed failures at every length (5/11,
+2/5, 6/12). `results/failure_coding_synthesis.json`,
+`results/findings_metrics.json` → `gpt_failures_by_length`.
 
 ### Caveats
 
 - One calibration set was tested (two fixed examples, fixed order). The
   few-shot amplification is a property of that set; it does not establish
   what few-shot prompting does in general (stimulus sampling).
-- The zero-shot baseline is modest, comes from three of six models, and
-  reverses (slightly) on the 38-passage RC2 subset against every judge.
+- The zero-shot lean is length-dependent and comes from three of six
+  models. On short passages, models' apparent strict errors were largely
+  judged defensible on re-review (GPT only), so "no clear lean" there may
+  understate model leniency.
+- Length may stand in for features that grow with it (more evidence, more
+  structure, more evaluative language). The "models reward text that looks
+  evaluative" explanation is untested; F5.1 did not concentrate in long
+  passages. A pre-specified lexicon test is parked for RQ3.
+- Independent-judge checks exist only for short passages (RC2 subset).
 - The GPT re-review is the expert reconsidering the expert's own labels
   with GPT's rationale in view; it is not independent confirmation, and it
   exists for GPT only.
