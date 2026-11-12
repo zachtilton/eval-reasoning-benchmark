@@ -421,6 +421,129 @@
       "3": 952
     }
   },
+  "unanimity_by_condition_pct": {
+    "zero_shot": 85.9,
+    "few_shot": 87.7
+  },
+  "few_shot_shift": {
+    "by_model": {
+      "gpt_5_6_sol": {
+        "n_paired": 150,
+        "zero_shot_calls_sound_pct": 44.7,
+        "few_shot_calls_sound_pct": 71.3,
+        "shift_pp": 26.7,
+        "flips_to_sound": 40,
+        "flips_to_not_sound": 0,
+        "flip_rate_pct": 26.7,
+        "mcnemar_exact_p": 0.0,
+        "zero_shot_accuracy_on_gold_sound_pct": 56.6,
+        "zero_shot_accuracy_on_gold_not_sound_pct": 67.6,
+        "few_shot_accuracy_on_gold_sound_pct": 84.2,
+        "few_shot_accuracy_on_gold_not_sound_pct": 41.9
+      },
+      "claude_opus_5": {
+        "n_paired": 150,
+        "zero_shot_calls_sound_pct": 45.3,
+        "few_shot_calls_sound_pct": 60.0,
+        "shift_pp": 14.7,
+        "flips_to_sound": 24,
+        "flips_to_not_sound": 2,
+        "flip_rate_pct": 17.3,
+        "mcnemar_exact_p": 1e-05,
+        "zero_shot_accuracy_on_gold_sound_pct": 56.6,
+        "zero_shot_accuracy_on_gold_not_sound_pct": 66.2,
+        "few_shot_accuracy_on_gold_sound_pct": 73.7,
+        "few_shot_accuracy_on_gold_not_sound_pct": 54.1
+      },
+      "gemini_3_pro_preview_high": {
+        "n_paired": 150,
+        "zero_shot_calls_sound_pct": 76.7,
+        "few_shot_calls_sound_pct": 75.3,
+        "shift_pp": -1.3,
+        "flips_to_sound": 4,
+        "flips_to_not_sound": 6,
+        "flip_rate_pct": 6.7,
+        "mcnemar_exact_p": 0.753906,
+        "zero_shot_accuracy_on_gold_sound_pct": 81.6,
+        "zero_shot_accuracy_on_gold_not_sound_pct": 28.4,
+        "few_shot_accuracy_on_gold_sound_pct": 84.2,
+        "few_shot_accuracy_on_gold_not_sound_pct": 33.8
+      },
+      "kimi_k3": {
+        "n_paired": 150,
+        "zero_shot_calls_sound_pct": 71.3,
+        "few_shot_calls_sound_pct": 89.3,
+        "shift_pp": 18.0,
+        "flips_to_sound": 28,
+        "flips_to_not_sound": 1,
+        "flip_rate_pct": 19.3,
+        "mcnemar_exact_p": 0.0,
+        "zero_shot_accuracy_on_gold_sound_pct": 80.3,
+        "zero_shot_accuracy_on_gold_not_sound_pct": 37.8,
+        "few_shot_accuracy_on_gold_sound_pct": 96.1,
+        "few_shot_accuracy_on_gold_not_sound_pct": 17.6
+      },
+      "deepseek_v4_pro": {
+        "n_paired": 150,
+        "zero_shot_calls_sound_pct": 34.7,
+        "few_shot_calls_sound_pct": 55.3,
+        "shift_pp": 20.7,
+        "flips_to_sound": 31,
+        "flips_to_not_sound": 0,
+        "flip_rate_pct": 20.7,
+        "mcnemar_exact_p": 0.0,
+        "zero_shot_accuracy_on_gold_sound_pct": 39.5,
+        "zero_shot_accuracy_on_gold_not_sound_pct": 70.3,
+        "few_shot_accuracy_on_gold_sound_pct": 69.7,
+        "few_shot_accuracy_on_gold_not_sound_pct": 59.5
+      },
+      "glm_5_2": {
+        "n_paired": 147,
+        "zero_shot_calls_sound_pct": 78.9,
+        "few_shot_calls_sound_pct": 85.7,
+        "shift_pp": 6.8,
+        "flips_to_sound": 15,
+        "flips_to_not_sound": 5,
+        "flip_rate_pct": 13.6,
+        "mcnemar_exact_p": 0.041389,
+        "zero_shot_accuracy_on_gold_sound_pct": 87.8,
+        "zero_shot_accuracy_on_gold_not_sound_pct": 30.1,
+        "few_shot_accuracy_on_gold_sound_pct": 94.6,
+        "few_shot_accuracy_on_gold_not_sound_pct": 23.3
+      }
+    },
+    "pooled": {
+      "flips_to_sound": 142,
+      "flips_to_not_sound": 14,
+      "share_of_flips_to_sound_pct": 91.0
+    },
+    "models_more_lenient_with_examples": [
+      "gpt_5_6_sol",
+      "claude_opus_5",
+      "kimi_k3",
+      "deepseek_v4_pro",
+      "glm_5_2"
+    ],
+    "models_significant_at_05": [
+      "gpt_5_6_sol",
+      "claude_opus_5",
+      "kimi_k3",
+      "deepseek_v4_pro",
+      "glm_5_2"
+    ],
+    "spread_calls_sound_pct": {
+      "zero_shot": [
+        34.7,
+        78.9
+      ],
+      "few_shot": [
+        55.3,
+        89.3
+      ],
+      "zero_shot_range_pp": 44.2,
+      "few_shot_range_pp": 34.0
+    }
+  },
   "shared_failures": {
     "per_model_any_condition_fail_rate_pct": {
       "gpt_5_6_sol": 50.7,

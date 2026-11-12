@@ -324,6 +324,62 @@ def leniency_vs_human_raters(maj: pd.DataFrame, gold: pd.DataFrame, retest: pd.D
     }
 
 
+def few_shot_shift(maj: pd.DataFrame, gold: pd.DataFrame) -> dict:
+    """
+    How the two calibration examples change each model's verdicts.
+
+    Paired by fragment within model: label flips between conditions, an exact
+    McNemar (binomial) test on flip direction, change in share called sound,
+    accuracy within each gold label by condition, and between-model spread.
+    The label-shift statistics do not use the gold standard.
+
+    Args:
+        maj: Output of majority_labels.
+        gold: Locked gold.
+
+    Returns:
+        Dict per model plus pooled and spread summaries.
+    """
+    from scipy.stats import binomtest
+
+    w = maj.pivot_table(index=["model_family", "fragment_id"], columns="prompt_condition", values="pred", aggfunc="first").reset_index()
+    w = w[(w["zero_shot"] != "none") & (w["few_shot"] != "none")].merge(gold[["fragment_id", "expert_classification"]], on="fragment_id")
+    per = {}
+    for model in MODEL_ORDER:
+        d = w[w["model_family"] == model]
+        to_sound = int(((d["zero_shot"] == "not_sound") & (d["few_shot"] == "sound")).sum())
+        to_not = int(((d["zero_shot"] == "sound") & (d["few_shot"] == "not_sound")).sum())
+        n_flip = to_sound + to_not
+        acc = {}
+        for cond in PROMPT_ORDER:
+            for lab in LABELS:
+                sub = d[d["expert_classification"] == lab]
+                acc[f"{cond}_accuracy_on_gold_{lab}_pct"] = _pct((sub[cond] == lab).mean())
+        per[model] = {
+            "n_paired": int(len(d)),
+            "zero_shot_calls_sound_pct": _pct((d["zero_shot"] == "sound").mean()),
+            "few_shot_calls_sound_pct": _pct((d["few_shot"] == "sound").mean()),
+            "shift_pp": round(100 * ((d["few_shot"] == "sound").mean() - (d["zero_shot"] == "sound").mean()), 1),
+            "flips_to_sound": to_sound,
+            "flips_to_not_sound": to_not,
+            "flip_rate_pct": _pct(n_flip / len(d)),
+            "mcnemar_exact_p": round(binomtest(to_sound, n_flip, 0.5).pvalue, 6) if n_flip else 1.0,
+            **acc,
+        }
+    zs = [v["zero_shot_calls_sound_pct"] for v in per.values()]
+    fs = [v["few_shot_calls_sound_pct"] for v in per.values()]
+    tot_s = sum(v["flips_to_sound"] for v in per.values())
+    tot_n = sum(v["flips_to_not_sound"] for v in per.values())
+    return {
+        "by_model": per,
+        "pooled": {"flips_to_sound": tot_s, "flips_to_not_sound": tot_n, "share_of_flips_to_sound_pct": _pct(tot_s / (tot_s + tot_n))},
+        "models_more_lenient_with_examples": [m for m, v in per.items() if v["shift_pp"] > 0],
+        "models_significant_at_05": [m for m, v in per.items() if v["mcnemar_exact_p"] < 0.05],
+        "spread_calls_sound_pct": {"zero_shot": [min(zs), max(zs)], "few_shot": [min(fs), max(fs)],
+                                   "zero_shot_range_pp": round(max(zs) - min(zs), 1), "few_shot_range_pp": round(max(fs) - min(fs), 1)},
+    }
+
+
 def unanimity(outcomes: pd.DataFrame) -> dict:
     """
     Run-to-run consistency: share of combinations with 3/3 agreement.
@@ -615,6 +671,8 @@ def run_findings_metrics(output_path: Path = FINDINGS_METRICS_PATH) -> dict:
         "human_comparison": human_comparison(maj, gold, retest),
         "leniency_vs_human_raters": leniency_vs_human_raters(maj, gold, retest),
         "unanimity_corrected": unanimity(outcomes),
+        "unanimity_by_condition_pct": {c: _pct(outcomes.loc[outcomes["prompt_condition"] == c, "unanimous_agreement"].astype(bool).mean()) for c in PROMPT_ORDER},
+        "few_shot_shift": few_shot_shift(maj, gold),
         "shared_failures": shared_failures(outcomes, gold, resolved, frags),
         "challenge_cases": challenge_case_summary(outcomes, rows),
         "contested_review": {
