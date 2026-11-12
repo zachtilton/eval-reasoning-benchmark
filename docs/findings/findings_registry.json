@@ -575,7 +575,7 @@
       "research_question": "What systematic failure patterns emerge from the LLM artifacts?",
       "status": "agreed",
       "document": "docs/findings/rq2.md",
-      "headline": "Without examples, models missed flawed reasoning somewhat more often than they wrongly rejected sound reasoning (1.5 to 1); the study's calibration examples widened that gap to nearly 4 to 1.",
+      "headline": "Models were lenient judges: they missed flawed reasoning more often than they rejected sound reasoning. Without examples, the lean depended on passage length: none on short passages, about 2 to 1 on long ones. The study's calibration examples amplified it at every length, to about 5 to 1 on long passages.",
       "claims": [
         {
           "id": "RQ2.2.a",

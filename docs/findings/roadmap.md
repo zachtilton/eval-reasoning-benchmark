@@ -1,12 +1,15 @@
 # Results roadmap (working, 2026-11-12)
 
+## Structure
+One topline conclusion per RQ, supported by findings; 2–3 supporting findings per RQ on the poster.
+
 ## RQ1 — done
 `rq1.md`. Open: revisit the mainline leniency clause in light of RQ2.2
 (zero-shot vs few-shot split).
 
 ## RQ2 — in progress (`rq2.md`)
 - [x] 2.1 Shared failures
-- [x] 2.2 Leniency (open: headline wording — zero-shot half is length-dependent; consider whether length belongs in the headline)
+- [x] 2.2 Leniency (headline settled: leniency / length / calibration examples, three sentences)
 - [x] 2.3 Calibration examples shifted verdicts, not accuracy
 - [x] #4 Failure by evaluation criterion — folded into 2.2 (criterion explains nothing once gold label is held constant)
 - [x] Passage-length moderation — folded into 2.2 (leniency grows with length; explains RC2-subset reversal)

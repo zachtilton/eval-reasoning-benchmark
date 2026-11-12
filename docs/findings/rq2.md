@@ -81,13 +81,15 @@ clusters are largely missed flaws.
 
 ---
 
-## Finding 2.2 — Leniency (agreed 2026-11-12; Option A; length and criterion checks added 2026-11-12)
+## Finding 2.2 — Leniency (agreed 2026-11-12; Option A; length and criterion checks added; headline settled 2026-11-12)
 
 ### Headline
 
-> **Without examples, models missed flawed reasoning somewhat more often than
-> they wrongly rejected sound reasoning (1.5 to 1); the study's calibration
-> examples widened that gap to nearly 4 to 1.**
+> **Models were lenient judges: they missed flawed reasoning more often
+> than they rejected sound reasoning. Without examples, the lean depended on
+> passage length: none on short passages, about 2 to 1 on long ones. The
+> study's calibration examples amplified it at every length, to about 5 to 1
+> on long passages.**
 
 ### Expanded
 
