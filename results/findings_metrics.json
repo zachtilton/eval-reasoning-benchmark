@@ -866,6 +866,128 @@
       }
     }
   },
+  "criterion_by_condition": {
+    "zero_shot": {
+      "by_criterion": {
+        "coherence": {
+          "fail_on_not_sound_pct": 62.5,
+          "fail_on_sound_pct": 33.3,
+          "gap_pp": 29.2,
+          "n_not_sound": 4,
+          "n_sound": 3
+        },
+        "effectiveness": {
+          "fail_on_not_sound_pct": 50.0,
+          "fail_on_sound_pct": 34.8,
+          "gap_pp": 15.2,
+          "n_not_sound": 6,
+          "n_sound": 11
+        },
+        "efficiency": {
+          "fail_on_not_sound_pct": 44.0,
+          "fail_on_sound_pct": 24.2,
+          "gap_pp": 19.8,
+          "n_not_sound": 14,
+          "n_sound": 11
+        },
+        "impact": {
+          "fail_on_not_sound_pct": 52.8,
+          "fail_on_sound_pct": 40.0,
+          "gap_pp": 12.8,
+          "n_not_sound": 12,
+          "n_sound": 5
+        },
+        "other": {
+          "fail_on_not_sound_pct": 46.2,
+          "fail_on_sound_pct": 33.3,
+          "gap_pp": 12.8,
+          "n_not_sound": 13,
+          "n_sound": 9
+        },
+        "relevance": {
+          "fail_on_not_sound_pct": 57.4,
+          "fail_on_sound_pct": 27.8,
+          "gap_pp": 29.6,
+          "n_not_sound": 9,
+          "n_sound": 18
+        },
+        "sustainability": {
+          "fail_on_not_sound_pct": 49.0,
+          "fail_on_sound_pct": 40.4,
+          "gap_pp": 8.6,
+          "n_not_sound": 16,
+          "n_sound": 19
+        }
+      },
+      "criteria_with_lenient_gap": 7,
+      "gap_range_pp": [
+        8.6,
+        29.6
+      ],
+      "criterion_given_label_F": 0.341,
+      "criterion_given_label_p": 0.9141
+    },
+    "few_shot": {
+      "by_criterion": {
+        "coherence": {
+          "fail_on_not_sound_pct": 70.8,
+          "fail_on_sound_pct": 11.1,
+          "gap_pp": 59.7,
+          "n_not_sound": 4,
+          "n_sound": 3
+        },
+        "effectiveness": {
+          "fail_on_not_sound_pct": 58.3,
+          "fail_on_sound_pct": 16.7,
+          "gap_pp": 41.7,
+          "n_not_sound": 6,
+          "n_sound": 11
+        },
+        "efficiency": {
+          "fail_on_not_sound_pct": 60.7,
+          "fail_on_sound_pct": 6.1,
+          "gap_pp": 54.7,
+          "n_not_sound": 14,
+          "n_sound": 11
+        },
+        "impact": {
+          "fail_on_not_sound_pct": 68.1,
+          "fail_on_sound_pct": 23.3,
+          "gap_pp": 44.7,
+          "n_not_sound": 12,
+          "n_sound": 5
+        },
+        "other": {
+          "fail_on_not_sound_pct": 65.4,
+          "fail_on_sound_pct": 16.7,
+          "gap_pp": 48.7,
+          "n_not_sound": 13,
+          "n_sound": 9
+        },
+        "relevance": {
+          "fail_on_not_sound_pct": 59.3,
+          "fail_on_sound_pct": 14.8,
+          "gap_pp": 44.4,
+          "n_not_sound": 9,
+          "n_sound": 18
+        },
+        "sustainability": {
+          "fail_on_not_sound_pct": 55.2,
+          "fail_on_sound_pct": 22.8,
+          "gap_pp": 32.4,
+          "n_not_sound": 16,
+          "n_sound": 19
+        }
+      },
+      "criteria_with_lenient_gap": 7,
+      "gap_range_pp": [
+        32.4,
+        59.7
+      ],
+      "criterion_given_label_F": 0.269,
+      "criterion_given_label_p": 0.9504
+    }
+  },
   "shared_failures": {
     "per_model_any_condition_fail_rate_pct": {
       "gpt_5_6_sol": 50.7,

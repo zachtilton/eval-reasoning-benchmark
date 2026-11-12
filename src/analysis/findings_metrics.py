@@ -574,6 +574,56 @@ def criterion_checks(outcomes: pd.DataFrame, maj: pd.DataFrame, gold: pd.DataFra
     return {"stratified": stratified, "gold_composition": gold_comp, "models_view": models_view, "rc2_raters": raters}
 
 
+def criterion_by_condition(outcomes: pd.DataFrame, gold: pd.DataFrame) -> dict:
+    """
+    Within-criterion leniency gap and stratified criterion test, per condition.
+
+    For each prompt condition: fail rate on gold-not-sound vs gold-sound
+    fragments within each criterion, the count of criteria where the gap is
+    positive (lenient), and the nested F test of criterion given gold label
+    on fragment-level fail proportions (6 outcomes per fragment).
+
+    Args:
+        outcomes: Corrected fragment outcomes.
+        gold: Locked gold with criterion.
+
+    Returns:
+        Dict per condition.
+    """
+    from scipy.stats import f as f_dist
+
+    from .config import CORE_CRITERIA
+
+    g = gold[["fragment_id", "expert_classification", "criterion"]].copy()
+    g["crit"] = g["criterion"].where(g["criterion"].isin(CORE_CRITERIA), "other")
+    crits = sorted(g["crit"].unique())
+    out = {}
+    for cond in PROMPT_ORDER:
+        o = outcomes[outcomes["prompt_condition"] == cond].assign(f=lambda d: (d["fragment_outcome"] == "fail").astype(float))
+        fr = o.groupby("fragment_id")["f"].mean().rename("fail").reset_index().merge(g, on="fragment_id")
+        gaps = {}
+        for k in crits:
+            d = fr[fr["crit"] == k]
+            ns = d.loc[d["expert_classification"] == "not_sound", "fail"]
+            s = d.loc[d["expert_classification"] == "sound", "fail"]
+            gaps[k] = {"fail_on_not_sound_pct": _pct(ns.mean()), "fail_on_sound_pct": _pct(s.mean()),
+                       "gap_pp": round(100 * (ns.mean() - s.mean()), 1), "n_not_sound": int(len(ns)), "n_sound": int(len(s))}
+        y = fr["fail"].to_numpy()
+        label = (fr["expert_classification"] == "not_sound").astype(float).to_numpy()
+        x_red = np.column_stack([np.ones(len(y)), label])
+        x_full = np.column_stack([x_red] + [(fr["crit"].to_numpy() == k).astype(float) for k in crits[1:]])
+        f_obs = _nested_f(y, x_red, x_full)
+        df1, df2 = len(crits) - 1, len(y) - x_full.shape[1]
+        out[cond] = {
+            "by_criterion": gaps,
+            "criteria_with_lenient_gap": int(sum(v["gap_pp"] > 0 for v in gaps.values())),
+            "gap_range_pp": [min(v["gap_pp"] for v in gaps.values()), max(v["gap_pp"] for v in gaps.values())],
+            "criterion_given_label_F": round(f_obs, 3),
+            "criterion_given_label_p": round(float(f_dist.sf(f_obs, df1, df2)), 4),
+        }
+    return out
+
+
 def unanimity(outcomes: pd.DataFrame) -> dict:
     """
     Run-to-run consistency: share of combinations with 3/3 agreement.
@@ -869,6 +919,7 @@ def run_findings_metrics(output_path: Path = FINDINGS_METRICS_PATH) -> dict:
         "few_shot_shift": few_shot_shift(maj, gold),
         "criterion_variation": criterion_variation(outcomes, gold),
         "criterion_checks": criterion_checks(outcomes, maj, gold, retest),
+        "criterion_by_condition": criterion_by_condition(outcomes, gold),
         "shared_failures": shared_failures(outcomes, gold, resolved, frags),
         "challenge_cases": challenge_case_summary(outcomes, rows),
         "contested_review": {
