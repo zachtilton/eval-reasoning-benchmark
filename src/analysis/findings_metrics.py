@@ -692,6 +692,88 @@ def leniency_ratio_uncertainty(maj: pd.DataFrame, gold: pd.DataFrame, retest: pd
     return {"bootstrap_ci_locked_gold": cis, "zero_shot_subset_simulation": subset}
 
 
+LENGTH_BINS = [(1, 3, "1-3 paragraphs"), (4, 6, "4-6 paragraphs"), (7, 99, "7+ paragraphs")]
+
+
+def length_moderation(maj: pd.DataFrame, gold: pd.DataFrame, retest: pd.DataFrame,
+                      n: int = BOOTSTRAP_RESAMPLES, seed: int = FINDINGS_SEED) -> dict:
+    """
+    Does passage length moderate model leniency?
+
+    Prompted by the RC2 subset (stratified on 1-3 paragraph fragments)
+    reversing the zero-shot lean. Per length bin and condition: leniency
+    ratio against the locked gold with a fragment-clustered bootstrap CI,
+    models' share of sound calls (gold-independent), and the gold's share of
+    not-sound labels. Also the Spearman correlation between word count and
+    the models' share of sound calls per fragment, and the zero-shot ratio
+    for short fragments inside vs outside the RC2 subset.
+
+    Args:
+        maj: Output of majority_labels.
+        gold: Locked gold with paragraph_count and fragment text.
+        retest: RC2 blind retest.
+        n: Bootstrap resamples.
+        seed: RNG seed.
+
+    Returns:
+        Dict of per-bin results, correlations and the RC2 comparison.
+    """
+    from scipy.stats import spearmanr
+
+    rng = np.random.default_rng(seed)
+    g = gold[["fragment_id", "expert_classification", "paragraph_count", "fragment"]].copy()
+    g["words"] = g["fragment"].astype(str).str.split().str.len()
+    g["bin"] = None
+    for lo, hi, name in LENGTH_BINS:
+        g.loc[g["paragraph_count"].between(lo, hi), "bin"] = name
+    m = maj[maj["pred"] != "none"].merge(g, on="fragment_id")
+    m = m.assign(missed=(m["expert_classification"] == "not_sound") & (m["pred"] == "sound"),
+                 rejected=(m["expert_classification"] == "sound") & (m["pred"] == "not_sound"),
+                 is_ns=m["expert_classification"] == "not_sound", sound_call=m["pred"] == "sound")
+
+    def frag_table(d):
+        return d.groupby("fragment_id").agg(missed=("missed", "sum"), rejected=("rejected", "sum"), n=("pred", "size"),
+                                            is_ns=("is_ns", "first")).reset_index(drop=True)
+
+    def ratio(fr):
+        ns, s = fr[fr["is_ns"]], fr[~fr["is_ns"]]
+        rej = s["rejected"].sum() / s["n"].sum()
+        return float((ns["missed"].sum() / ns["n"].sum()) / rej) if rej > 0 else float("inf")
+
+    bins = {}
+    for _, _, name in LENGTH_BINS:
+        gb = g[g["bin"] == name]
+        entry = {"n_fragments": int(len(gb)), "gold_not_sound_pct": _pct((gb["expert_classification"] == "not_sound").mean()),
+                 "median_words": int(gb["words"].median())}
+        for cond in PROMPT_ORDER:
+            d = m[(m["bin"] == name) & (m["prompt_condition"] == cond)]
+            fr = frag_table(d)
+            boots = [ratio(fr.iloc[rng.integers(0, len(fr), len(fr))]) for _ in range(n)]
+            ns, s = d[d["is_ns"]], d[~d["is_ns"]]
+            entry[cond] = {"ratio": round(ratio(fr), 2), "ratio_ci_95": [round(x, 2) for x in np.percentile(boots, [2.5, 97.5])],
+                           "missed_flaws_pct": _pct(ns["missed"].mean()), "wrongly_rejected_pct": _pct(s["rejected"].mean()),
+                           "models_call_sound_pct": _pct(d["sound_call"].mean())}
+        bins[name] = entry
+
+    corr = {}
+    for cond in PROMPT_ORDER:
+        per = m[m["prompt_condition"] == cond].groupby("fragment_id").agg(sound=("sound_call", "mean"), words=("words", "first"))
+        rho, p = spearmanr(per["words"], per["sound"])
+        corr[cond] = {"spearman_rho": round(float(rho), 3), "p_value": round(float(p), 4)}
+
+    rc2 = set(retest["report_id"])
+    short = m[(m["bin"] == LENGTH_BINS[0][2]) & (m["prompt_condition"] == "zero_shot")]
+    inside, outside = short[short["fragment_id"].isin(rc2)], short[~short["fragment_id"].isin(rc2)]
+    rc2_bins = g[g["fragment_id"].isin(rc2)]["bin"].value_counts().to_dict()
+    return {
+        "by_length": bins,
+        "words_vs_sound_calls": corr,
+        "rc2_subset_length_bins": {str(k): int(v) for k, v in rc2_bins.items()},
+        "short_zero_shot_ratio_inside_rc2": {"n_fragments": int(inside["fragment_id"].nunique()), "ratio": round(ratio(frag_table(inside)), 2)},
+        "short_zero_shot_ratio_outside_rc2": {"n_fragments": int(outside["fragment_id"].nunique()), "ratio": round(ratio(frag_table(outside)), 2)},
+    }
+
+
 def unanimity(outcomes: pd.DataFrame) -> dict:
     """
     Run-to-run consistency: share of combinations with 3/3 agreement.
@@ -989,6 +1071,7 @@ def run_findings_metrics(output_path: Path = FINDINGS_METRICS_PATH) -> dict:
         "criterion_checks": criterion_checks(outcomes, maj, gold, retest),
         "criterion_by_condition": criterion_by_condition(outcomes, gold),
         "leniency_ratio_uncertainty": leniency_ratio_uncertainty(maj, gold, retest),
+        "length_moderation": length_moderation(maj, gold, retest),
         "shared_failures": shared_failures(outcomes, gold, resolved, frags),
         "challenge_cases": challenge_case_summary(outcomes, rows),
         "contested_review": {

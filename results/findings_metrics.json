@@ -1037,6 +1037,106 @@
       }
     }
   },
+  "length_moderation": {
+    "by_length": {
+      "1-3 paragraphs": {
+        "n_fragments": 55,
+        "gold_not_sound_pct": 50.9,
+        "median_words": 191,
+        "zero_shot": {
+          "ratio": 0.87,
+          "ratio_ci_95": [
+            0.56,
+            1.28
+          ],
+          "missed_flaws_pct": 39.3,
+          "wrongly_rejected_pct": 45.3,
+          "models_call_sound_pct": 46.8
+        },
+        "few_shot": {
+          "ratio": 2.64,
+          "ratio_ci_95": [
+            1.59,
+            5.33
+          ],
+          "missed_flaws_pct": 54.2,
+          "wrongly_rejected_pct": 20.5,
+          "models_call_sound_pct": 66.6
+        }
+      },
+      "4-6 paragraphs": {
+        "n_fragments": 46,
+        "gold_not_sound_pct": 41.3,
+        "median_words": 495,
+        "zero_shot": {
+          "ratio": 1.8,
+          "ratio_ci_95": [
+            0.96,
+            3.48
+          ],
+          "missed_flaws_pct": 42.1,
+          "wrongly_rejected_pct": 23.5,
+          "models_call_sound_pct": 62.3
+        },
+        "few_shot": {
+          "ratio": 3.86,
+          "ratio_ci_95": [
+            1.98,
+            9.47
+          ],
+          "missed_flaws_pct": 54.9,
+          "wrongly_rejected_pct": 14.2,
+          "models_call_sound_pct": 73.1
+        }
+      },
+      "7+ paragraphs": {
+        "n_fragments": 49,
+        "gold_not_sound_pct": 55.1,
+        "median_words": 815,
+        "zero_shot": {
+          "ratio": 2.26,
+          "ratio_ci_95": [
+            1.41,
+            4.18
+          ],
+          "missed_flaws_pct": 66.7,
+          "wrongly_rejected_pct": 29.5,
+          "models_call_sound_pct": 68.4
+        },
+        "few_shot": {
+          "ratio": 5.43,
+          "ratio_ci_95": [
+            2.74,
+            20.49
+          ],
+          "missed_flaws_pct": 74.1,
+          "wrongly_rejected_pct": 13.6,
+          "models_call_sound_pct": 79.6
+        }
+      }
+    },
+    "words_vs_sound_calls": {
+      "zero_shot": {
+        "spearman_rho": 0.322,
+        "p_value": 0.0001
+      },
+      "few_shot": {
+        "spearman_rho": 0.29,
+        "p_value": 0.0003
+      }
+    },
+    "rc2_subset_length_bins": {
+      "1-3 paragraphs": 38
+    },
+    "short_zero_shot_ratio_inside_rc2": {
+      "n_fragments": 38,
+      "ratio": 0.78
+    },
+    "short_zero_shot_ratio_outside_rc2": {
+      "n_fragments": 17,
+      "ratio": 1.15
+    }
+  },
   "shared_failures": {
     "per_model_any_condition_fail_rate_pct": {
       "gpt_5_6_sol": 50.7,
