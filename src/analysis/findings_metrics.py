@@ -286,6 +286,44 @@ def human_comparison(maj: pd.DataFrame, gold: pd.DataFrame, retest: pd.DataFrame
     return out
 
 
+def leniency_vs_human_raters(maj: pd.DataFrame, gold: pd.DataFrame, retest: pd.DataFrame) -> dict:
+    """
+    Is model leniency relative to the anchor, or to human judges generally?
+
+    On the RC2 fragments in the benchmark, compares how often each human
+    judge and the models call fragments sound, and recomputes the models'
+    missed-flaw vs wrongly-rejected rates against each RC2 rater in place of
+    the anchor.
+
+    Args:
+        maj: Output of majority_labels.
+        gold: Locked gold.
+        retest: RC2 blind retest.
+
+    Returns:
+        Dict: sound-call rates per judge, model mean and range, and model
+        error rates and ratio against each reference judge.
+    """
+    h = retest.rename(columns={"report_id": "fragment_id"}).copy()
+    for c in ("rater_1", "rater_2", "anchor3_pass2"):
+        h[c] = _norm_label(h[c])
+    h = h.merge(gold[["fragment_id", "expert_classification"]].rename(columns={"expert_classification": "locked"}), on="fragment_id")
+    judges = {"anchor_pass2": "anchor3_pass2", "rater_1": "rater_1", "rater_2": "rater_2", "locked": "locked"}
+    m = maj[maj["pred"] != "none"].merge(h, on="fragment_id")
+    per = m.groupby(["model_family", "prompt_condition"])["pred"].apply(lambda s: (s == "sound").mean())
+    against = {}
+    for name, col in judges.items():
+        missed = (m.loc[m[col] == "not_sound", "pred"] == "sound").mean()
+        rejected = (m.loc[m[col] == "sound", "pred"] == "not_sound").mean()
+        against[name] = {"missed_flaws_pct": _pct(missed), "wrongly_rejected_pct": _pct(rejected), "ratio": round(missed / rejected, 2)}
+    return {
+        "n_fragments": int(len(h)),
+        "calls_sound_pct": {name: _pct((h[col] == "sound").mean()) for name, col in judges.items()},
+        "models_calls_sound_pct": {"mean": _pct(per.mean()), "range": [_pct(per.min()), _pct(per.max())]},
+        "model_errors_against": against,
+    }
+
+
 def unanimity(outcomes: pd.DataFrame) -> dict:
     """
     Run-to-run consistency: share of combinations with 3/3 agreement.
@@ -575,6 +613,7 @@ def run_findings_metrics(output_path: Path = FINDINGS_METRICS_PATH) -> dict:
         "model_model_kappa": model_model_kappa(maj),
         "error_asymmetry": error_asymmetry_by_reference(maj, ref),
         "human_comparison": human_comparison(maj, gold, retest),
+        "leniency_vs_human_raters": leniency_vs_human_raters(maj, gold, retest),
         "unanimity_corrected": unanimity(outcomes),
         "shared_failures": shared_failures(outcomes, gold, resolved, frags),
         "challenge_cases": challenge_case_summary(outcomes, rows),

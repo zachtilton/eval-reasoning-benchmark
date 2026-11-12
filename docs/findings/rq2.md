@@ -81,12 +81,13 @@ clusters are largely missed flaws.
 
 ---
 
-## Finding 2.2 — Leniency (agreed 2026-11-12)
+## Finding 2.2 — Leniency (agreed 2026-11-12; scoped 2026-11-12)
 
 ### Headline
 
 > **Models missed flawed reasoning about twice as often as they wrongly
-> rejected sound reasoning.**
+> rejected sound reasoning, judged against the expert; the same lean
+> appeared against two independent trained evaluators.**
 
 ### Expanded
 
@@ -99,9 +100,14 @@ clusters are largely missed flaws.
 > were lenient with or without examples. The other three (GPT, Claude,
 > DeepSeek) leaned strict without examples but turned lenient once given
 > them, so few-shot prompting increased leniency rather than correcting it.
-> Expert review of the primary model's errors supports reading leniency as
-> the genuine pattern: 27 of 43 lenient errors were confirmed, against 1 of
-> 33 strict errors.
+> The lean is not specific to the expert's standard: on the 38 passages
+> also rated by two independent trained evaluators, models leaned lenient
+> against every judge to a similar degree (missed-to-rejected ratios
+> 1.25–1.5), even though the judges themselves called between 37% and 55%
+> of those passages sound. The expert's own re-review of the primary
+> model's errors points the same way (27 of 43 lenient errors confirmed,
+> against 1 of 33 strict errors), though that review is not independent of
+> the expert's labels.
 
 ### Evidence
 
@@ -141,12 +147,31 @@ DeepSeek at zero-shot, and all three flip lenient with few-shot.
 | GLM 5.2 | 79.2% | 85.3% |
 | Kimi K3 | 71.3% | 89.3% |
 
-**Expert confirmation (GPT failure coding)** — lenient errors 27/43
+**Against independent human judges (38 RC2 fragments in the benchmark)**
+
+| Reference | Calls sound | Model missed flaws | Model wrongly rejected | Ratio |
+|---|---|---|---|---|
+| Expert (pass 2, independent) | 36.8% | 48.4% | 32.3% | 1.50 |
+| Rater 1 | 44.7% | 46.6% | 33.5% | 1.39 |
+| Locked gold | 50.0% | 46.1% | 35.0% | 1.32 |
+| Rater 2 | 55.3% | 58.1% | 46.6% | 1.25 |
+
+Models' own share called sound on these fragments: mean 55.6% (range
+13.2–89.5% across the 12 model × condition combinations). The ratio is
+smaller on this subset than on all 150 fragments (2.27) whichever judge is
+used, so the subset speaks to the direction of the lean, not its size.
+
+**Expert re-review (GPT failure coding)** — lenient errors 27/43
 fragments confirmed genuine (62.8%); strict 1/33 (3.0%).
 `results/failure_coding_synthesis.json`.
 
 ### Caveats
 
+- "About twice as often" is the full-sample estimate against the locked
+  gold. The independent-judge check (n = 38) supports the direction but
+  cannot confirm the size.
+- The GPT re-review is the expert reconsidering the expert's own labels
+  with GPT's rationale in view; it is not independent confirmation.
 - Confirmation of error direction exists only for GPT; whether Claude's and
   DeepSeek's zero-shot strict errors are likewise mostly gold artifacts is
   unverified.

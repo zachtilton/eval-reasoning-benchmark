@@ -127,7 +127,7 @@
         },
         {
           "id": "RQ1.c",
-          "text": "Below the expert's own test-retest consistency (85%).",
+          "text": "Below the expert's own test-retest consistency (85%, kappa = 0.70).",
           "values": [
             {
               "metric": "reliability_checks.json:rc1.agreement_rate",
@@ -263,7 +263,7 @@
         },
         {
           "id": "RQ1.g",
-          "text": "Expert review of the primary model's errors confirmed most lenient errors (27 of 43) and attributed nearly all strict errors (32 of 33) to the gold standard.",
+          "text": "The expert's own re-review of the primary model's errors confirmed most lenient errors (27 of 43) and attributed nearly all strict errors (32 of 33) to the gold standard.",
           "values": [
             {
               "metric": "failure_coding_synthesis.json:direction.lenient.genuine",
@@ -286,7 +286,8 @@
           "sources": [
             "gpt_coding"
           ],
-          "code": "src/analysis/coding_synthesis.py:direction_summary"
+          "code": "src/analysis/coding_synthesis.py:direction_summary",
+          "caveat": "Not independent: the expert reconsidering the expert's own labels with GPT's rationale in view."
         },
         {
           "id": "RQ1.h",
@@ -570,7 +571,7 @@
       "research_question": "What systematic failure patterns emerge from the LLM artifacts?",
       "status": "agreed",
       "document": "docs/findings/rq2.md",
-      "headline": "Models missed flawed reasoning about twice as often as they wrongly rejected sound reasoning.",
+      "headline": "Models missed flawed reasoning about twice as often as they wrongly rejected sound reasoning, judged against the expert; the same lean appeared against two independent trained evaluators.",
       "claims": [
         {
           "id": "RQ2.2.a",
@@ -670,7 +671,7 @@
         },
         {
           "id": "RQ2.2.d",
-          "text": "Expert review supports leniency as the genuine pattern: 27 of 43 lenient errors confirmed vs 1 of 33 strict.",
+          "text": "The expert's own re-review points the same way: 27 of 43 lenient errors confirmed vs 1 of 33 strict.",
           "values": [
             {
               "metric": "failure_coding_synthesis.json:direction.lenient.genuine",
@@ -686,7 +687,7 @@
             "gpt_coding"
           ],
           "code": "src/analysis/coding_synthesis.py:direction_summary",
-          "caveat": "Direction confirmation exists for GPT only."
+          "caveat": "Direction confirmation exists for GPT only, and the re-review is not independent of the expert's labels."
         },
         {
           "id": "RQ2.2.e",
@@ -843,6 +844,56 @@
             "gold_locked"
           ],
           "code": "src/analysis/findings_metrics.py:model_anchor_agreement"
+        },
+        {
+          "id": "RQ2.2.f",
+          "text": "The lean is not specific to the expert: on the 38 RC2 fragments, models leaned lenient against every judge to a similar degree (ratios 1.25-1.5), though the judges called 37-55% of those fragments sound.",
+          "values": [
+            {
+              "metric": "findings_metrics.json:leniency_vs_human_raters.n_fragments",
+              "value": 38
+            },
+            {
+              "metric": "findings_metrics.json:leniency_vs_human_raters.calls_sound_pct.anchor_pass2",
+              "value": 36.8
+            },
+            {
+              "metric": "findings_metrics.json:leniency_vs_human_raters.calls_sound_pct.rater_1",
+              "value": 44.7
+            },
+            {
+              "metric": "findings_metrics.json:leniency_vs_human_raters.calls_sound_pct.rater_2",
+              "value": 55.3
+            },
+            {
+              "metric": "findings_metrics.json:leniency_vs_human_raters.models_calls_sound_pct.mean",
+              "value": 55.6
+            },
+            {
+              "metric": "findings_metrics.json:leniency_vs_human_raters.model_errors_against.anchor_pass2.ratio",
+              "value": 1.5
+            },
+            {
+              "metric": "findings_metrics.json:leniency_vs_human_raters.model_errors_against.rater_1.ratio",
+              "value": 1.39
+            },
+            {
+              "metric": "findings_metrics.json:leniency_vs_human_raters.model_errors_against.rater_2.ratio",
+              "value": 1.25
+            },
+            {
+              "metric": "findings_metrics.json:leniency_vs_human_raters.model_errors_against.locked.ratio",
+              "value": 1.32
+            }
+          ],
+          "procedure": "On RC2 fragments in the benchmark, model majority labels scored against each human judge in turn (anchor pass 2, rater 1, rater 2, locked gold); within-label error rates and their ratio.",
+          "sources": [
+            "rc2_retest",
+            "scored_db_corrected",
+            "gold_locked"
+          ],
+          "code": "src/analysis/findings_metrics.py:leniency_vs_human_raters",
+          "caveat": "n = 38; the ratio is smaller on this subset than on all 150 fragments for every judge, so it supports direction, not size."
         }
       ]
     }

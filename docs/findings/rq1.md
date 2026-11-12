@@ -17,16 +17,17 @@ scoring against the locked gold standard
 
 > Under corrected scoring, LLMs agreed with expert judgments of evaluative
 > reasoning on ~60% of fragments (95% CI 54–66%). That is modestly above
-> chance (κ ≈ 0.20), below the expert's own test-retest consistency (85%),
+> chance (κ ≈ 0.20), below the expert's own test-retest consistency (85%, κ = 0.70),
 > and comparable to trained human evaluators' agreement with the same
 > expert's independent ratings. It rises to ~74% when contested labels are
 > resolved by an independent third reviewer. That adjustment can only raise
 > the figure, and it applies to fragments where qualified evaluators
 > themselves disagree. The most robust result is directional: models
 > affirmed sound reasoning far more reliably than they detected flawed
-> reasoning (75% vs 44%). Expert review of the primary model's errors
-> confirmed most lenient errors (27 of 43) as genuine and attributed nearly
-> all strict errors (32 of 33) to the gold standard.
+> reasoning (75% vs 44%), a lean that also appeared against two
+> independent trained evaluators. The expert's own re-review of the primary
+> model's errors confirmed most lenient errors (27 of 43) as genuine and
+> attributed nearly all strict errors (32 of 33) to the gold standard.
 
 ## Evidence
 
@@ -76,7 +77,12 @@ scoring against the locked gold standard
    the anchor's pass-2 ratings followed calibration on these fragments.
    "Comparable", not "equivalent".
 3. **Single-expert gold standard,** calibrated against a two-person panel
-   but not statistically equivalent to it (RC2).
+   but not statistically equivalent to it (RC2), with test-retest κ = 0.70
+   (below the 0.80 target). All accuracy and error-direction figures are
+   agreement with this expert's standard, not with an independent truth;
+   claims are worded accordingly. The expert's re-review of GPT's errors is
+   a reconsideration of the expert's own labels, not independent
+   confirmation.
 4. **Scope.** 150 UN evaluation fragments; binary sound / not sound; six
    specific 2026 model versions; possible training-data exposure.
 5. **Rounding.** Report 60%, not 59.9%: the sampling interval spans 11
@@ -99,7 +105,7 @@ The 43.3% figure belongs here only, not alongside the 60% / 74% estimates.
 > toward leniency.**
 >
 > *Robustness: 60% (95% CI 54–66%); 74% when contested labels are
-> independently resolved. Expert's own test-retest: 85%. Roughly 1 in 4
+> independently resolved. Expert's own test-retest: 85% (κ = 0.70). Roughly 1 in 4
 > fragments split qualified evaluators. Human comparison: two independent
 > evaluators, n = 38.*
 

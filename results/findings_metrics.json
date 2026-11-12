@@ -374,6 +374,44 @@
       }
     }
   },
+  "leniency_vs_human_raters": {
+    "n_fragments": 38,
+    "calls_sound_pct": {
+      "anchor_pass2": 36.8,
+      "rater_1": 44.7,
+      "rater_2": 55.3,
+      "locked": 50.0
+    },
+    "models_calls_sound_pct": {
+      "mean": 55.6,
+      "range": [
+        13.2,
+        89.5
+      ]
+    },
+    "model_errors_against": {
+      "anchor_pass2": {
+        "missed_flaws_pct": 48.4,
+        "wrongly_rejected_pct": 32.3,
+        "ratio": 1.5
+      },
+      "rater_1": {
+        "missed_flaws_pct": 46.6,
+        "wrongly_rejected_pct": 33.5,
+        "ratio": 1.39
+      },
+      "rater_2": {
+        "missed_flaws_pct": 58.1,
+        "wrongly_rejected_pct": 46.6,
+        "ratio": 1.25
+      },
+      "locked": {
+        "missed_flaws_pct": 46.1,
+        "wrongly_rejected_pct": 35.0,
+        "ratio": 1.32
+      }
+    }
+  },
   "unanimity_corrected": {
     "unanimous_pct": 86.8,
     "pass_count_distribution": {
