@@ -81,46 +81,61 @@ clusters are largely missed flaws.
 
 ---
 
-## Finding 2.2 — Leniency (agreed 2026-11-12; scoped 2026-11-12)
+## Finding 2.2 — Leniency (agreed 2026-11-12; revised to Option A 2026-11-12)
 
 ### Headline
 
-> **Models missed flawed reasoning about twice as often as they wrongly
-> rejected sound reasoning, judged against the expert; the same lean
-> appeared against two independent trained evaluators.**
+> **Without examples, models missed flawed reasoning somewhat more often than
+> they wrongly rejected sound reasoning (1.5 to 1); the study's calibration
+> examples widened that gap to nearly 4 to 1.**
 
 ### Expanded
 
-> When the expert judged a passage's reasoning flawed, models called it
-> sound 56% of the time. When the expert judged it sound, models called it
-> flawed 25% of the time. The roughly 2-to-1 ratio held under all three
-> versions of the reference labels: the locked gold (56% vs 25%), the
-> expert's pre-revision ratings (50% vs 23%), and contested labels resolved
-> by an independent reviewer (40% vs 17%). Three models (Gemini, GLM, Kimi)
-> were lenient with or without examples. The other three (GPT, Claude,
-> DeepSeek) leaned strict without examples but turned lenient once given
-> them, so few-shot prompting increased leniency rather than correcting it.
-> The lean is not specific to the expert's standard: on the 38 passages
-> also rated by two independent trained evaluators, models leaned lenient
-> against every judge to a similar degree (missed-to-rejected ratios
-> 1.25–1.5), even though the judges themselves called between 37% and 55%
-> of those passages sound. The expert's own re-review of the primary
-> model's errors points the same way (27 of 43 lenient errors confirmed,
-> against 1 of 33 strict errors), though that review is not independent of
-> the expert's labels.
+> Without examples, models called flawed passages sound 50% of the time and
+> sound passages flawed 33% of the time, a ratio of 1.5 to 1. That baseline
+> held under all three versions of the reference labels (1.4 to 1.5) but
+> came from half the models: Gemini, GLM and Kimi were lenient, while GPT,
+> Claude and DeepSeek leaned strict. It is also sample-dependent: on the 38
+> passages also rated by two independent trained evaluators, models without
+> examples leaned slightly strict against every judge, the locked gold
+> included (0.8 to 1). With the study's two calibration examples, the gap
+> widened to 62% vs 16%, nearly 4 to 1, as all three strict models turned
+> lenient; that lean held under every label version (3.6 to 4.7) and
+> against every human judge on the 38-passage subset (2.0 to 3.1). Because
+> only one set of examples was tested, the amplification shows what a
+> particular calibration set can do, not what few-shot prompting does in
+> general. The expert's own re-review of the primary model's errors points
+> toward leniency as well (27 of 43 lenient errors confirmed, against 1 of
+> 33 strict errors), though that review is not independent of the expert's
+> labels.
 
 ### Evidence
 
 Error rates are conditional on the reference label (rate within each group),
-not shares of all errors.
+not shares of all errors. Ratio = missed flaws ÷ wrongly rejected (> 1
+lenient, < 1 strict).
 
-**By reference-label version (pooled, all models and conditions)**
+**By reference-label version and condition (all 150 fragments)**
 
-| Reference labels | Sound labels (of 150) | Missed flaws (ref. not sound) | Wrongly rejected (ref. sound) |
+| Reference labels | Zero-shot: missed vs rejected (ratio) | Few-shot: missed vs rejected (ratio) | Pooled ratio |
 |---|---|---|---|
-| Locked gold | 76 | 55.8% | 24.6% |
-| Pre-revision ratings (18 pre-lock revisions undone) | 88 | 50.3% | 23.4% |
-| Triangulated (35 contested → third reviewer) | 89 | 40.1% | 16.8% |
+| Locked gold | 50.0% vs 33.0% (1.52) | 61.6% vs 16.3% (3.79) | 2.27 |
+| Pre-revision ratings (18 pre-lock revisions undone) | 44.1% vs 31.1% (1.42) | 56.5% vs 15.7% (3.59) | 2.15 |
+| Triangulated (35 contested → third reviewer) | 32.2% vs 23.3% (1.39) | 48.1% vs 10.3% (4.67) | 2.39 |
+
+**Against independent human judges (38 RC2 fragments in the benchmark)**
+
+| Reference | Calls sound | Zero-shot ratio | Few-shot ratio | Pooled ratio |
+|---|---|---|---|---|
+| Expert (pass 2, independent) | 36.8% | 0.85 | 3.05 | 1.50 |
+| Rater 1 | 44.7% | 0.80 | 2.81 | 1.39 |
+| Locked gold | 50.0% | 0.78 | 2.63 | 1.32 |
+| Rater 2 | 55.3% | 0.83 | 1.98 | 1.25 |
+
+Models' share called sound on these fragments: 44.6% zero-shot, 66.6%
+few-shot (mean across models). Within each condition the ratios are similar
+whichever judge is the reference, so the judge matters little; the
+condition and the sample matter a lot.
 
 **By model and condition (locked gold)**
 
@@ -147,36 +162,20 @@ DeepSeek at zero-shot, and all three flip lenient with few-shot.
 | GLM 5.2 | 79.2% | 85.3% |
 | Kimi K3 | 71.3% | 89.3% |
 
-**Against independent human judges (38 RC2 fragments in the benchmark)**
-
-| Reference | Calls sound | Model missed flaws | Model wrongly rejected | Ratio |
-|---|---|---|---|---|
-| Expert (pass 2, independent) | 36.8% | 48.4% | 32.3% | 1.50 |
-| Rater 1 | 44.7% | 46.6% | 33.5% | 1.39 |
-| Locked gold | 50.0% | 46.1% | 35.0% | 1.32 |
-| Rater 2 | 55.3% | 58.1% | 46.6% | 1.25 |
-
-Models' own share called sound on these fragments: mean 55.6% (range
-13.2–89.5% across the 12 model × condition combinations). The ratio is
-smaller on this subset than on all 150 fragments (2.27) whichever judge is
-used, so the subset speaks to the direction of the lean, not its size.
-
 **Expert re-review (GPT failure coding)** — lenient errors 27/43
 fragments confirmed genuine (62.8%); strict 1/33 (3.0%).
 `results/failure_coding_synthesis.json`.
 
 ### Caveats
 
-- "About twice as often" is the full-sample estimate against the locked
-  gold. The independent-judge check (n = 38) supports the direction but
-  cannot confirm the size.
+- One calibration set was tested (two fixed examples, fixed order). The
+  few-shot amplification is a property of that set; it does not establish
+  what few-shot prompting does in general (stimulus sampling).
+- The zero-shot baseline is modest, comes from three of six models, and
+  reverses (slightly) on the 38-passage RC2 subset against every judge.
 - The GPT re-review is the expert reconsidering the expert's own labels
-  with GPT's rationale in view; it is not independent confirmation.
-- Confirmation of error direction exists only for GPT; whether Claude's and
-  DeepSeek's zero-shot strict errors are likewise mostly gold artifacts is
-  unverified.
-- The 15 sound→not-sound pre-lock revisions could have manufactured
-  leniency; the pre-revision row shows the asymmetry survives without them.
+  with GPT's rationale in view; it is not independent confirmation, and it
+  exists for GPT only.
 - The triangulated row is a one-directional sensitivity (contested set
   selected where models disagreed with gold).
 

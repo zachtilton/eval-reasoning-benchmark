@@ -571,69 +571,89 @@
       "research_question": "What systematic failure patterns emerge from the LLM artifacts?",
       "status": "agreed",
       "document": "docs/findings/rq2.md",
-      "headline": "Models missed flawed reasoning about twice as often as they wrongly rejected sound reasoning, judged against the expert; the same lean appeared against two independent trained evaluators.",
+      "headline": "Without examples, models missed flawed reasoning somewhat more often than they wrongly rejected sound reasoning (1.5 to 1); the study's calibration examples widened that gap to nearly 4 to 1.",
       "claims": [
         {
           "id": "RQ2.2.a",
-          "text": "Models called flawed passages sound 56% of the time and sound passages flawed 25% of the time.",
+          "text": "Without examples, models called flawed passages sound 50% of the time and sound passages flawed 33% of the time (1.5 to 1), consistently across the three label versions (1.4 to 1.5).",
           "values": [
             {
-              "metric": "findings_metrics.json:error_asymmetry.locked.missed_flaws_pct",
-              "value": 55.8
+              "metric": "findings_metrics.json:error_asymmetry.locked.by_condition.zero_shot.missed_flaws_pct",
+              "value": 50.0
             },
             {
-              "metric": "findings_metrics.json:error_asymmetry.locked.wrongly_rejected_pct",
-              "value": 24.6
+              "metric": "findings_metrics.json:error_asymmetry.locked.by_condition.zero_shot.wrongly_rejected_pct",
+              "value": 33.0
+            },
+            {
+              "metric": "findings_metrics.json:error_asymmetry.locked.by_condition.zero_shot.ratio",
+              "value": 1.52
+            },
+            {
+              "metric": "findings_metrics.json:error_asymmetry.pre_revision.by_condition.zero_shot.ratio",
+              "value": 1.42
+            },
+            {
+              "metric": "findings_metrics.json:error_asymmetry.triangulated.by_condition.zero_shot.ratio",
+              "value": 1.39
             }
           ],
-          "procedure": "Error rate within each reference label, pooled across models and conditions (majority labels).",
-          "sources": [
-            "scored_db_corrected",
-            "gold_locked"
-          ],
-          "code": "src/analysis/findings_metrics.py:error_asymmetry_by_reference"
-        },
-        {
-          "id": "RQ2.2.b",
-          "text": "The ~2-to-1 ratio held under all three reference-label versions (50% vs 23% pre-revision; 40% vs 17% triangulated).",
-          "values": [
-            {
-              "metric": "findings_metrics.json:error_asymmetry.locked.ratio",
-              "value": 2.27
-            },
-            {
-              "metric": "findings_metrics.json:error_asymmetry.pre_revision.missed_flaws_pct",
-              "value": 50.3
-            },
-            {
-              "metric": "findings_metrics.json:error_asymmetry.pre_revision.wrongly_rejected_pct",
-              "value": 23.4
-            },
-            {
-              "metric": "findings_metrics.json:error_asymmetry.pre_revision.ratio",
-              "value": 2.15
-            },
-            {
-              "metric": "findings_metrics.json:error_asymmetry.triangulated.missed_flaws_pct",
-              "value": 40.1
-            },
-            {
-              "metric": "findings_metrics.json:error_asymmetry.triangulated.wrongly_rejected_pct",
-              "value": 16.8
-            },
-            {
-              "metric": "findings_metrics.json:error_asymmetry.triangulated.ratio",
-              "value": 2.39
-            }
-          ],
-          "procedure": "Same rates against (1) the anchor's pre-revision ratings (18 pre-lock revisions undone) and (2) the triangulated labels.",
+          "procedure": "Within-label error rates of zero-shot majority labels against the locked gold, the anchor's pre-revision ratings, and the triangulated labels.",
           "sources": [
             "scored_db_corrected",
             "gold_locked",
             "gold_supplement",
             "contested_review"
           ],
-          "code": "src/analysis/findings_metrics.py:reference_labels, error_asymmetry_by_reference"
+          "code": "src/analysis/findings_metrics.py:error_asymmetry_by_reference",
+          "caveat": "Comes from three of six models (Gemini, GLM, Kimi); reverses slightly on the 38-passage RC2 subset (see RQ2.2.f)."
+        },
+        {
+          "id": "RQ2.2.b",
+          "text": "With the study's calibration examples the gap widened to 62% vs 16% (nearly 4 to 1), holding under every label version (3.6 to 4.7); pooled across conditions the ratio is about 2 to 1.",
+          "values": [
+            {
+              "metric": "findings_metrics.json:error_asymmetry.locked.by_condition.few_shot.missed_flaws_pct",
+              "value": 61.6
+            },
+            {
+              "metric": "findings_metrics.json:error_asymmetry.locked.by_condition.few_shot.wrongly_rejected_pct",
+              "value": 16.3
+            },
+            {
+              "metric": "findings_metrics.json:error_asymmetry.locked.by_condition.few_shot.ratio",
+              "value": 3.79
+            },
+            {
+              "metric": "findings_metrics.json:error_asymmetry.pre_revision.by_condition.few_shot.ratio",
+              "value": 3.59
+            },
+            {
+              "metric": "findings_metrics.json:error_asymmetry.triangulated.by_condition.few_shot.ratio",
+              "value": 4.67
+            },
+            {
+              "metric": "findings_metrics.json:error_asymmetry.locked.ratio",
+              "value": 2.27
+            },
+            {
+              "metric": "findings_metrics.json:error_asymmetry.pre_revision.ratio",
+              "value": 2.15
+            },
+            {
+              "metric": "findings_metrics.json:error_asymmetry.triangulated.ratio",
+              "value": 2.39
+            }
+          ],
+          "procedure": "As RQ2.2.a for few-shot majority labels; pooled ratio across both conditions for reference.",
+          "sources": [
+            "scored_db_corrected",
+            "gold_locked",
+            "gold_supplement",
+            "contested_review"
+          ],
+          "code": "src/analysis/findings_metrics.py:reference_labels, error_asymmetry_by_reference",
+          "caveat": "One fixed calibration set (two examples, fixed order) was tested; the amplification is a property of that set, not of few-shot prompting in general."
         },
         {
           "id": "RQ2.2.c",
@@ -847,7 +867,7 @@
         },
         {
           "id": "RQ2.2.f",
-          "text": "The lean is not specific to the expert: on the 38 RC2 fragments, models leaned lenient against every judge to a similar degree (ratios 1.25-1.5), though the judges called 37-55% of those fragments sound.",
+          "text": "On the 38 RC2 passages, within each condition the ratio is similar whichever human judge is the reference: zero-shot 0.78-0.85 (slightly strict), few-shot 1.98-3.05 (lenient). The judge matters little; the condition and the sample matter a lot.",
           "values": [
             {
               "metric": "findings_metrics.json:leniency_vs_human_raters.n_fragments",
@@ -866,34 +886,54 @@
               "value": 55.3
             },
             {
-              "metric": "findings_metrics.json:leniency_vs_human_raters.models_calls_sound_pct.mean",
-              "value": 55.6
+              "metric": "findings_metrics.json:leniency_vs_human_raters.by_condition.zero_shot.models_calls_sound_pct_mean",
+              "value": 44.6
             },
             {
-              "metric": "findings_metrics.json:leniency_vs_human_raters.model_errors_against.anchor_pass2.ratio",
-              "value": 1.5
+              "metric": "findings_metrics.json:leniency_vs_human_raters.by_condition.zero_shot.model_errors_against.anchor_pass2.ratio",
+              "value": 0.85
             },
             {
-              "metric": "findings_metrics.json:leniency_vs_human_raters.model_errors_against.rater_1.ratio",
-              "value": 1.39
+              "metric": "findings_metrics.json:leniency_vs_human_raters.by_condition.zero_shot.model_errors_against.rater_1.ratio",
+              "value": 0.8
             },
             {
-              "metric": "findings_metrics.json:leniency_vs_human_raters.model_errors_against.rater_2.ratio",
-              "value": 1.25
+              "metric": "findings_metrics.json:leniency_vs_human_raters.by_condition.zero_shot.model_errors_against.rater_2.ratio",
+              "value": 0.83
             },
             {
-              "metric": "findings_metrics.json:leniency_vs_human_raters.model_errors_against.locked.ratio",
-              "value": 1.32
+              "metric": "findings_metrics.json:leniency_vs_human_raters.by_condition.zero_shot.model_errors_against.locked.ratio",
+              "value": 0.78
+            },
+            {
+              "metric": "findings_metrics.json:leniency_vs_human_raters.by_condition.few_shot.models_calls_sound_pct_mean",
+              "value": 66.6
+            },
+            {
+              "metric": "findings_metrics.json:leniency_vs_human_raters.by_condition.few_shot.model_errors_against.anchor_pass2.ratio",
+              "value": 3.05
+            },
+            {
+              "metric": "findings_metrics.json:leniency_vs_human_raters.by_condition.few_shot.model_errors_against.rater_1.ratio",
+              "value": 2.81
+            },
+            {
+              "metric": "findings_metrics.json:leniency_vs_human_raters.by_condition.few_shot.model_errors_against.rater_2.ratio",
+              "value": 1.98
+            },
+            {
+              "metric": "findings_metrics.json:leniency_vs_human_raters.by_condition.few_shot.model_errors_against.locked.ratio",
+              "value": 2.63
             }
           ],
-          "procedure": "On RC2 fragments in the benchmark, model majority labels scored against each human judge in turn (anchor pass 2, rater 1, rater 2, locked gold); within-label error rates and their ratio.",
+          "procedure": "On RC2 fragments in the benchmark, model majority labels scored against each human judge in turn, per prompt condition; ratio of within-label error rates.",
           "sources": [
             "rc2_retest",
             "scored_db_corrected",
             "gold_locked"
           ],
           "code": "src/analysis/findings_metrics.py:leniency_vs_human_raters",
-          "caveat": "n = 38; the ratio is smaller on this subset than on all 150 fragments for every judge, so it supports direction, not size."
+          "caveat": "n = 38; ratios on this subset differ from the full 150 for every judge, the locked gold included, so it speaks to judge-dependence, not to overall size."
         }
       ]
     }

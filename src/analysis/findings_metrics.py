@@ -215,7 +215,8 @@ def error_asymmetry_by_reference(maj: pd.DataFrame, ref: pd.DataFrame) -> dict:
     """
     Pooled missed-flaw vs wrongly-rejected rates under each reference version.
 
-    Rates are conditional on the reference label (within-group rates).
+    Rates are conditional on the reference label (within-group rates);
+    reported pooled and per prompt condition.
 
     Args:
         maj: Output of majority_labels.
@@ -225,17 +226,16 @@ def error_asymmetry_by_reference(maj: pd.DataFrame, ref: pd.DataFrame) -> dict:
         Dict per reference version.
     """
     m = maj[maj["pred"] != "none"].merge(ref, on="fragment_id")
+
+    def rates(d: pd.DataFrame, col: str) -> dict:
+        missed = (d.loc[d[col] == "not_sound", "pred"] == "sound").mean()
+        rejected = (d.loc[d[col] == "sound", "pred"] == "not_sound").mean()
+        return {"missed_flaws_pct": _pct(missed), "wrongly_rejected_pct": _pct(rejected), "ratio": round(missed / rejected, 2)}
+
     out = {}
     for col in ("locked", "pre_revision", "triangulated"):
-        err = m["pred"] != m[col]
-        missed = err[m[col] == "not_sound"].mean()
-        rejected = err[m[col] == "sound"].mean()
-        out[col] = {
-            "n_sound_labels": int((ref[col] == "sound").sum()),
-            "missed_flaws_pct": _pct(missed),
-            "wrongly_rejected_pct": _pct(rejected),
-            "ratio": round(missed / rejected, 2),
-        }
+        out[col] = {"n_sound_labels": int((ref[col] == "sound").sum()), **rates(m, col),
+                    "by_condition": {c: rates(m[m["prompt_condition"] == c], col) for c in PROMPT_ORDER}}
     return out
 
 
@@ -311,16 +311,26 @@ def leniency_vs_human_raters(maj: pd.DataFrame, gold: pd.DataFrame, retest: pd.D
     judges = {"anchor_pass2": "anchor3_pass2", "rater_1": "rater_1", "rater_2": "rater_2", "locked": "locked"}
     m = maj[maj["pred"] != "none"].merge(h, on="fragment_id")
     per = m.groupby(["model_family", "prompt_condition"])["pred"].apply(lambda s: (s == "sound").mean())
-    against = {}
-    for name, col in judges.items():
-        missed = (m.loc[m[col] == "not_sound", "pred"] == "sound").mean()
-        rejected = (m.loc[m[col] == "sound", "pred"] == "not_sound").mean()
-        against[name] = {"missed_flaws_pct": _pct(missed), "wrongly_rejected_pct": _pct(rejected), "ratio": round(missed / rejected, 2)}
+
+    def rates(d: pd.DataFrame, col: str) -> dict:
+        missed = (d.loc[d[col] == "not_sound", "pred"] == "sound").mean()
+        rejected = (d.loc[d[col] == "sound", "pred"] == "not_sound").mean()
+        return {"missed_flaws_pct": _pct(missed), "wrongly_rejected_pct": _pct(rejected), "ratio": round(missed / rejected, 2)}
+
+    against = {name: rates(m, col) for name, col in judges.items()}
+    by_condition = {
+        c: {
+            "models_calls_sound_pct_mean": _pct(per.xs(c, level="prompt_condition").mean()),
+            "model_errors_against": {name: rates(m[m["prompt_condition"] == c], col) for name, col in judges.items()},
+        }
+        for c in PROMPT_ORDER
+    }
     return {
         "n_fragments": int(len(h)),
         "calls_sound_pct": {name: _pct((h[col] == "sound").mean()) for name, col in judges.items()},
         "models_calls_sound_pct": {"mean": _pct(per.mean()), "range": [_pct(per.min()), _pct(per.max())]},
         "model_errors_against": against,
+        "by_condition": by_condition,
     }
 
 
