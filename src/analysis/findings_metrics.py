@@ -397,6 +397,52 @@ def few_shot_shift(maj: pd.DataFrame, gold: pd.DataFrame) -> dict:
     }
 
 
+def criterion_variation(outcomes: pd.DataFrame, gold: pd.DataFrame) -> dict:
+    """
+    All-model failure rates by evaluation criterion.
+
+    Reports, per criterion, fragment count, share of gold labels not sound
+    (leniency makes not-sound fragments fail more), the pooled fail rate,
+    the fail rate within each gold label, and a fragment-clustered bootstrap
+    CI. A chi-squared test on fragment-level fail counts (each fragment's 12
+    outcomes summed) asks whether criteria differ overall.
+
+    Args:
+        outcomes: Corrected fragment outcomes.
+        gold: Locked gold with criterion.
+
+    Returns:
+        Dict per criterion plus the omnibus test.
+    """
+    from scipy.stats import chi2_contingency
+
+    from .config import CORE_CRITERIA
+
+    g = gold[["fragment_id", "expert_classification", "criterion"]].copy()
+    g["crit"] = g["criterion"].where(g["criterion"].isin(CORE_CRITERIA), "other")
+    o = outcomes.merge(g, on="fragment_id").assign(f=lambda d: (d["fragment_outcome"] == "fail").astype(int))
+    rng = np.random.default_rng(FINDINGS_SEED)
+    out = {}
+    for crit, d in o.groupby("crit"):
+        by = d.groupby("fragment_id")["f"].agg(["sum", "count"])
+        s, c = by["sum"].to_numpy(), by["count"].to_numpy()
+        boots = [s[i].sum() / c[i].sum() for i in (rng.integers(0, len(s), len(s)) for _ in range(BOOTSTRAP_RESAMPLES))]
+        out[crit] = {
+            "n_fragments": int(len(by)),
+            "gold_not_sound_pct": _pct((g.loc[g["crit"] == crit, "expert_classification"] == "not_sound").mean()),
+            "fail_pct": _pct(d["f"].mean()),
+            "fail_ci_95_pct": [_pct(x) for x in np.percentile(boots, [2.5, 97.5])],
+            "fail_on_gold_sound_pct": _pct(d.loc[d["expert_classification"] == "sound", "f"].mean()) if (d["expert_classification"] == "sound").any() else None,
+            "fail_on_gold_not_sound_pct": _pct(d.loc[d["expert_classification"] == "not_sound", "f"].mean()) if (d["expert_classification"] == "not_sound").any() else None,
+        }
+    frag = o.groupby(["crit", "fragment_id"])["f"].agg(["sum", "count"]).reset_index()
+    table = frag.groupby("crit")[["sum", "count"]].sum()
+    table["pass"] = table["count"] - table["sum"]
+    chi2, p, dof, _ = chi2_contingency(table[["sum", "pass"]].to_numpy())
+    return {"by_criterion": out, "omnibus_chi2_combinations": {"chi2": round(float(chi2), 3), "dof": int(dof), "p_value": round(float(p), 4),
+            "note": "Treats the 12 outcomes per fragment as independent; anti-conservative. Read with the clustered CIs."}}
+
+
 def unanimity(outcomes: pd.DataFrame) -> dict:
     """
     Run-to-run consistency: share of combinations with 3/3 agreement.
@@ -690,6 +736,7 @@ def run_findings_metrics(output_path: Path = FINDINGS_METRICS_PATH) -> dict:
         "unanimity_corrected": unanimity(outcomes),
         "unanimity_by_condition_pct": {c: _pct(outcomes.loc[outcomes["prompt_condition"] == c, "unanimous_agreement"].astype(bool).mean()) for c in PROMPT_ORDER},
         "few_shot_shift": few_shot_shift(maj, gold),
+        "criterion_variation": criterion_variation(outcomes, gold),
         "shared_failures": shared_failures(outcomes, gold, resolved, frags),
         "challenge_cases": challenge_case_summary(outcomes, rows),
         "contested_review": {

@@ -646,6 +646,93 @@
       "few_shot_range_pp": 34.0
     }
   },
+  "criterion_variation": {
+    "by_criterion": {
+      "coherence": {
+        "n_fragments": 7,
+        "gold_not_sound_pct": 57.1,
+        "fail_pct": 47.6,
+        "fail_ci_95_pct": [
+          19.0,
+          77.4
+        ],
+        "fail_on_gold_sound_pct": 22.2,
+        "fail_on_gold_not_sound_pct": 66.7
+      },
+      "effectiveness": {
+        "n_fragments": 17,
+        "gold_not_sound_pct": 35.3,
+        "fail_pct": 35.8,
+        "fail_ci_95_pct": [
+          18.1,
+          54.9
+        ],
+        "fail_on_gold_sound_pct": 25.8,
+        "fail_on_gold_not_sound_pct": 54.2
+      },
+      "efficiency": {
+        "n_fragments": 25,
+        "gold_not_sound_pct": 56.0,
+        "fail_pct": 36.0,
+        "fail_ci_95_pct": [
+          24.0,
+          48.3
+        ],
+        "fail_on_gold_sound_pct": 15.2,
+        "fail_on_gold_not_sound_pct": 52.4
+      },
+      "impact": {
+        "n_fragments": 17,
+        "gold_not_sound_pct": 70.6,
+        "fail_pct": 52.0,
+        "fail_ci_95_pct": [
+          35.8,
+          68.1
+        ],
+        "fail_on_gold_sound_pct": 31.7,
+        "fail_on_gold_not_sound_pct": 60.4
+      },
+      "other": {
+        "n_fragments": 22,
+        "gold_not_sound_pct": 59.1,
+        "fail_pct": 43.2,
+        "fail_ci_95_pct": [
+          30.3,
+          56.8
+        ],
+        "fail_on_gold_sound_pct": 25.0,
+        "fail_on_gold_not_sound_pct": 55.8
+      },
+      "relevance": {
+        "n_fragments": 27,
+        "gold_not_sound_pct": 33.3,
+        "fail_pct": 33.6,
+        "fail_ci_95_pct": [
+          21.0,
+          47.2
+        ],
+        "fail_on_gold_sound_pct": 21.3,
+        "fail_on_gold_not_sound_pct": 58.3
+      },
+      "sustainability": {
+        "n_fragments": 35,
+        "gold_not_sound_pct": 45.7,
+        "fail_pct": 41.0,
+        "fail_ci_95_pct": [
+          29.0,
+          53.3
+        ],
+        "fail_on_gold_sound_pct": 31.6,
+        "fail_on_gold_not_sound_pct": 52.1
+      }
+    },
+    "omnibus_chi2_combinations": {
+      "chi2": 24.4,
+      "dof": 6,
+      "p_value": 0.0004,
+      "note": "Treats the 12 outcomes per fragment as independent; anti-conservative. Read with the clustered CIs."
+    }
+  },
   "shared_failures": {
     "per_model_any_condition_fail_rate_pct": {
       "gpt_5_6_sol": 50.7,
