@@ -40,3 +40,20 @@ def test_reference_labels_and_asymmetry():
     out = error_asymmetry_by_reference(maj, ref)
     assert out["locked"]["missed_flaws_pct"] == 100.0       # both gold not_sound called sound
     assert out["locked"]["wrongly_rejected_pct"] == 50.0    # 1 of 2 gold sound rejected
+
+
+def test_unreviewed_bound_rule_of_three():
+    """Bound = unreviewed x 3/reviewed per stratum; a census adds nothing."""
+    from src.analysis.findings_metrics import _unreviewed_bound
+
+    rev = pd.DataFrame({
+        "stratum": ["incoherent_confident"] * 30 + ["ambiguous_sides_with_haiku"] * 60 + ["ambiguous_3way_split"] * 10,
+        "your_rating": "coherent",
+    })
+    pop = {"coherent": 830, "incoherent": 60, "ambiguous": 100 + 10}
+    luna = pd.DataFrame({"luna_verdict": ["coherent"] * 100 + ["ambiguous"] * 10})
+    out = _unreviewed_bound(rev, pop, luna)
+    assert out["incoherent"]["max_incoherent_unreviewed"] == 3.0          # 30 unreviewed x 3/30
+    assert out["ambiguous_luna_coherent"]["max_incoherent_unreviewed"] == 2.0  # 40 unreviewed x 3/60
+    assert out["ambiguous_luna_ambiguous"]["max_incoherent_unreviewed"] == 0.0  # census
+    assert out["max_incoherent_unreviewed_pct_of_all_runs"] == 0.5             # 5 of 1,000

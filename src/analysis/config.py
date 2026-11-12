@@ -113,6 +113,9 @@ FIGURE_DPI: int = 300
 
 FRAGMENT_OUTCOMES_TRIANGULATED_PATH = RESPONSES_DIR / "fragment_outcomes_triangulated.csv"
 RC2_BLIND_RETEST_PATH = PROJECT_ROOT / "reliability" / "blind_retest_40frag_pass2.csv"
+RC3_REVIEW_KEY_PATH = PROJECT_ROOT / "logs" / "human_review_key.csv"
+RC3_REVIEW_BLINDED_PATH = PROJECT_ROOT / "logs" / "human_review_blinded.csv"
+LUNA_TRIAGE_PATH = RESPONSES_DIR / "triangulation_luna_ambiguous.csv"
 RELIABILITY_CHECKS_PATH = RESULTS_DIR / "reliability_checks.json"
 H2_CORRECTED_RESULTS_PATH = RESULTS_DIR / "H2_statistical_tests_corrected.json"
 H2_TRIANGULATED_RESULTS_PATH = RESULTS_DIR / "H2_statistical_tests_triangulated.json"

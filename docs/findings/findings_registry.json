@@ -1,21 +1,67 @@
 {
   "about": "Machine-readable provenance for the written findings in docs/findings/*.md. Each claim lists the metric values that corroborate it (as <results file>:<dot.path>), the procedure, the data sources and the code that produced it. tests/test_findings_registry.py checks every listed value against the results files, so prose and numbers cannot drift apart silently.",
   "conventions": {
-    "metric_ref": "<file under results/>:<dot.separated.path>; list indices are not used",
+    "metric_ref": "<file under results/>:<dot.separated.path>; keyed dicts (e.g. by_combination.<model>|<condition>) rather than list indices",
     "unit": "Majority label per fragment x model x prompt condition unless stated; corrected (accuracy-only) scoring; locked gold 2026-10-03 unless stated",
     "status": "agreed = wording agreed with the author; draft = discussed, wording open"
   },
   "sources": {
-    "scored_db_corrected": {"path": "data/responses/scored_database_corrected.csv", "description": "5,400 runs, corrected (accuracy-only) scoring"},
-    "fragment_outcomes_corrected": {"path": "data/responses/fragment_outcomes_corrected.csv", "description": "1,800 fragment x model x condition outcomes, majority rule"},
-    "fragment_outcomes_triangulated": {"path": "data/responses/fragment_outcomes_triangulated.csv", "description": "As corrected, with 35 contested labels replaced by the third reviewer's"},
-    "gold_locked": {"path": "data/gold_standard/gold_standard_locked_2026-10-03.csv", "description": "Locked expert gold standard (150 fragments)"},
-    "gold_supplement": {"path": "data/gold_standard/gold_standard_rationale_supplement.csv", "description": "18 pre-lock rating revisions with original ratings"},
-    "contested_review": {"path": "data/responses/contested_fragments_review_resolved.csv", "description": "35 contested fragments with the independent third reviewer's blind classification"},
-    "rc2_retest": {"path": "reliability/blind_retest_40frag_pass2.csv", "description": "RC2: two human raters and the anchor (original and pass-2) on 40 fragments"},
-    "rc1": {"path": "reliability/rc1_expert_temporal_consistency.csv", "description": "RC1: anchor blind test-retest on 20 fragments"},
-    "gpt_coding": {"path": "data/analysis/failure_codes_gpt5.csv", "description": "Completed GPT failure-coding sheet (76 fragments, 112 rows)"},
-    "rc3_review": {"path": "logs/human_review_key.csv", "description": "RC3: stratified human review of coherence-flagged runs (with logs/human_review_blinded.csv)"}
+    "scored_db_corrected": {
+      "path": "data/responses/scored_database_corrected.csv",
+      "description": "5,400 runs, corrected (accuracy-only) scoring"
+    },
+    "fragment_outcomes_corrected": {
+      "path": "data/responses/fragment_outcomes_corrected.csv",
+      "description": "1,800 fragment x model x condition outcomes, majority rule"
+    },
+    "fragment_outcomes_triangulated": {
+      "path": "data/responses/fragment_outcomes_triangulated.csv",
+      "description": "As corrected, with 35 contested labels replaced by the third reviewer's"
+    },
+    "gold_locked": {
+      "path": "data/gold_standard/gold_standard_locked_2026-10-03.csv",
+      "description": "Locked expert gold standard (150 fragments)"
+    },
+    "gold_supplement": {
+      "path": "data/gold_standard/gold_standard_rationale_supplement.csv",
+      "description": "18 pre-lock rating revisions with original ratings"
+    },
+    "contested_review": {
+      "path": "data/responses/contested_fragments_review_resolved.csv",
+      "description": "35 contested fragments with the independent third reviewer's blind classification"
+    },
+    "rc2_retest": {
+      "path": "reliability/blind_retest_40frag_pass2.csv",
+      "description": "RC2: two human raters and the anchor (original and pass-2) on 40 fragments"
+    },
+    "rc1": {
+      "path": "reliability/rc1_expert_temporal_consistency.csv",
+      "description": "RC1: anchor blind test-retest on 20 fragments"
+    },
+    "gpt_coding": {
+      "path": "data/analysis/failure_codes_gpt5.csv",
+      "description": "Completed GPT failure-coding sheet (76 fragments, 112 rows)"
+    },
+    "rc3_review": {
+      "path": "logs/human_review_key.csv",
+      "description": "RC3: stratified human review of coherence-flagged runs (with logs/human_review_blinded.csv)"
+    },
+    "rc3_blinded": {
+      "path": "logs/human_review_blinded.csv",
+      "description": "RC3: blinded rationales with the author's coherence ratings"
+    },
+    "luna_triage": {
+      "path": "data/responses/triangulation_luna_ambiguous.csv",
+      "description": "Secondary-model (gpt-5.6-luna) triage of all 1,217 ambiguous runs"
+    },
+    "fragment_outcomes_as_designed": {
+      "path": "data/responses/fragment_outcomes.csv",
+      "description": "Fragment outcomes under the pre-registered scoring (coherence gate)"
+    },
+    "scored_db_as_designed": {
+      "path": "data/responses/scored_database.csv",
+      "description": "5,400 runs under the pre-registered scoring, with coherence_final"
+    }
   },
   "findings": [
     {
@@ -29,50 +75,122 @@
           "id": "RQ1.a",
           "text": "LLMs agreed with the expert on ~60% of fragments (95% CI 54-66%).",
           "values": [
-            {"metric": "findings_metrics.json:pass_rate.corrected.pass_rate_pct", "value": 59.9},
-            {"metric": "findings_metrics.json:pass_rate.corrected.ci_95_pct", "value": [54.3, 65.5]},
-            {"metric": "findings_metrics.json:pass_rate.run_level_corrected.pct", "value": 59.6}
+            {
+              "metric": "findings_metrics.json:pass_rate.corrected.pass_rate_pct",
+              "value": 59.9
+            },
+            {
+              "metric": "findings_metrics.json:pass_rate.corrected.ci_95_pct",
+              "value": [
+                54.3,
+                65.5
+              ]
+            },
+            {
+              "metric": "findings_metrics.json:pass_rate.run_level_corrected.pct",
+              "value": 59.6
+            }
           ],
           "procedure": "Pooled fragment-level pass rate across 6 models x 2 conditions x 150 fragments; 95% CI by fragment-clustered bootstrap (5,000 resamples, seed 42).",
-          "sources": ["fragment_outcomes_corrected", "scored_db_corrected"],
+          "sources": [
+            "fragment_outcomes_corrected",
+            "scored_db_corrected"
+          ],
           "code": "src/analysis/findings_metrics.py:cluster_bootstrap_pass_rate"
         },
         {
           "id": "RQ1.b",
           "text": "Modestly above chance: kappa ~0.20.",
           "values": [
-            {"metric": "findings_metrics.json:model_anchor_agreement.kappa_mean", "value": 0.196},
-            {"metric": "findings_metrics.json:model_anchor_agreement.kappa_range", "value": [0.097, 0.292]},
-            {"metric": "findings_metrics.json:model_anchor_agreement.gold_sound_pct", "value": 50.7}
+            {
+              "metric": "findings_metrics.json:model_anchor_agreement.kappa_mean",
+              "value": 0.196
+            },
+            {
+              "metric": "findings_metrics.json:model_anchor_agreement.kappa_range",
+              "value": [
+                0.097,
+                0.292
+              ]
+            },
+            {
+              "metric": "findings_metrics.json:model_anchor_agreement.gold_sound_pct",
+              "value": 50.7
+            }
           ],
           "procedure": "Cohen's kappa, model majority label vs locked gold, per model x condition (12), averaged.",
-          "sources": ["scored_db_corrected", "gold_locked"],
+          "sources": [
+            "scored_db_corrected",
+            "gold_locked"
+          ],
           "code": "src/analysis/findings_metrics.py:model_anchor_agreement"
         },
         {
           "id": "RQ1.c",
           "text": "Below the expert's own test-retest consistency (85%).",
           "values": [
-            {"metric": "reliability_checks.json:rc1.agreement_rate", "value": 0.85},
-            {"metric": "reliability_checks.json:rc1.kappa", "value": 0.7}
+            {
+              "metric": "reliability_checks.json:rc1.agreement_rate",
+              "value": 0.85
+            },
+            {
+              "metric": "reliability_checks.json:rc1.kappa",
+              "value": 0.7
+            }
           ],
           "procedure": "RC1: anchor re-classified 20 random fragments blind; percent agreement and Cohen's kappa.",
-          "sources": ["rc1"],
+          "sources": [
+            "rc1"
+          ],
           "code": "results/reliability_checks.json (consumed by src/analysis/runner.py:_build_reliability_results)"
         },
         {
           "id": "RQ1.d",
           "text": "Comparable to trained human evaluators' agreement with the same expert's independent ratings.",
           "values": [
-            {"metric": "findings_metrics.json:human_comparison.shared.n", "value": 38},
-            {"metric": "findings_metrics.json:human_comparison.shared.models_vs_anchor_pass2_pct.mean", "value": 57.5},
-            {"metric": "findings_metrics.json:human_comparison.shared.rater_1_vs_anchor_pass2.agreement_pct", "value": 60.5},
-            {"metric": "findings_metrics.json:human_comparison.shared.rater_2_vs_anchor_pass2.agreement_pct", "value": 55.3},
-            {"metric": "findings_metrics.json:human_comparison.all_40.rater_1_vs_rater_2.agreement_pct", "value": 75.0},
-            {"metric": "findings_metrics.json:human_comparison.all_40.rater_1_vs_rater_2.kappa", "value": 0.505}
+            {
+              "metric": "findings_metrics.json:human_comparison.shared.n",
+              "value": 38
+            },
+            {
+              "metric": "findings_metrics.json:human_comparison.shared.models_vs_anchor_pass2_pct.mean",
+              "value": 57.5
+            },
+            {
+              "metric": "findings_metrics.json:human_comparison.shared.rater_1_vs_anchor_pass2.agreement_pct",
+              "value": 60.5
+            },
+            {
+              "metric": "findings_metrics.json:human_comparison.shared.rater_2_vs_anchor_pass2.agreement_pct",
+              "value": 55.3
+            },
+            {
+              "metric": "findings_metrics.json:human_comparison.all_40.rater_1_vs_rater_2.agreement_pct",
+              "value": 75.0
+            },
+            {
+              "metric": "findings_metrics.json:human_comparison.all_40.rater_1_vs_rater_2.kappa",
+              "value": 0.505
+            },
+            {
+              "metric": "findings_metrics.json:human_comparison.shared.rater_1_vs_locked.agreement_pct",
+              "value": 73.7
+            },
+            {
+              "metric": "findings_metrics.json:human_comparison.shared.rater_2_vs_locked.agreement_pct",
+              "value": 68.4
+            },
+            {
+              "metric": "findings_metrics.json:human_comparison.shared.locked_matches_anchor_pass2_pct",
+              "value": 86.8
+            }
           ],
           "procedure": "Percent agreement on the 38 RC2 fragments in the benchmark: each human rater vs the anchor's pass-2 (independent) ratings; each model x condition majority label vs the same, averaged.",
-          "sources": ["rc2_retest", "scored_db_corrected", "gold_locked"],
+          "sources": [
+            "rc2_retest",
+            "scored_db_corrected",
+            "gold_locked"
+          ],
           "code": "src/analysis/findings_metrics.py:human_comparison",
           "caveat": "Small (n = 38) and not held out; against the locked gold, humans agree at 68-74% but that comparison is partly circular (gold revised toward the raters)."
         },
@@ -80,68 +198,245 @@
           "id": "RQ1.e",
           "text": "Rises to ~74% when contested labels are resolved by an independent third reviewer; the adjustment can only raise the figure.",
           "values": [
-            {"metric": "findings_metrics.json:pass_rate.triangulated.pass_rate_pct", "value": 73.6},
-            {"metric": "findings_metrics.json:pass_rate.triangulated.ci_95_pct", "value": [68.9, 78.1]},
-            {"metric": "findings_metrics.json:contested_review.n", "value": 35},
-            {"metric": "findings_metrics.json:contested_review.reviewer_sides_models", "value": 25}
+            {
+              "metric": "findings_metrics.json:pass_rate.triangulated.pass_rate_pct",
+              "value": 73.6
+            },
+            {
+              "metric": "findings_metrics.json:pass_rate.triangulated.ci_95_pct",
+              "value": [
+                68.9,
+                78.1
+              ]
+            },
+            {
+              "metric": "findings_metrics.json:contested_review.n",
+              "value": 35
+            },
+            {
+              "metric": "findings_metrics.json:contested_review.reviewer_sides_models",
+              "value": 25
+            },
+            {
+              "metric": "findings_metrics.json:contested_review.lenient_side.reviewer_sides_models",
+              "value": 19
+            },
+            {
+              "metric": "findings_metrics.json:contested_review.strict_side.reviewer_sides_models",
+              "value": 6
+            },
+            {
+              "metric": "findings_metrics.json:contested_review.majority_strength.5",
+              "value": 15
+            },
+            {
+              "metric": "findings_metrics.json:contested_review.majority_strength.6",
+              "value": 20
+            }
           ],
           "procedure": "Label-substitution sensitivity: the third reviewer's blind call replaces the gold on the 35 fragments where >= 5 of 6 models agreed against it; rescored and re-adjudicated.",
-          "sources": ["contested_review", "fragment_outcomes_triangulated"],
+          "sources": [
+            "contested_review",
+            "fragment_outcomes_triangulated"
+          ],
           "code": "src/scoring/reviewer_substitution.py:run_reviewer_triangulation"
         },
         {
           "id": "RQ1.f",
           "text": "Models affirmed sound reasoning far more reliably than they detected flawed reasoning (75% vs 44%).",
           "values": [
-            {"metric": "findings_metrics.json:model_anchor_agreement.accuracy_on_gold_sound_mean_pct", "value": 75.4},
-            {"metric": "findings_metrics.json:model_anchor_agreement.accuracy_on_gold_not_sound_mean_pct", "value": 44.2}
+            {
+              "metric": "findings_metrics.json:model_anchor_agreement.accuracy_on_gold_sound_mean_pct",
+              "value": 75.4
+            },
+            {
+              "metric": "findings_metrics.json:model_anchor_agreement.accuracy_on_gold_not_sound_mean_pct",
+              "value": 44.2
+            }
           ],
           "procedure": "Accuracy within each gold label, per model x condition, averaged.",
-          "sources": ["scored_db_corrected", "gold_locked"],
+          "sources": [
+            "scored_db_corrected",
+            "gold_locked"
+          ],
           "code": "src/analysis/findings_metrics.py:model_anchor_agreement"
         },
         {
           "id": "RQ1.g",
           "text": "Expert review of the primary model's errors confirmed most lenient errors (27 of 43) and attributed nearly all strict errors (32 of 33) to the gold standard.",
           "values": [
-            {"metric": "failure_coding_synthesis.json:direction.lenient.genuine", "value": 27},
-            {"metric": "failure_coding_synthesis.json:direction.lenient.n", "value": 43},
-            {"metric": "failure_coding_synthesis.json:direction.strict.doubt_gold", "value": 32},
-            {"metric": "failure_coding_synthesis.json:direction.strict.n", "value": 33}
+            {
+              "metric": "failure_coding_synthesis.json:direction.lenient.genuine",
+              "value": 27
+            },
+            {
+              "metric": "failure_coding_synthesis.json:direction.lenient.n",
+              "value": 43
+            },
+            {
+              "metric": "failure_coding_synthesis.json:direction.strict.doubt_gold",
+              "value": 32
+            },
+            {
+              "metric": "failure_coding_synthesis.json:direction.strict.n",
+              "value": 33
+            }
           ],
           "procedure": "GPT failure coding: each failed fragment either coded as a genuine failure (Appendix D.1) or marked coder_doubts_gold_standard; split by error direction.",
-          "sources": ["gpt_coding"],
+          "sources": [
+            "gpt_coding"
+          ],
           "code": "src/analysis/coding_synthesis.py:direction_summary"
         },
         {
           "id": "RQ1.h",
           "text": "No significant differences between the six models or between closed and open models.",
           "values": [
-            {"metric": "H2_statistical_tests_corrected.json:test_2_chi_squared.omnibus.chi_squared", "value": 3.2378},
-            {"metric": "H2_statistical_tests_corrected.json:test_2_chi_squared.omnibus.p_value", "value": 0.663383},
-            {"metric": "H2_statistical_tests_corrected.json:test_3_z_test.p_value", "value": 0.386695}
+            {
+              "metric": "H2_statistical_tests_corrected.json:test_2_chi_squared.omnibus.chi_squared",
+              "value": 3.2378
+            },
+            {
+              "metric": "H2_statistical_tests_corrected.json:test_2_chi_squared.omnibus.p_value",
+              "value": 0.663383
+            },
+            {
+              "metric": "H2_statistical_tests_corrected.json:test_3_z_test.p_value",
+              "value": 0.386695
+            }
           ],
           "procedure": "Chi-squared test of pass/fail across six models (df = 5); two-proportion z-test closed vs open.",
-          "sources": ["fragment_outcomes_corrected"],
+          "sources": [
+            "fragment_outcomes_corrected"
+          ],
           "code": "src/analysis/statistics.py:chi_squared_model_comparison, architecture_z_test"
         },
         {
           "id": "RQ1.i",
           "text": "Run-to-run consistency: all three runs agreed in 86.8% of combinations.",
           "values": [
-            {"metric": "findings_metrics.json:unanimity_corrected.unanimous_pct", "value": 86.8}
+            {
+              "metric": "findings_metrics.json:unanimity_corrected.unanimous_pct",
+              "value": 86.8
+            }
           ],
           "procedure": "Share of fragment x model x condition combinations with 3/3 runs passing or 3/3 failing.",
-          "sources": ["fragment_outcomes_corrected"],
+          "sources": [
+            "fragment_outcomes_corrected"
+          ],
           "code": "src/scoring/accuracy.py:adjudicate_fragment_outcomes"
+        },
+        {
+          "id": "RQ1.j",
+          "text": "Roughly one in four fragments split qualified evaluators.",
+          "values": [
+            {
+              "metric": "findings_metrics.json:evaluator_split.human_human_disagreement_pct",
+              "value": 25.0
+            },
+            {
+              "metric": "findings_metrics.json:evaluator_split.contested_share_pct",
+              "value": 23.3
+            }
+          ],
+          "procedure": "Two independent estimates: disagreement between the two RC2 raters (40 fragments) and the share of benchmark fragments in the contested set (35/150).",
+          "sources": [
+            "rc2_retest",
+            "contested_review"
+          ],
+          "code": "src/analysis/findings_metrics.py:evaluator_split_share",
+          "caveat": "Approximate; small samples (40 and 35)."
+        },
+        {
+          "id": "RQ1.k",
+          "text": "10 of the 35 contested fragments were pre-lock revisions; on all 10 the anchor's original rating matched the models and the third reviewer sided with the models. The 4 also rated by the RC2 raters are each a 2-2 human split.",
+          "values": [
+            {
+              "metric": "findings_metrics.json:contested_overlap.revised_in_contested",
+              "value": 10
+            },
+            {
+              "metric": "findings_metrics.json:contested_overlap.revised_in_contested_original_matches_models",
+              "value": 10
+            },
+            {
+              "metric": "findings_metrics.json:contested_overlap.revised_in_contested_reviewer_sides_models",
+              "value": 10
+            },
+            {
+              "metric": "findings_metrics.json:contested_overlap.directly_rated_by_rc2",
+              "value": 4
+            },
+            {
+              "metric": "findings_metrics.json:contested_overlap.directly_rated_all_2_2",
+              "value": true
+            }
+          ],
+          "procedure": "Join of the contested review with the pre-lock revision supplement and the RC2 blind-retest ratings; human votes = two RC2 raters, the anchor's original rating, and the third reviewer.",
+          "sources": [
+            "contested_review",
+            "gold_supplement",
+            "rc2_retest"
+          ],
+          "code": "src/analysis/findings_metrics.py:contested_overlap"
         }
       ],
       "methods_notes": [
         {
           "id": "RQ1.m1",
           "text": "Deviation: pre-registered scoring with the coherence gate gave 43.3%; RC3 found 0 of 217 sampled flagged runs incoherent, so the gate was removed.",
-          "sources": ["fragment_outcomes_corrected", "rc3_review"],
-          "code": "src/scoring/corrected_scoring.py"
+          "sources": [
+            "fragment_outcomes_as_designed",
+            "scored_db_as_designed",
+            "rc3_review",
+            "rc3_blinded",
+            "luna_triage"
+          ],
+          "code": "src/analysis/findings_metrics.py:rc3_deviation",
+          "values": [
+            {
+              "metric": "findings_metrics.json:rc3_deviation.as_designed_pass_rate_pct",
+              "value": 43.3
+            },
+            {
+              "metric": "findings_metrics.json:rc3_deviation.non_coherent_total",
+              "value": 1433
+            },
+            {
+              "metric": "findings_metrics.json:rc3_deviation.review.flagged_rated",
+              "value": 217
+            },
+            {
+              "metric": "findings_metrics.json:rc3_deviation.review.flagged_rated_incoherent",
+              "value": 0
+            },
+            {
+              "metric": "findings_metrics.json:rc3_deviation.review.incoherent_rated",
+              "value": 64
+            },
+            {
+              "metric": "findings_metrics.json:rc3_deviation.review.ambiguous_rated",
+              "value": 153
+            },
+            {
+              "metric": "findings_metrics.json:rc3_deviation.review.rated_incoherent",
+              "value": 0
+            },
+            {
+              "metric": "findings_metrics.json:rc3_deviation.luna_triage.coherent",
+              "value": 1153
+            },
+            {
+              "metric": "findings_metrics.json:rc3_deviation.unreviewed_bound.max_incoherent_unreviewed_total",
+              "value": 43.0
+            },
+            {
+              "metric": "findings_metrics.json:rc3_deviation.unreviewed_bound.max_incoherent_unreviewed_pct_of_all_runs",
+              "value": 0.8
+            }
+          ],
+          "procedure": "As-designed pass rate from the pre-registered outcomes. RC3: stratified human review of coherence-flagged runs; rule-of-three (3/n) upper bound on the incoherence rate per stratum, applied to the unreviewed remainder.",
+          "caveat": "The rater never assigned 'incoherent' (including 94 controls), so RC3 cannot fully separate a mis-firing pipeline from a high personal threshold for incoherence."
         }
       ]
     },
@@ -156,53 +451,116 @@
           "id": "RQ2.1.a",
           "text": "31 passages were failed by every model and 35 by none, versus about 2 of each expected if models erred independently.",
           "values": [
-            {"metric": "findings_metrics.json:shared_failures.observed_grouped.6", "value": 31},
-            {"metric": "findings_metrics.json:shared_failures.observed_grouped.0", "value": 35},
-            {"metric": "findings_metrics.json:shared_failures.expected_grouped.6", "value": 2.0},
-            {"metric": "findings_metrics.json:shared_failures.expected_grouped.0", "value": 2.7}
+            {
+              "metric": "findings_metrics.json:shared_failures.observed_grouped.6",
+              "value": 31
+            },
+            {
+              "metric": "findings_metrics.json:shared_failures.observed_grouped.0",
+              "value": 35
+            },
+            {
+              "metric": "findings_metrics.json:shared_failures.expected_grouped.6",
+              "value": 2.0
+            },
+            {
+              "metric": "findings_metrics.json:shared_failures.expected_grouped.0",
+              "value": 2.7
+            }
           ],
           "procedure": "A model fails a fragment if it fails in either condition. Expected counts: exact Poisson-binomial from each model's own any-condition fail rate, assuming independence.",
-          "sources": ["fragment_outcomes_corrected"],
+          "sources": [
+            "fragment_outcomes_corrected"
+          ],
           "code": "src/analysis/findings_metrics.py:shared_failures"
         },
         {
           "id": "RQ2.1.b",
           "text": "Which passage was judged explained about half the variation in outcomes; which model, almost none.",
           "values": [
-            {"metric": "findings_metrics.json:shared_failures.eta_squared.fragment_id", "value": 0.521},
-            {"metric": "findings_metrics.json:shared_failures.eta_squared.model_family", "value": 0.002},
-            {"metric": "findings_metrics.json:shared_failures.eta_squared.prompt_condition", "value": 0.001},
-            {"metric": "findings_metrics.json:shared_failures.eta_squared_chance_baseline_fragment", "value": 0.083}
+            {
+              "metric": "findings_metrics.json:shared_failures.eta_squared.fragment_id",
+              "value": 0.521
+            },
+            {
+              "metric": "findings_metrics.json:shared_failures.eta_squared.model_family",
+              "value": 0.002
+            },
+            {
+              "metric": "findings_metrics.json:shared_failures.eta_squared.prompt_condition",
+              "value": 0.001
+            },
+            {
+              "metric": "findings_metrics.json:shared_failures.eta_squared_chance_baseline_fragment",
+              "value": 0.083
+            }
           ],
           "procedure": "Eta squared (between-group share of variance) of binary fail across 1,800 combinations, by fragment, model and condition separately.",
-          "sources": ["fragment_outcomes_corrected"],
+          "sources": [
+            "fragment_outcomes_corrected"
+          ],
           "code": "src/analysis/findings_metrics.py:shared_failures"
         },
         {
           "id": "RQ2.1.c",
           "text": "Nearly all of the primary model's failures (107 of 112) were shared with at least two other models.",
           "values": [
-            {"metric": "findings_metrics.json:challenge_cases.criterion_1_cases", "value": 107},
-            {"metric": "findings_metrics.json:challenge_cases.gpt_failures", "value": 112},
-            {"metric": "findings_metrics.json:challenge_cases.criterion_1_all_five_comparison_fail", "value": 45},
-            {"metric": "findings_metrics.json:challenge_cases.criterion_2_inside_criterion_1", "value": 32},
-            {"metric": "findings_metrics.json:challenge_cases.criterion_2_cases", "value": 33}
+            {
+              "metric": "findings_metrics.json:challenge_cases.criterion_1_cases",
+              "value": 107
+            },
+            {
+              "metric": "findings_metrics.json:challenge_cases.gpt_failures",
+              "value": 112
+            },
+            {
+              "metric": "findings_metrics.json:challenge_cases.criterion_1_all_five_comparison_fail",
+              "value": 45
+            },
+            {
+              "metric": "findings_metrics.json:challenge_cases.criterion_2_inside_criterion_1",
+              "value": 32
+            },
+            {
+              "metric": "findings_metrics.json:challenge_cases.criterion_2_cases",
+              "value": 33
+            }
           ],
           "procedure": "H.4 challenge cases. Criterion 1: GPT fails AND >= 2 comparison models fail on the same fragment x condition. Criterion 2: primary code accounting for >= 10% of confirmed coded rows.",
-          "sources": ["fragment_outcomes_corrected", "gpt_coding"],
+          "sources": [
+            "fragment_outcomes_corrected",
+            "gpt_coding"
+          ],
           "code": "src/analysis/challenge_cases.py:identify_challenge_cases"
         },
         {
           "id": "RQ2.1.d",
           "text": "Of the 31 passages every model failed, 26 were contested; expert review confirmed 13 as genuine errors and doubted the gold on 18.",
           "values": [
-            {"metric": "findings_metrics.json:shared_failures.all_six.in_contested_set", "value": 26},
-            {"metric": "findings_metrics.json:shared_failures.all_six.gold_not_sound", "value": 26},
-            {"metric": "findings_metrics.json:shared_failures.all_six.gpt_coding_genuine", "value": 13},
-            {"metric": "findings_metrics.json:shared_failures.all_six.gpt_coding_doubt_gold", "value": 18}
+            {
+              "metric": "findings_metrics.json:shared_failures.all_six.in_contested_set",
+              "value": 26
+            },
+            {
+              "metric": "findings_metrics.json:shared_failures.all_six.gold_not_sound",
+              "value": 26
+            },
+            {
+              "metric": "findings_metrics.json:shared_failures.all_six.gpt_coding_genuine",
+              "value": 13
+            },
+            {
+              "metric": "findings_metrics.json:shared_failures.all_six.gpt_coding_doubt_gold",
+              "value": 18
+            }
           ],
           "procedure": "Cross-tabulation of the all-six fragments with the contested set, the gold label and the GPT coding disposition.",
-          "sources": ["fragment_outcomes_corrected", "contested_review", "gold_locked", "gpt_coding"],
+          "sources": [
+            "fragment_outcomes_corrected",
+            "contested_review",
+            "gold_locked",
+            "gpt_coding"
+          ],
           "code": "src/analysis/findings_metrics.py:shared_failures"
         }
       ]
@@ -218,52 +576,273 @@
           "id": "RQ2.2.a",
           "text": "Models called flawed passages sound 56% of the time and sound passages flawed 25% of the time.",
           "values": [
-            {"metric": "findings_metrics.json:error_asymmetry.locked.missed_flaws_pct", "value": 55.8},
-            {"metric": "findings_metrics.json:error_asymmetry.locked.wrongly_rejected_pct", "value": 24.6}
+            {
+              "metric": "findings_metrics.json:error_asymmetry.locked.missed_flaws_pct",
+              "value": 55.8
+            },
+            {
+              "metric": "findings_metrics.json:error_asymmetry.locked.wrongly_rejected_pct",
+              "value": 24.6
+            }
           ],
           "procedure": "Error rate within each reference label, pooled across models and conditions (majority labels).",
-          "sources": ["scored_db_corrected", "gold_locked"],
+          "sources": [
+            "scored_db_corrected",
+            "gold_locked"
+          ],
           "code": "src/analysis/findings_metrics.py:error_asymmetry_by_reference"
         },
         {
           "id": "RQ2.2.b",
           "text": "The ~2-to-1 ratio held under all three reference-label versions (50% vs 23% pre-revision; 40% vs 17% triangulated).",
           "values": [
-            {"metric": "findings_metrics.json:error_asymmetry.locked.ratio", "value": 2.27},
-            {"metric": "findings_metrics.json:error_asymmetry.pre_revision.missed_flaws_pct", "value": 50.3},
-            {"metric": "findings_metrics.json:error_asymmetry.pre_revision.wrongly_rejected_pct", "value": 23.4},
-            {"metric": "findings_metrics.json:error_asymmetry.pre_revision.ratio", "value": 2.15},
-            {"metric": "findings_metrics.json:error_asymmetry.triangulated.missed_flaws_pct", "value": 40.1},
-            {"metric": "findings_metrics.json:error_asymmetry.triangulated.wrongly_rejected_pct", "value": 16.8},
-            {"metric": "findings_metrics.json:error_asymmetry.triangulated.ratio", "value": 2.39}
+            {
+              "metric": "findings_metrics.json:error_asymmetry.locked.ratio",
+              "value": 2.27
+            },
+            {
+              "metric": "findings_metrics.json:error_asymmetry.pre_revision.missed_flaws_pct",
+              "value": 50.3
+            },
+            {
+              "metric": "findings_metrics.json:error_asymmetry.pre_revision.wrongly_rejected_pct",
+              "value": 23.4
+            },
+            {
+              "metric": "findings_metrics.json:error_asymmetry.pre_revision.ratio",
+              "value": 2.15
+            },
+            {
+              "metric": "findings_metrics.json:error_asymmetry.triangulated.missed_flaws_pct",
+              "value": 40.1
+            },
+            {
+              "metric": "findings_metrics.json:error_asymmetry.triangulated.wrongly_rejected_pct",
+              "value": 16.8
+            },
+            {
+              "metric": "findings_metrics.json:error_asymmetry.triangulated.ratio",
+              "value": 2.39
+            }
           ],
           "procedure": "Same rates against (1) the anchor's pre-revision ratings (18 pre-lock revisions undone) and (2) the triangulated labels.",
-          "sources": ["scored_db_corrected", "gold_locked", "gold_supplement", "contested_review"],
+          "sources": [
+            "scored_db_corrected",
+            "gold_locked",
+            "gold_supplement",
+            "contested_review"
+          ],
           "code": "src/analysis/findings_metrics.py:reference_labels, error_asymmetry_by_reference"
         },
         {
           "id": "RQ2.2.c",
           "text": "Three models were lenient in both conditions; GPT, Claude and DeepSeek leaned strict at zero-shot and turned lenient with few-shot examples.",
           "values": [
-            {"metric": "findings_metrics.json:model_anchor_agreement.n_combinations_lenient", "value": 9},
-            {"metric": "findings_metrics.json:model_anchor_agreement.strict_combinations", "value": ["gpt_5_6_sol|zero_shot", "claude_opus_5|zero_shot", "deepseek_v4_pro|zero_shot"]},
-            {"metric": "findings_metrics.json:model_anchor_agreement.few_shot_more_lenient_models", "value": ["gpt_5_6_sol", "claude_opus_5", "kimi_k3", "deepseek_v4_pro", "glm_5_2"]}
+            {
+              "metric": "findings_metrics.json:model_anchor_agreement.n_combinations_lenient",
+              "value": 9
+            },
+            {
+              "metric": "findings_metrics.json:model_anchor_agreement.strict_combinations",
+              "value": [
+                "gpt_5_6_sol|zero_shot",
+                "claude_opus_5|zero_shot",
+                "deepseek_v4_pro|zero_shot"
+              ]
+            },
+            {
+              "metric": "findings_metrics.json:model_anchor_agreement.few_shot_more_lenient_models",
+              "value": [
+                "gpt_5_6_sol",
+                "claude_opus_5",
+                "kimi_k3",
+                "deepseek_v4_pro",
+                "glm_5_2"
+              ]
+            }
           ],
           "procedure": "Per model x condition: lenient if missed-flaw rate exceeds wrongly-rejected rate; few-shot more lenient if share called sound rises from zero-shot.",
-          "sources": ["scored_db_corrected", "gold_locked"],
+          "sources": [
+            "scored_db_corrected",
+            "gold_locked"
+          ],
           "code": "src/analysis/findings_metrics.py:model_anchor_agreement"
         },
         {
           "id": "RQ2.2.d",
           "text": "Expert review supports leniency as the genuine pattern: 27 of 43 lenient errors confirmed vs 1 of 33 strict.",
           "values": [
-            {"metric": "failure_coding_synthesis.json:direction.lenient.genuine", "value": 27},
-            {"metric": "failure_coding_synthesis.json:direction.strict.genuine", "value": 1}
+            {
+              "metric": "failure_coding_synthesis.json:direction.lenient.genuine",
+              "value": 27
+            },
+            {
+              "metric": "failure_coding_synthesis.json:direction.strict.genuine",
+              "value": 1
+            }
           ],
           "procedure": "GPT failure coding disposition by error direction (fragment level).",
-          "sources": ["gpt_coding"],
+          "sources": [
+            "gpt_coding"
+          ],
           "code": "src/analysis/coding_synthesis.py:direction_summary",
           "caveat": "Direction confirmation exists for GPT only."
+        },
+        {
+          "id": "RQ2.2.e",
+          "text": "Per-model tables in rq2.md: missed-flaw and wrongly-rejected rates, and share called sound, by model and condition.",
+          "values": [
+            {
+              "metric": "findings_metrics.json:model_anchor_agreement.by_combination.gpt_5_6_sol|zero_shot.missed_flaws_pct",
+              "value": 32.4
+            },
+            {
+              "metric": "findings_metrics.json:model_anchor_agreement.by_combination.gpt_5_6_sol|zero_shot.wrongly_rejected_pct",
+              "value": 43.4
+            },
+            {
+              "metric": "findings_metrics.json:model_anchor_agreement.by_combination.gpt_5_6_sol|zero_shot.calls_sound_pct",
+              "value": 44.7
+            },
+            {
+              "metric": "findings_metrics.json:model_anchor_agreement.by_combination.gpt_5_6_sol|few_shot.missed_flaws_pct",
+              "value": 58.1
+            },
+            {
+              "metric": "findings_metrics.json:model_anchor_agreement.by_combination.gpt_5_6_sol|few_shot.wrongly_rejected_pct",
+              "value": 15.8
+            },
+            {
+              "metric": "findings_metrics.json:model_anchor_agreement.by_combination.gpt_5_6_sol|few_shot.calls_sound_pct",
+              "value": 71.3
+            },
+            {
+              "metric": "findings_metrics.json:model_anchor_agreement.by_combination.claude_opus_5|zero_shot.missed_flaws_pct",
+              "value": 33.8
+            },
+            {
+              "metric": "findings_metrics.json:model_anchor_agreement.by_combination.claude_opus_5|zero_shot.wrongly_rejected_pct",
+              "value": 43.4
+            },
+            {
+              "metric": "findings_metrics.json:model_anchor_agreement.by_combination.claude_opus_5|zero_shot.calls_sound_pct",
+              "value": 45.3
+            },
+            {
+              "metric": "findings_metrics.json:model_anchor_agreement.by_combination.claude_opus_5|few_shot.missed_flaws_pct",
+              "value": 45.9
+            },
+            {
+              "metric": "findings_metrics.json:model_anchor_agreement.by_combination.claude_opus_5|few_shot.wrongly_rejected_pct",
+              "value": 26.3
+            },
+            {
+              "metric": "findings_metrics.json:model_anchor_agreement.by_combination.claude_opus_5|few_shot.calls_sound_pct",
+              "value": 60.0
+            },
+            {
+              "metric": "findings_metrics.json:model_anchor_agreement.by_combination.gemini_3_pro_preview_high|zero_shot.missed_flaws_pct",
+              "value": 71.6
+            },
+            {
+              "metric": "findings_metrics.json:model_anchor_agreement.by_combination.gemini_3_pro_preview_high|zero_shot.wrongly_rejected_pct",
+              "value": 18.4
+            },
+            {
+              "metric": "findings_metrics.json:model_anchor_agreement.by_combination.gemini_3_pro_preview_high|zero_shot.calls_sound_pct",
+              "value": 76.7
+            },
+            {
+              "metric": "findings_metrics.json:model_anchor_agreement.by_combination.gemini_3_pro_preview_high|few_shot.missed_flaws_pct",
+              "value": 66.2
+            },
+            {
+              "metric": "findings_metrics.json:model_anchor_agreement.by_combination.gemini_3_pro_preview_high|few_shot.wrongly_rejected_pct",
+              "value": 15.8
+            },
+            {
+              "metric": "findings_metrics.json:model_anchor_agreement.by_combination.gemini_3_pro_preview_high|few_shot.calls_sound_pct",
+              "value": 75.3
+            },
+            {
+              "metric": "findings_metrics.json:model_anchor_agreement.by_combination.kimi_k3|zero_shot.missed_flaws_pct",
+              "value": 62.2
+            },
+            {
+              "metric": "findings_metrics.json:model_anchor_agreement.by_combination.kimi_k3|zero_shot.wrongly_rejected_pct",
+              "value": 19.7
+            },
+            {
+              "metric": "findings_metrics.json:model_anchor_agreement.by_combination.kimi_k3|zero_shot.calls_sound_pct",
+              "value": 71.3
+            },
+            {
+              "metric": "findings_metrics.json:model_anchor_agreement.by_combination.kimi_k3|few_shot.missed_flaws_pct",
+              "value": 82.4
+            },
+            {
+              "metric": "findings_metrics.json:model_anchor_agreement.by_combination.kimi_k3|few_shot.wrongly_rejected_pct",
+              "value": 3.9
+            },
+            {
+              "metric": "findings_metrics.json:model_anchor_agreement.by_combination.kimi_k3|few_shot.calls_sound_pct",
+              "value": 89.3
+            },
+            {
+              "metric": "findings_metrics.json:model_anchor_agreement.by_combination.deepseek_v4_pro|zero_shot.missed_flaws_pct",
+              "value": 29.7
+            },
+            {
+              "metric": "findings_metrics.json:model_anchor_agreement.by_combination.deepseek_v4_pro|zero_shot.wrongly_rejected_pct",
+              "value": 60.5
+            },
+            {
+              "metric": "findings_metrics.json:model_anchor_agreement.by_combination.deepseek_v4_pro|zero_shot.calls_sound_pct",
+              "value": 34.7
+            },
+            {
+              "metric": "findings_metrics.json:model_anchor_agreement.by_combination.deepseek_v4_pro|few_shot.missed_flaws_pct",
+              "value": 40.5
+            },
+            {
+              "metric": "findings_metrics.json:model_anchor_agreement.by_combination.deepseek_v4_pro|few_shot.wrongly_rejected_pct",
+              "value": 30.3
+            },
+            {
+              "metric": "findings_metrics.json:model_anchor_agreement.by_combination.deepseek_v4_pro|few_shot.calls_sound_pct",
+              "value": 55.3
+            },
+            {
+              "metric": "findings_metrics.json:model_anchor_agreement.by_combination.glm_5_2|zero_shot.missed_flaws_pct",
+              "value": 70.3
+            },
+            {
+              "metric": "findings_metrics.json:model_anchor_agreement.by_combination.glm_5_2|zero_shot.wrongly_rejected_pct",
+              "value": 12.0
+            },
+            {
+              "metric": "findings_metrics.json:model_anchor_agreement.by_combination.glm_5_2|zero_shot.calls_sound_pct",
+              "value": 79.2
+            },
+            {
+              "metric": "findings_metrics.json:model_anchor_agreement.by_combination.glm_5_2|few_shot.missed_flaws_pct",
+              "value": 76.7
+            },
+            {
+              "metric": "findings_metrics.json:model_anchor_agreement.by_combination.glm_5_2|few_shot.wrongly_rejected_pct",
+              "value": 5.3
+            },
+            {
+              "metric": "findings_metrics.json:model_anchor_agreement.by_combination.glm_5_2|few_shot.calls_sound_pct",
+              "value": 85.8
+            }
+          ],
+          "procedure": "Per model x condition majority labels vs locked gold; within-label error rates and share of sound calls.",
+          "sources": [
+            "scored_db_corrected",
+            "gold_locked"
+          ],
+          "code": "src/analysis/findings_metrics.py:model_anchor_agreement"
         }
       ]
     }

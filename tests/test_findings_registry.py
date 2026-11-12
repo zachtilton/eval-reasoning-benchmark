@@ -21,8 +21,8 @@ def resolve(ref: str):
 def _values():
     """Every (claim id, metric ref, registered value) in the registry."""
     for finding in REGISTRY["findings"]:
-        for claim in finding["claims"]:
-            for v in claim["values"]:
+        for claim in finding["claims"] + finding.get("methods_notes", []):
+            for v in claim.get("values", []):
                 yield pytest.param(v["metric"], v["value"], id=f"{claim['id']}:{v['metric']}")
 
 

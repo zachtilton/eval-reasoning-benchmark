@@ -67,8 +67,11 @@ scoring against the locked gold standard
 1. **Pre-registration deviation.** Corrected scoring removed the coherence
    gate after RC3 found 0 of 217 sampled flagged runs incoherent. The
    finding concerns classification agreement, not rationale coherence.
-   RC3 was a sample (64/216 incoherent, 153/1,217 ambiguous reviewed); the
-   rest were scored by extension.
+   RC3 was a sample (64/216 incoherent, 153/1,217 ambiguous reviewed; the 64
+   ambiguous runs a second model could not call were fully reviewed); the
+   rest were scored by extension. Rule-of-three bound: at most ~43 genuinely
+   incoherent runs (0.8% of 5,400) among those never reviewed. The rater
+   never assigned "incoherent", including to 94 controls.
 2. **Human comparison is small and not held out.** 38 fragments (±~15 pp);
    the anchor's pass-2 ratings followed calibration on these fragments.
    "Comparable", not "equivalent".

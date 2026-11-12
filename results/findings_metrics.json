@@ -28,8 +28,8 @@
     }
   },
   "model_anchor_agreement": {
-    "by_combination": [
-      {
+    "by_combination": {
+      "gpt_5_6_sol|zero_shot": {
         "model_family": "gpt_5_6_sol",
         "prompt_condition": "zero_shot",
         "n": 150,
@@ -46,7 +46,7 @@
         "wrongly_rejected_pct": 43.4,
         "calls_sound_pct": 44.7
       },
-      {
+      "gpt_5_6_sol|few_shot": {
         "model_family": "gpt_5_6_sol",
         "prompt_condition": "few_shot",
         "n": 150,
@@ -63,7 +63,7 @@
         "wrongly_rejected_pct": 15.8,
         "calls_sound_pct": 71.3
       },
-      {
+      "claude_opus_5|zero_shot": {
         "model_family": "claude_opus_5",
         "prompt_condition": "zero_shot",
         "n": 150,
@@ -80,7 +80,7 @@
         "wrongly_rejected_pct": 43.4,
         "calls_sound_pct": 45.3
       },
-      {
+      "claude_opus_5|few_shot": {
         "model_family": "claude_opus_5",
         "prompt_condition": "few_shot",
         "n": 150,
@@ -97,7 +97,7 @@
         "wrongly_rejected_pct": 26.3,
         "calls_sound_pct": 60.0
       },
-      {
+      "gemini_3_pro_preview_high|zero_shot": {
         "model_family": "gemini_3_pro_preview_high",
         "prompt_condition": "zero_shot",
         "n": 150,
@@ -114,7 +114,7 @@
         "wrongly_rejected_pct": 18.4,
         "calls_sound_pct": 76.7
       },
-      {
+      "gemini_3_pro_preview_high|few_shot": {
         "model_family": "gemini_3_pro_preview_high",
         "prompt_condition": "few_shot",
         "n": 150,
@@ -131,7 +131,7 @@
         "wrongly_rejected_pct": 15.8,
         "calls_sound_pct": 75.3
       },
-      {
+      "kimi_k3|zero_shot": {
         "model_family": "kimi_k3",
         "prompt_condition": "zero_shot",
         "n": 150,
@@ -148,7 +148,7 @@
         "wrongly_rejected_pct": 19.7,
         "calls_sound_pct": 71.3
       },
-      {
+      "kimi_k3|few_shot": {
         "model_family": "kimi_k3",
         "prompt_condition": "few_shot",
         "n": 150,
@@ -165,7 +165,7 @@
         "wrongly_rejected_pct": 3.9,
         "calls_sound_pct": 89.3
       },
-      {
+      "deepseek_v4_pro|zero_shot": {
         "model_family": "deepseek_v4_pro",
         "prompt_condition": "zero_shot",
         "n": 150,
@@ -182,7 +182,7 @@
         "wrongly_rejected_pct": 60.5,
         "calls_sound_pct": 34.7
       },
-      {
+      "deepseek_v4_pro|few_shot": {
         "model_family": "deepseek_v4_pro",
         "prompt_condition": "few_shot",
         "n": 150,
@@ -199,7 +199,7 @@
         "wrongly_rejected_pct": 30.3,
         "calls_sound_pct": 55.3
       },
-      {
+      "glm_5_2|zero_shot": {
         "model_family": "glm_5_2",
         "prompt_condition": "zero_shot",
         "n": 149,
@@ -216,7 +216,7 @@
         "wrongly_rejected_pct": 12.0,
         "calls_sound_pct": 79.2
       },
-      {
+      "glm_5_2|few_shot": {
         "model_family": "glm_5_2",
         "prompt_condition": "few_shot",
         "n": 148,
@@ -233,7 +233,7 @@
         "wrongly_rejected_pct": 5.3,
         "calls_sound_pct": 85.8
       }
-    ],
+    },
     "kappa_mean": 0.196,
     "kappa_range": [
       0.097,
@@ -465,5 +465,141 @@
       "n": 10,
       "reviewer_sides_models": 6
     }
+  },
+  "rc3_deviation": {
+    "as_designed_pass_rate_pct": 43.3,
+    "coherence_population": {
+      "coherent": 3967,
+      "ambiguous": 1217,
+      "incoherent": 216
+    },
+    "non_coherent_total": 1433,
+    "review": {
+      "sampled": 314,
+      "rated": 311,
+      "rated_coherent": 311,
+      "rated_incoherent": 0,
+      "flagged_rated": 217,
+      "flagged_rated_incoherent": 0,
+      "incoherent_rated": 64,
+      "ambiguous_rated": 153,
+      "by_stratum": {
+        "ambiguous_3way_split": {
+          "sampled": 64,
+          "rated": 64,
+          "rated_incoherent": 0
+        },
+        "ambiguous_sides_with_haiku": {
+          "sampled": 83,
+          "rated": 83,
+          "rated_incoherent": 0
+        },
+        "ambiguous_sides_with_rule": {
+          "sampled": 6,
+          "rated": 6,
+          "rated_incoherent": 0
+        },
+        "coherent_confident": {
+          "sampled": 94,
+          "rated": 94,
+          "rated_incoherent": 0
+        },
+        "incoherent_confident": {
+          "sampled": 67,
+          "rated": 64,
+          "rated_incoherent": 0
+        }
+      }
+    },
+    "luna_triage": {
+      "coherent": 1153,
+      "ambiguous": 64
+    },
+    "unreviewed_bound": {
+      "incoherent": {
+        "population": 216,
+        "reviewed": 64,
+        "unreviewed": 152,
+        "upper_rate_pct": 4.7,
+        "max_incoherent_unreviewed": 7.1
+      },
+      "ambiguous_luna_coherent": {
+        "population": 1153,
+        "reviewed": 89,
+        "unreviewed": 1064,
+        "upper_rate_pct": 3.4,
+        "max_incoherent_unreviewed": 35.9
+      },
+      "ambiguous_luna_ambiguous": {
+        "population": 64,
+        "reviewed": 64,
+        "unreviewed": 0,
+        "upper_rate_pct": 4.7,
+        "max_incoherent_unreviewed": 0.0
+      },
+      "max_incoherent_unreviewed_total": 43.0,
+      "max_incoherent_unreviewed_pct_of_all_runs": 0.8
+    }
+  },
+  "contested_overlap": {
+    "revised_in_contested": 10,
+    "revised_in_contested_reviewer_sides_models": 10,
+    "revised_in_contested_original_matches_models": 10,
+    "directly_rated_by_rc2": 4,
+    "directly_rated_all_2_2": true,
+    "directly_rated": {
+      "2019": {
+        "rc2_raters": [
+          "sound",
+          "sound"
+        ],
+        "anchor_original": "not_sound",
+        "third_reviewer": "not_sound",
+        "locked": "sound",
+        "model_majority": "not_sound",
+        "human_sound_votes": 2,
+        "human_votes": 4
+      },
+      "703": {
+        "rc2_raters": [
+          "not_sound",
+          "not_sound"
+        ],
+        "anchor_original": "sound",
+        "third_reviewer": "sound",
+        "locked": "not_sound",
+        "model_majority": "sound",
+        "human_sound_votes": 2,
+        "human_votes": 4
+      },
+      "1367": {
+        "rc2_raters": [
+          "not_sound",
+          "not_sound"
+        ],
+        "anchor_original": "sound",
+        "third_reviewer": "sound",
+        "locked": "not_sound",
+        "model_majority": "sound",
+        "human_sound_votes": 2,
+        "human_votes": 4
+      },
+      "1001": {
+        "rc2_raters": [
+          "not_sound",
+          "not_sound"
+        ],
+        "anchor_original": "sound",
+        "third_reviewer": "sound",
+        "locked": "not_sound",
+        "model_majority": "sound",
+        "human_sound_votes": 2,
+        "human_votes": 4
+      }
+    }
+  },
+  "evaluator_split": {
+    "human_human_disagreement_pct": 25.0,
+    "contested_share_pct": 23.3
   }
 }

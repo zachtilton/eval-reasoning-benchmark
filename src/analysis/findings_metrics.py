@@ -34,14 +34,19 @@ from .config import (
     FINDINGS_METRICS_PATH,
     FINDINGS_SEED,
     FRAGMENT_OUTCOMES_CORRECTED_PATH,
+    FRAGMENT_OUTCOMES_PATH,
     FRAGMENT_OUTCOMES_TRIANGULATED_PATH,
     GOLD_RATIONALE_SUPPLEMENT_PATH,
     KAPPA_BOOTSTRAP_RESAMPLES,
+    LUNA_TRIAGE_PATH,
     MODEL_ORDER,
     PRIMARY_MODEL,
     PROMPT_ORDER,
     RC2_BLIND_RETEST_PATH,
+    RC3_REVIEW_BLINDED_PATH,
+    RC3_REVIEW_KEY_PATH,
     SCORED_DB_CORRECTED_PATH,
+    SCORED_DB_PATH,
 )
 
 LABELS = ("sound", "not_sound")
@@ -167,7 +172,7 @@ def model_anchor_agreement(maj: pd.DataFrame, gold: pd.DataFrame, seed: int = FI
     t = pd.DataFrame(rows)
     lenient = t[t["missed_flaws_pct"] > t["wrongly_rejected_pct"]]
     return {
-        "by_combination": rows,
+        "by_combination": {f"{r['model_family']}|{r['prompt_condition']}": r for r in rows},
         "kappa_mean": round(t["kappa"].mean(), 3),
         "kappa_range": [round(t["kappa"].min(), 3), round(t["kappa"].max(), 3)],
         "agreement_range_pct": [t["agreement_pct"].min(), t["agreement_pct"].max()],
@@ -386,6 +391,156 @@ def challenge_case_summary(outcomes: pd.DataFrame, rows: pd.DataFrame) -> dict:
     }
 
 
+def rc3_deviation(
+    outcomes_as_designed: pd.DataFrame,
+    scored_db_as_designed: pd.DataFrame,
+    review_key: pd.DataFrame,
+    review_blinded: pd.DataFrame,
+    luna: pd.DataFrame,
+) -> dict:
+    """
+    Figures behind the pre-registration deviation (coherence gate removed).
+
+    Args:
+        outcomes_as_designed: Fragment outcomes under the pre-registered scoring.
+        scored_db_as_designed: Scored DB with coherence_final.
+        review_key: RC3 stratified sample key (row_id, stratum, coherence_final).
+        review_blinded: RC3 blinded sheet with the author's ratings (your_rating).
+        luna: Secondary-model triage of all ambiguous runs (luna_verdict).
+
+    Returns:
+        Dict: as-designed pass rate, coherence population, RC3 sample by
+        stratum and rating, Luna triage counts, and a rule-of-three bound
+        on genuinely incoherent runs among those never reviewed.
+    """
+    pop = scored_db_as_designed["coherence_final"].value_counts().to_dict()
+    rev = review_key.merge(review_blinded[["row_id", "your_rating"]], on="row_id", how="left")
+    rated = rev[rev["your_rating"].notna()]
+    flagged = rated[rated["coherence_final"] != "coherent"]
+    by_stratum = {
+        s: {"sampled": int(len(g)), "rated": int(g["your_rating"].notna().sum()),
+            "rated_incoherent": int((g["your_rating"] == "incoherent").sum())}
+        for s, g in rev.groupby("stratum")
+    }
+    n_incoh = int((rated["coherence_final"] == "incoherent").sum())
+    n_amb = int((rated["coherence_final"] == "ambiguous").sum())
+    return {
+        "as_designed_pass_rate_pct": _pct((outcomes_as_designed["fragment_outcome"] == "pass").mean()),
+        "coherence_population": {k: int(v) for k, v in pop.items()},
+        "non_coherent_total": int(pop.get("incoherent", 0) + pop.get("ambiguous", 0)),
+        "review": {
+            "sampled": int(len(rev)),
+            "rated": int(len(rated)),
+            "rated_coherent": int((rated["your_rating"] == "coherent").sum()),
+            "rated_incoherent": int((rated["your_rating"] == "incoherent").sum()),
+            "flagged_rated": int(len(flagged)),
+            "flagged_rated_incoherent": int((flagged["your_rating"] == "incoherent").sum()),
+            "incoherent_rated": n_incoh,
+            "ambiguous_rated": n_amb,
+            "by_stratum": by_stratum,
+        },
+        "luna_triage": luna["luna_verdict"].value_counts().to_dict(),
+        "unreviewed_bound": _unreviewed_bound(rev, pop, luna),
+    }
+
+
+def _unreviewed_bound(rev: pd.DataFrame, pop: dict, luna: pd.DataFrame) -> dict:
+    """
+    Rule-of-three bound on genuinely incoherent runs left unreviewed.
+
+    Populations follow the RC3 strata: confident-incoherent runs, ambiguous
+    runs Luna judged coherent (sampled), and ambiguous runs Luna could not
+    call (fully censused). With 0 incoherent ratings in n reviewed, the 95%
+    upper bound on the rate is ~3/n, applied to the unreviewed remainder.
+
+    Args:
+        rev: RC3 key merged with ratings.
+        pop: Coherence population counts.
+        luna: Luna triage of all ambiguous runs.
+
+    Returns:
+        Dict per population plus the total bound on unreviewed incoherent runs.
+    """
+    luna_counts = luna["luna_verdict"].value_counts()
+    rated = rev[rev["your_rating"].notna()]
+    groups = {
+        "incoherent": (int(pop.get("incoherent", 0)), int((rated["stratum"] == "incoherent_confident").sum())),
+        "ambiguous_luna_coherent": (int(luna_counts.get("coherent", 0)),
+                                    int(rated["stratum"].isin(["ambiguous_sides_with_haiku", "ambiguous_sides_with_rule"]).sum())),
+        "ambiguous_luna_ambiguous": (int(luna_counts.get("ambiguous", 0)), int((rated["stratum"] == "ambiguous_3way_split").sum())),
+    }
+    out, total = {}, 0.0
+    for name, (n_pop, n_rev) in groups.items():
+        unreviewed = n_pop - n_rev
+        rate = 3 / n_rev if n_rev else None
+        bound = unreviewed * rate if rate is not None else None
+        total += bound or 0.0
+        out[name] = {"population": n_pop, "reviewed": n_rev, "unreviewed": unreviewed,
+                     "upper_rate_pct": round(100 * rate, 1) if rate else None,
+                     "max_incoherent_unreviewed": round(bound, 1) if bound is not None else None}
+    out["max_incoherent_unreviewed_total"] = round(total, 1)
+    out["max_incoherent_unreviewed_pct_of_all_runs"] = round(100 * total / sum(pop.values()), 2)
+    return out
+
+
+def contested_overlap(resolved: pd.DataFrame, supplement: pd.DataFrame, retest: pd.DataFrame) -> dict:
+    """
+    Overlap of the contested set with the pre-lock revisions and RC2 ratings.
+
+    Args:
+        resolved: Contested-fragment review (35 rows).
+        supplement: Pre-lock revision supplement (18 rows).
+        retest: RC2 blind retest (report_id, rater_1, rater_2, anchor1, ...).
+
+    Returns:
+        Dict: overlap counts, how the reviewer sided on revised fragments, and
+        the human vote split on fragments also rated by the RC2 raters.
+    """
+    x = resolved.merge(supplement[["fragment_id", "original_rating", "final_rating_locked"]], on="fragment_id")
+    h = retest.rename(columns={"report_id": "fragment_id"}).copy()
+    for c in ("rater_1", "rater_2", "anchor1"):
+        h[c] = _norm_label(h[c])
+    direct = x.merge(h, on="fragment_id")
+    splits = {}
+    for r in direct.itertuples():
+        votes = [r.rater_1, r.rater_2, r.original_rating, r.reviewer_classification]
+        splits[str(r.fragment_id)] = {
+            "rc2_raters": [r.rater_1, r.rater_2],
+            "anchor_original": r.original_rating,
+            "third_reviewer": r.reviewer_classification,
+            "locked": r.final_rating_locked,
+            "model_majority": r.model_majority,
+            "human_sound_votes": int(sum(v == "sound" for v in votes)),
+            "human_votes": len(votes),
+        }
+    return {
+        "revised_in_contested": int(len(x)),
+        "revised_in_contested_reviewer_sides_models": int((x["reviewer_classification"] == x["model_majority"]).sum()),
+        "revised_in_contested_original_matches_models": int((x["original_rating"] == x["model_majority"]).sum()),
+        "directly_rated_by_rc2": int(len(direct)),
+        "directly_rated_all_2_2": bool(all(s["human_sound_votes"] == 2 for s in splits.values())),
+        "directly_rated": splits,
+    }
+
+
+def evaluator_split_share(human: dict, contested_n: int, n_fragments: int) -> dict:
+    """
+    The two estimates behind "roughly one in four fragments split evaluators".
+
+    Args:
+        human: Output of human_comparison.
+        contested_n: Size of the contested set.
+        n_fragments: Benchmark size.
+
+    Returns:
+        Dict with human-human disagreement and contested share (percent).
+    """
+    return {
+        "human_human_disagreement_pct": round(100 - human["all_40"]["rater_1_vs_rater_2"]["agreement_pct"], 1),
+        "contested_share_pct": _pct(contested_n / n_fragments),
+    }
+
+
 def run_findings_metrics(output_path: Path = FINDINGS_METRICS_PATH) -> dict:
     """
     Compute every metric cited in docs/findings and export JSON.
@@ -404,6 +559,7 @@ def run_findings_metrics(output_path: Path = FINDINGS_METRICS_PATH) -> dict:
     supplement = pd.read_csv(GOLD_RATIONALE_SUPPLEMENT_PATH)
     rows = load_coding_sheet(FAILURE_CODES_PATH)
     frags = to_fragment_level(rows)
+    retest = pd.read_csv(RC2_BLIND_RETEST_PATH)
     maj = majority_labels(db)
     ref = reference_labels(gold, supplement, resolved)
 
@@ -418,7 +574,7 @@ def run_findings_metrics(output_path: Path = FINDINGS_METRICS_PATH) -> dict:
         "model_anchor_agreement": model_anchor_agreement(maj, gold),
         "model_model_kappa": model_model_kappa(maj),
         "error_asymmetry": error_asymmetry_by_reference(maj, ref),
-        "human_comparison": human_comparison(maj, gold, pd.read_csv(RC2_BLIND_RETEST_PATH)),
+        "human_comparison": human_comparison(maj, gold, retest),
         "unanimity_corrected": unanimity(outcomes),
         "shared_failures": shared_failures(outcomes, gold, resolved, frags),
         "challenge_cases": challenge_case_summary(outcomes, rows),
@@ -432,6 +588,15 @@ def run_findings_metrics(output_path: Path = FINDINGS_METRICS_PATH) -> dict:
                             "reviewer_sides_models": int(((resolved["expert_classification"] == "sound") & (resolved["reviewer_classification"] == "not_sound")).sum())},
         },
     }
+    metrics["rc3_deviation"] = rc3_deviation(
+        pd.read_csv(FRAGMENT_OUTCOMES_PATH),
+        pd.read_csv(SCORED_DB_PATH, usecols=["coherence_final"]),
+        pd.read_csv(RC3_REVIEW_KEY_PATH),
+        pd.read_csv(RC3_REVIEW_BLINDED_PATH),
+        pd.read_csv(LUNA_TRIAGE_PATH),
+    )
+    metrics["contested_overlap"] = contested_overlap(resolved, supplement, retest)
+    metrics["evaluator_split"] = evaluator_split_share(metrics["human_comparison"], len(resolved), len(gold))
     output_path.parent.mkdir(parents=True, exist_ok=True)
     with open(output_path, "w") as f:
         json.dump(metrics, f, indent=2, default=_json_default)
