@@ -34,16 +34,16 @@ scoring against the locked gold standard
 |---|---|---|
 | Fragment-level agreement (pooled, 6 models × 2 conditions × 150) | 59.9%, 95% CI 54.3–65.5% (fragment-clustered bootstrap, 5,000 resamples, seed 42) | `data/responses/fragment_outcomes_corrected.csv` |
 | Run-level agreement | 59.6% (3,220 / 5,400) | `data/responses/scored_database_corrected.csv` |
-| Chance-corrected agreement, model vs anchor | κ mean 0.20 (range 0.10–0.29); raw 55–65% | scratch `rq1_agreement.py` (not yet folded into `src/`) |
+| Chance-corrected agreement, model vs anchor | κ mean 0.20 (range 0.10–0.29); raw 55–65% | `results/findings_metrics.json` → `model_anchor_agreement` |
 | Accuracy by gold label | sound 75% vs not sound 44% | same |
 | No model differences | χ²(5) = 3.24, p = .66, V = 0.04; closed 60.9% vs open 58.9%, z = 0.87, p = .39 | `results/H2_statistical_tests_corrected.json` |
 | Run-to-run consistency | 86.8% of 1,800 combinations unanimous across 3 runs | `fragment_outcomes_corrected.csv` |
 | Expert test-retest (RC1) | 85% agreement, κ = 0.70, n = 20 | `results/reliability_checks.json` |
 | Human–human (RC2 raters) | 75% agreement, κ = 0.50, n = 40 | `reliability/blind_retest_40frag_pass2.csv` |
 | Humans vs anchor's independent (pass-2) ratings, 38 shared fragments | 55.3% / 60.5% (κ 0.13 / 0.19) | same |
-| Models vs anchor pass-2 ratings, same 38 fragments | mean 57.3% (range 42–76%) | same + corrected DB majority labels |
+| Models vs anchor pass-2 ratings, same 38 fragments | mean 57.5% (range 42–76%) | same + corrected DB majority labels |
 | Humans vs locked gold, same 38 (partly circular: gold revised toward raters) | 68.4% / 73.7% (κ 0.37 / 0.47) | same |
-| Triangulated sensitivity (35 contested labels resolved by third reviewer) | 73.6%, 95% CI 69.1–78.1% | `data/responses/fragment_outcomes_triangulated.csv` |
+| Triangulated sensitivity (35 contested labels resolved by third reviewer) | 73.6%, 95% CI 68.9–78.1% | `data/responses/fragment_outcomes_triangulated.csv` |
 | Third reviewer sided with models | 25 / 35 (lenient side 19/25, strict side 6/10) | `data/responses/contested_fragments_review_resolved.csv` |
 | GPT error confirmation (failure coding) | lenient 27/43 genuine; strict 1/33 genuine | `results/failure_coding_synthesis.json` |
 | Pre-lock revisions vs models | all models agree more with pre-revision ratings (+1.4 to +8.0 pp, mean +5.5) | same |
@@ -99,3 +99,10 @@ The 43.3% figure belongs here only, not alongside the 60% / 74% estimates.
 > independently resolved. Expert's own test-retest: 85%. Roughly 1 in 4
 > fragments split qualified evaluators. Human comparison: two independent
 > evaluators, n = 38.*
+
+---
+
+*Provenance:* every figure above is computed by
+`src/analysis/findings_metrics.py` (→ `results/findings_metrics.json`) or an
+existing results file; `docs/findings/findings_registry.json` maps each claim
+to its metric, procedure and data sources.

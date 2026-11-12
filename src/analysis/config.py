@@ -106,3 +106,19 @@ CORE_CRITERIA: list[str] = [
     "relevance", "coherence", "effectiveness", "efficiency", "impact", "sustainability",
 ]
 FIGURE_DPI: int = 300
+
+# ---------------------------------------------------------------------------
+# Findings metrics and registry (see findings_metrics.py)
+# ---------------------------------------------------------------------------
+
+FRAGMENT_OUTCOMES_TRIANGULATED_PATH = RESPONSES_DIR / "fragment_outcomes_triangulated.csv"
+RC2_BLIND_RETEST_PATH = PROJECT_ROOT / "reliability" / "blind_retest_40frag_pass2.csv"
+RELIABILITY_CHECKS_PATH = RESULTS_DIR / "reliability_checks.json"
+H2_CORRECTED_RESULTS_PATH = RESULTS_DIR / "H2_statistical_tests_corrected.json"
+H2_TRIANGULATED_RESULTS_PATH = RESULTS_DIR / "H2_statistical_tests_triangulated.json"
+FINDINGS_METRICS_PATH = RESULTS_DIR / "findings_metrics.json"
+FINDINGS_REGISTRY_PATH = PROJECT_ROOT / "docs" / "findings" / "findings_registry.json"
+
+FINDINGS_SEED: int = 42
+BOOTSTRAP_RESAMPLES: int = 5000
+KAPPA_BOOTSTRAP_RESAMPLES: int = 2000

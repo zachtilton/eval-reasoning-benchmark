@@ -9,7 +9,26 @@ patterns first, then GPT (primary diagnostic model) close-up.
 
 ---
 
-## Finding 2.1 — Shared failures (draft, discussed 2026-11-12)
+## Finding 2.1 — Shared failures (agreed 2026-11-12)
+
+### Headline
+
+> **The six models got the same passages wrong: what mattered was which
+> passage was being judged, not which model judged it.**
+
+### Expanded
+
+> The six models largely passed and failed the same passages. Thirty-one
+> passages were failed by every model and 35 by none; if each model erred
+> independently at its own rate, about two of each would be expected. Which
+> passage was being judged accounted for about half the variation in
+> outcomes; which model judged it accounted for almost none, consistent with
+> the absence of significant differences between models. Nearly all of the
+> primary model's failures (107 of 112) were shared with at least two other
+> models. Shared failure is not the same as shared error, however: of the 31
+> passages every model failed, 26 were among those where the models jointly
+> disagreed with the expert, and on expert review 13 were confirmed as
+> genuine model errors while 18 rested on reference labels open to question.
 
 ### Plain-language version
 
@@ -31,11 +50,11 @@ against a human expert, that is a signal worth checking, not a verdict.
 | Models failing a fragment (failure in either condition) | Observed | Expected if independent* |
 |---|---|---|
 | 0 | 35 | 2.7 |
-| 1–5 | 84 | 145.2 |
-| 6 | 31 | 2.1 |
+| 1–5 | 84 | 145.3 |
+| 6 | 31 | 2.0 |
 
-\*Simulated from each model's own any-condition fail rate (46–51%), 5,000
-draws, seed 42.
+\*Exact (Poisson-binomial) from each model's own any-condition fail rate
+(46–51%).
 
 - Share of pass/fail variation explained (η², 1,800 combinations): fragment
   0.52 (chance baseline ≈ 0.08 with 150 groups), model 0.002, prompt
@@ -93,9 +112,9 @@ not shares of all errors.
 
 | Reference labels | Sound labels (of 150) | Missed flaws (ref. not sound) | Wrongly rejected (ref. sound) |
 |---|---|---|---|
-| Locked gold | 76 | 55.7% | 24.6% |
+| Locked gold | 76 | 55.8% | 24.6% |
 | Pre-revision ratings (18 pre-lock revisions undone) | 88 | 50.3% | 23.4% |
-| Triangulated (35 contested → third reviewer) | 89 | 40.2% | 16.8% |
+| Triangulated (35 contested → third reviewer) | 89 | 40.1% | 16.8% |
 
 **By model and condition (locked gold)**
 
@@ -145,6 +164,7 @@ fragments confirmed genuine (62.8%); strict 1/33 (3.0%).
   (few-shot-only failures 68% confirmed vs zero-shot-only 5%), criterion.
 - Mainline RQ2 answer.
 
-*Reproducibility note:* the figures in 2.1 and 2.2 were computed in session
-scripts and are not yet in `src/`; fold into an analysis module before
-finalizing.
+*Provenance:* every figure above is computed by
+`src/analysis/findings_metrics.py` (→ `results/findings_metrics.json`) or an
+existing results file; `docs/findings/findings_registry.json` maps each claim
+to its metric, procedure and data sources.
