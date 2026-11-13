@@ -1047,6 +1047,112 @@ def rater_leniency(gold: pd.DataFrame, retest: pd.DataFrame) -> dict:
     return out
 
 
+def _balanced(pred: np.ndarray, ref: np.ndarray) -> dict:
+    """Balanced accuracy, plain agreement and leniency ratio for label arrays."""
+    s, ns = ref == "sound", ref == "not_sound"
+    acc_s = (pred[s] == "sound").mean() if s.any() else np.nan
+    acc_ns = (pred[ns] == "not_sound").mean() if ns.any() else np.nan
+    missed, rejected = 1 - acc_ns, 1 - acc_s
+    return {"balanced": (acc_s + acc_ns) / 2, "agreement": (pred == ref).mean(),
+            "ratio": missed / rejected if rejected > 0 else np.inf}
+
+
+def reading_corrections(db: pd.DataFrame, maj: pd.DataFrame, gold: pd.DataFrame,
+                        n_boot: int = BOOTSTRAP_RESAMPLES, n_repeats: int = 20, n_folds: int = 5,
+                        seed: int = FINDINGS_SEED) -> dict:
+    """
+    Pre-specified analysis P1 (docs/findings/analysis_log.md): do output-side
+    rules applied to existing model outputs improve judgment?
+
+    R1 (stricter vote): verdict "sound" only if all usable runs (>= 2) say
+    sound; compared with the 2-of-3 majority on the same units, on all
+    passages, with a fragment-clustered bootstrap CI for the difference.
+    R2 (pooling): one verdict per passage x condition, "sound" iff >= k of
+    the six models' majority labels say sound; k chosen by balanced accuracy
+    in training folds (5-fold, stratified by gold label, 20 repeats);
+    compared with the mean individual-model balanced accuracy on the same
+    test passages. Primary outcome: balanced accuracy; secondary: plain
+    agreement and leniency ratio.
+
+    Args:
+        db: Corrected scored database (run level).
+        maj: Output of majority_labels.
+        gold: Locked gold.
+        n_boot: Bootstrap resamples (R1).
+        n_repeats: Cross-validation repeats (R2).
+        n_folds: Folds (R2).
+        seed: RNG seed.
+
+    Returns:
+        Dict per condition with R1 and R2 results.
+    """
+    rng = np.random.default_rng(seed)
+    g = gold.set_index("fragment_id")["expert_classification"]
+    ok = db[~db["error_flag"].fillna(False).astype(bool) & db["classification_output"].isin(LABELS)]
+    runs = ok.groupby(KEYS)["classification_output"].agg(n="size", n_sound=lambda s: int((s == "sound").sum())).reset_index()
+    runs["r1"] = np.where((runs["n"] >= 2) & (runs["n_sound"] == runs["n"]), "sound", "not_sound")
+    base = maj[maj["pred"] != "none"].merge(runs[KEYS + ["r1"]], on=KEYS)
+    base["ref"] = base["fragment_id"].map(g)
+
+    def fmt(d):
+        return {"balanced_accuracy_pct": _pct(d["balanced"]), "agreement_pct": _pct(d["agreement"]),
+                "leniency_ratio": round(float(d["ratio"]), 2) if np.isfinite(d["ratio"]) else None}
+
+    out = {}
+    for cond in PROMPT_ORDER:
+        b = base[base["prompt_condition"] == cond]
+        # ---- R1
+        frag_ids = np.sort(b["fragment_id"].unique())
+        idx_by_frag = {f: np.where(b["fragment_id"].to_numpy() == f)[0] for f in frag_ids}
+        pred_base, pred_r1, ref = b["pred"].to_numpy(), b["r1"].to_numpy(), b["ref"].to_numpy()
+        m_base, m_r1 = _balanced(pred_base, ref), _balanced(pred_r1, ref)
+        diffs = []
+        for _ in range(n_boot):
+            pick = rng.choice(frag_ids, len(frag_ids), replace=True)
+            ix = np.concatenate([idx_by_frag[f] for f in pick])
+            diffs.append(_balanced(pred_r1[ix], ref[ix])["balanced"] - _balanced(pred_base[ix], ref[ix])["balanced"])
+        r1 = {"baseline": fmt(m_base), "stricter_vote": fmt(m_r1),
+              "balanced_difference_pp": round(100 * (m_r1["balanced"] - m_base["balanced"]), 1),
+              "balanced_difference_ci_95_pp": [round(100 * x, 1) for x in np.percentile(diffs, [2.5, 97.5])],
+              "units": int(len(b))}
+        # ---- R2
+        votes = b.assign(sv=(b["pred"] == "sound").astype(int)).groupby("fragment_id").agg(k_sound=("sv", "sum"), n_models=("sv", "size"))
+        votes = votes[votes["n_models"] == 6]
+        frags = votes.index.to_numpy()
+        refs = g.reindex(frags).to_numpy()
+        indiv = {m: b[b["model_family"] == m].set_index("fragment_id")["pred"] for m in MODEL_ORDER}
+        test_rows = []
+        for rep in range(n_repeats):
+            r = np.random.default_rng(seed + rep)
+            folds = np.empty(len(frags), dtype=int)
+            for lab in LABELS:
+                ids = np.where(refs == lab)[0]
+                r.shuffle(ids)
+                folds[ids] = np.arange(len(ids)) % n_folds
+            for k_fold in range(n_folds):
+                tr, te = folds != k_fold, folds == k_fold
+                ks = votes["k_sound"].to_numpy()
+                best_k = max(range(1, 7), key=lambda k: (_balanced(np.where(ks[tr] >= k, "sound", "not_sound"), refs[tr])["balanced"], -abs(k - 3.5)))
+                pooled = _balanced(np.where(ks[te] >= best_k, "sound", "not_sound"), refs[te])
+                indiv_bal = np.nanmean([_balanced(indiv[m].reindex(frags[te]).fillna("none").to_numpy(), refs[te])["balanced"] for m in MODEL_ORDER])
+                test_rows.append({"rep": rep, "k": best_k, "pooled": pooled["balanced"], "pooled_agree": pooled["agreement"],
+                                  "pooled_ratio": pooled["ratio"], "indiv": indiv_bal})
+        tr_df = pd.DataFrame(test_rows)
+        per_rep = tr_df.groupby("rep")[["pooled", "indiv", "pooled_agree"]].mean()
+        diff_rep = 100 * (per_rep["pooled"] - per_rep["indiv"])
+        finite_ratio = tr_df["pooled_ratio"].replace(np.inf, np.nan)
+        r2 = {"pooled_balanced_accuracy_pct": _pct(tr_df["pooled"].mean()),
+              "pooled_agreement_pct": _pct(tr_df["pooled_agree"].mean()),
+              "pooled_leniency_ratio_median": round(float(finite_ratio.median()), 2),
+              "individual_mean_balanced_accuracy_pct": _pct(tr_df["indiv"].mean()),
+              "difference_pp": round(float(diff_rep.mean()), 1),
+              "difference_range_across_repeats_pp": [round(float(diff_rep.min()), 1), round(float(diff_rep.max()), 1)],
+              "chosen_k_distribution": {str(int(k)): int(v) for k, v in tr_df["k"].value_counts().sort_index().items()},
+              "n_passages": int(len(frags)), "folds": n_folds, "repeats": n_repeats}
+        out[cond] = {"R1_stricter_vote": r1, "R2_pooling": r2}
+    return out
+
+
 def unanimity(outcomes: pd.DataFrame) -> dict:
     """
     Run-to-run consistency: share of combinations with 3/3 agreement.
@@ -1350,6 +1456,7 @@ def run_findings_metrics(output_path: Path = FINDINGS_METRICS_PATH) -> dict:
         "theory_checks": theory_checks(rows, frags, outcomes, gold),
         "family_checks": family_checks(maj, gold, outcomes),
         "rater_leniency": rater_leniency(gold, retest),
+        "reading_corrections": reading_corrections(db, maj, gold),
         "shared_failures": shared_failures(outcomes, gold, resolved, frags),
         "challenge_cases": challenge_case_summary(outcomes, rows),
         "contested_review": {
