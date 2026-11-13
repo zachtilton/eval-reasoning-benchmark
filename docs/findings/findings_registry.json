@@ -1652,6 +1652,153 @@
           "caveat": "Post hoc refinements of the boundary account would be exploratory."
         }
       ]
+    },
+    {
+      "id": "RQ4.evidence",
+      "research_question": "How do failure patterns vary across model families (frontier vs. open-source) and prompting conditions (zero-shot vs. few-shot)?",
+      "status": "draft",
+      "document": "docs/findings/rq4.md",
+      "headline": "(RQ4 answer to be drafted by the author)",
+      "claims": [
+        {
+          "id": "RQ4.a",
+          "text": "Open models called more passages sound and were more lenient than closed models, with and without examples; families did not differ in accuracy.",
+          "values": [
+            {
+              "metric": "findings_metrics.json:family_checks.crossing.family_gap_zero_shot.calls_sound_pp",
+              "value": {
+                "estimate": -6.14,
+                "ci_95": [
+                  -10.15,
+                  -2.22
+                ]
+              }
+            },
+            {
+              "metric": "findings_metrics.json:family_checks.crossing.family_gap_few_shot.calls_sound_pp",
+              "value": {
+                "estimate": -7.9,
+                "ci_95": [
+                  -11.47,
+                  -4.4
+                ]
+              }
+            },
+            {
+              "metric": "findings_metrics.json:family_checks.crossing.family_gap_zero_shot.ratio",
+              "value": {
+                "estimate": -0.44,
+                "ci_95": [
+                  -0.81,
+                  -0.13
+                ]
+              }
+            },
+            {
+              "metric": "findings_metrics.json:family_checks.crossing.family_gap_few_shot.ratio",
+              "value": {
+                "estimate": -2.09,
+                "ci_95": [
+                  -4.01,
+                  -0.96
+                ]
+              }
+            },
+            {
+              "metric": "findings_metrics.json:family_checks.crossing.family_gap_zero_shot.pass_pp",
+              "value": {
+                "estimate": 2.0,
+                "ci_95": [
+                  -2.22,
+                  6.22
+                ]
+              }
+            },
+            {
+              "metric": "findings_metrics.json:family_checks.crossing.family_gap_few_shot.pass_pp",
+              "value": {
+                "estimate": 2.0,
+                "ci_95": [
+                  -1.78,
+                  5.78
+                ]
+              }
+            }
+          ],
+          "procedure": "Majority labels pooled by family and condition; closed - open contrasts with fragment-clustered bootstrap CIs (5,000, seed 42).",
+          "sources": [
+            "scored_db_corrected",
+            "gold_locked",
+            "fragment_outcomes_corrected"
+          ],
+          "code": "src/analysis/findings_metrics.py:family_checks",
+          "caveat": "Three models per family (purposive, top-performing); CIs resample passages, not models."
+        },
+        {
+          "id": "RQ4.b",
+          "text": "Calibration examples shifted both families toward 'sound' by similar amounts (13 vs 15 points); the crossing on share called sound and on pass rate is not distinguishable from zero.",
+          "values": [
+            {
+              "metric": "findings_metrics.json:family_checks.crossing.closed.calls_sound_pp",
+              "value": {
+                "estimate": 13.33,
+                "ci_95": [
+                  9.78,
+                  16.89
+                ]
+              }
+            },
+            {
+              "metric": "findings_metrics.json:family_checks.crossing.open.calls_sound_pp",
+              "value": {
+                "estimate": 15.09,
+                "ci_95": [
+                  11.47,
+                  18.87
+                ]
+              }
+            },
+            {
+              "metric": "findings_metrics.json:family_checks.crossing.closed_minus_open.calls_sound_pp",
+              "value": {
+                "estimate": -1.76,
+                "ci_95": [
+                  -6.0,
+                  2.42
+                ]
+              }
+            },
+            {
+              "metric": "findings_metrics.json:family_checks.crossing.closed_minus_open.pass_pp",
+              "value": {
+                "estimate": 0.0,
+                "ci_95": [
+                  -4.22,
+                  4.22
+                ]
+              }
+            },
+            {
+              "metric": "findings_metrics.json:family_checks.crossing.closed_minus_open.ratio",
+              "value": {
+                "estimate": -1.65,
+                "ci_95": [
+                  -3.5,
+                  -0.59
+                ]
+              }
+            }
+          ],
+          "procedure": "Zero- to few-shot change within each family and the closed - open difference in change (difference in differences), bootstrap CIs.",
+          "sources": [
+            "scored_db_corrected",
+            "gold_locked",
+            "fragment_outcomes_corrected"
+          ],
+          "code": "src/analysis/findings_metrics.py:family_checks",
+          "caveat": "The leniency-ratio crossing excludes zero but ratios grow faster from a more lenient base; the linear measure shows no clear crossing."
+        }
+      ]
     }
   ],
   "rq_answers": {

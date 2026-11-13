@@ -931,6 +931,87 @@ def theory_checks(rows: pd.DataFrame, frags: pd.DataFrame, outcomes: pd.DataFram
             "stairway_within_passage": stair}
 
 
+def family_checks(maj: pd.DataFrame, gold: pd.DataFrame, outcomes: pd.DataFrame,
+                  n: int = BOOTSTRAP_RESAMPLES, seed: int = FINDINGS_SEED) -> dict:
+    """
+    RQ4: leniency by model family, and family x prompting (the crossing).
+
+    Per family (closed / open; three models each) and condition: share
+    called sound, missed-flaw and wrongly-rejected rates, leniency ratio and
+    pass rate. Crossing: change from zero-shot to few-shot within each family
+    (pass rate, share called sound, leniency ratio) and the closed - open
+    difference in those changes, with fragment-clustered bootstrap 95% CIs.
+
+    Args:
+        maj: Output of majority_labels.
+        gold: Locked gold.
+        outcomes: Corrected fragment outcomes.
+        n: Bootstrap resamples.
+        seed: RNG seed.
+
+    Returns:
+        Dict with per-family-condition summaries and crossing contrasts.
+    """
+    from .config import ARCHITECTURE_MAP
+
+    rng = np.random.default_rng(seed)
+    m = maj[maj["pred"] != "none"].merge(gold[["fragment_id", "expert_classification"]], on="fragment_id")
+    m["family"] = m["model_family"].map(ARCHITECTURE_MAP)
+    m = m.assign(ns=(m["expert_classification"] == "not_sound").astype(int),
+                 s=(m["expert_classification"] == "sound").astype(int),
+                 missed=((m["expert_classification"] == "not_sound") & (m["pred"] == "sound")).astype(int),
+                 rejected=((m["expert_classification"] == "sound") & (m["pred"] == "not_sound")).astype(int),
+                 sound_call=(m["pred"] == "sound").astype(int), one=1)
+    o = outcomes.assign(family=outcomes["model_family"].map(ARCHITECTURE_MAP), passed=(outcomes["fragment_outcome"] == "pass").astype(int), one=1)
+
+    frag_ids = np.sort(gold["fragment_id"].unique())
+    cells = {}
+    for fam in ("closed", "open"):
+        for cond in PROMPT_ORDER:
+            a = m[(m["family"] == fam) & (m["prompt_condition"] == cond)].groupby("fragment_id")[["ns", "s", "missed", "rejected", "sound_call", "one"]].sum().reindex(frag_ids, fill_value=0)
+            b = o[(o["family"] == fam) & (o["prompt_condition"] == cond)].groupby("fragment_id")[["passed", "one"]].sum().reindex(frag_ids, fill_value=0)
+            cells[(fam, cond)] = np.column_stack([a.to_numpy(), b.to_numpy()])  # cols: ns s missed rejected sound one passed one_o
+
+    def stats(arr):
+        ns, s, missed, rej, sc, one, passed, one_o = arr.sum(axis=0)
+        mr, rr = missed / ns, rej / s
+        return {"calls_sound": sc / one, "missed": mr, "rejected": rr, "ratio": mr / rr if rr > 0 else np.inf, "pass": passed / one_o}
+
+    summary = {f"{fam}|{cond}": {k: (round(v, 2) if k == "ratio" else _pct(v)) for k, v in stats(cells[(fam, cond)]).items()}
+               for fam in ("closed", "open") for cond in PROMPT_ORDER}
+
+    def contrasts(idx):
+        res = {}
+        for fam in ("closed", "open"):
+            z, f = stats(cells[(fam, "zero_shot")][idx]), stats(cells[(fam, "few_shot")][idx])
+            res[fam] = {"pass": f["pass"] - z["pass"], "calls_sound": f["calls_sound"] - z["calls_sound"], "ratio": f["ratio"] - z["ratio"]}
+        res["closed_minus_open"] = {k: res["closed"][k] - res["open"][k] for k in res["closed"]}
+        for cond in PROMPT_ORDER:
+            c, op = stats(cells[("closed", cond)][idx]), stats(cells[("open", cond)][idx])
+            res[f"family_gap_{cond}"] = {"calls_sound": c["calls_sound"] - op["calls_sound"], "ratio": c["ratio"] - op["ratio"], "pass": c["pass"] - op["pass"]}
+        return res
+
+    full = np.arange(len(frag_ids))
+    point = contrasts(full)
+    boots = [contrasts(rng.integers(0, len(frag_ids), len(frag_ids))) for _ in range(n)]
+
+    def ci(path):
+        vals = np.array([b[path[0]][path[1]] for b in boots])
+        vals = vals[np.isfinite(vals)]
+        return [float(x) for x in np.percentile(vals, [2.5, 97.5])]
+
+    def fmt(path, scale):
+        est = point[path[0]][path[1]]
+        lo, hi = ci(path)
+        return {"estimate": round(est * scale, 2), "ci_95": [round(lo * scale, 2), round(hi * scale, 2)]}
+
+    crossing = {}
+    for key in ("closed", "open", "closed_minus_open", "family_gap_zero_shot", "family_gap_few_shot"):
+        crossing[key] = {"pass_pp": fmt((key, "pass"), 100), "calls_sound_pp": fmt((key, "calls_sound"), 100), "ratio": fmt((key, "ratio"), 1)}
+    return {"by_family_condition": summary, "crossing": crossing,
+            "note": "Three models per family; a purposive sample of top-performing models in each family, not a sample of families."}
+
+
 def unanimity(outcomes: pd.DataFrame) -> dict:
     """
     Run-to-run consistency: share of combinations with 3/3 agreement.
@@ -1232,6 +1313,7 @@ def run_findings_metrics(output_path: Path = FINDINGS_METRICS_PATH) -> dict:
         "gpt_failures_by_length": gpt_failures_by_length(frags, gold, outcomes),
         "f51_by_condition": f51_by_condition(rows, frags),
         "theory_checks": theory_checks(rows, frags, outcomes, gold),
+        "family_checks": family_checks(maj, gold, outcomes),
         "shared_failures": shared_failures(outcomes, gold, resolved, frags),
         "challenge_cases": challenge_case_summary(outcomes, rows),
         "contested_review": {
