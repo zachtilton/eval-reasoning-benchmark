@@ -58,6 +58,12 @@ rule; add bootstrap CIs for the leniency ratios.
 ## Findings review (author request, 2026-11-13)
 - [x] Headline review done (2026-11-13): implication-first headlines applied to 1.1, 1.2, 2.1–2.4 (1.3 already); former 2.5 renumbered 2.4, then 2.3 when the former 2.3 moved to RQ4 as 4.2.
 
+## Conclusions (in progress, `conclusions.md`)
+- [x] C-a blind spot for missing judgments (Nunns)
+- [ ] Title-level conclusion via the six checklist domains: Domain 1 criteria/standards proposed (post hoc; safeguards adopted: disclose provenance, ground in theory, report verdict with and without C4 as a bar); Domains 2–6 to do
+- [ ] Cluster conclusions (models as judges incl. bias vs noise / correctability — P1 found leniency shiftable, accuracy gain suggestive only; the yardstick; practitioner choices)
+- [ ] Verify Dell'Acqua et al. (2023) jagged frontier, Kahneman et al. (2021) Noise, Turpin et al. (2023), Loru et al. (2025)
+
 ## After findings
 Per-RQ conclusions (rated); study-level limitations (ethics, representation,
 design); poster (one headline + one figure per RQ; new figures for RQ1/RQ2).
