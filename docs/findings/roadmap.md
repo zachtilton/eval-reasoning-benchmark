@@ -19,6 +19,7 @@ One topline conclusion per RQ, supported by findings; 2–3 supporting findings 
 - [ ] RQ2 mainline answer + conclusion-level rating
 
 ## RQ3 — not started
+**Scope decision (2026-11-12):** the proposal's named frameworks lead (Scriven's general logic and Nunns et al.'s variation; JCSEE; Toulmin; Hurteau et al.; Gullickson; Meldrum & Gullickson), with abductive extensions accompanying (verbosity bias, shortcut learning, in-context-learning literature). Proposal commitments 1–3 (named-framework interpretation, checklist as sensitizing concepts, emergent-code / framework-adequacy analysis) are met procedurally by the coding; the interpretive relating to theory remains to be written. Construct-validity questions (D4 vs D2; few-shot and D6; criterion clustering) to be reported as weak/null checks. Candidate connections: Gullickson's (Stake's) "fully describe / fully judge" for the description–evaluation gap (conjecture; revisit data); Nunns et al. on omitted conclusions as a practical stake for meta-evaluation; Stairway propagation within a passage (suggestive only).
 Develop the named phenomena from RQ2: **evaluative veneer** (2.5; links to verbosity bias, shortcut learning), the **description–evaluation gap** (Scriven's logic of evaluation), and **argumentative capability** (2.4).
 Domain profile and theory linkage; **parked lexicon test**: do surface
 evaluative features (evaluative-term density, rating scales, criterion
@@ -74,4 +75,6 @@ design); poster (one headline + one figure per RQ; new figures for RQ1/RQ2).
   triage of ambiguous runs, corrected-scoring decision record).
 
 ## Housekeeping (not poster-critical)
+- RC numbering: canonical per proposal reliability table — RC1 expert test-retest, RC2 anchor–panel MRST, RC3 coherence validation, RC4 failure-coding recode. Fix outliers: proposal para on failure-coding recode (says RC3), `CLAUDE.md` (says RC2 = coherence), code/file names (`corrected_scoring.py`, `*_corrected`).
+- Proposal text says 4 calibration fragments; study used 2 — author to update proposal.
 Rename RC2 → RC3 in code references (`corrected_scoring.py`, `*_corrected`).
