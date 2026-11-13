@@ -114,7 +114,7 @@ re-review. This is reported as analytic data, not as proof that the model
 was right; the asymmetry, the third reviewer and the planned blind re-rating
 are what test it.
 
-### Evidence
+#### Evidence
 
 | | Failed passages | Confirmed | Gold doubted |
 |---|---|---|---|
@@ -131,7 +131,7 @@ are what test it.
   lenient).
 - `results/failure_coding_synthesis.json`, `results/findings_metrics.json`.
 
-### Caveats
+#### Caveats
 
 - Not independent: the expert reconsidered the expert's own labels with the
   model's rationale in view (persuasion is a live rival explanation).
