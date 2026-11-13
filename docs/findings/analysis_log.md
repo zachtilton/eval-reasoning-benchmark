@@ -48,7 +48,7 @@ Commits are on `main`.
 | E15 | 2026-11-12 | Is the RC2-subset reversal noise? | Bootstrap CI for ratios; 5,000 random 38-fragment subsets | Zero-shot CI 1.14–2.01; subset ratio matched by only 0.2–0.4% of random subsets | Subset judged unusual, not noise | `leniency_ratio_uncertainty` | 2125041 |
 | E16 | 2026-11-12 | Author: RC2 fragments were stratified to 1–3 paragraphs | Leniency by paragraph-count bin (bins chosen **after** this prompt); word count vs models' sound calls | No zero-shot lean on 1–3 paragraphs, clear on 7+; models' sound calls rise with length, gold's do not | 2.2 headline (length); RC2 reversal explained | `length_moderation` | cbe69c7 |
 | E17 | 2026-11-12 | Does long text hide missing judgments (F5.1)? | GPT confirmed failures by length; F5.1 share by length | F5.1 ≈ half at every length; strict failures concentrate in short passages but gold doubted at every length | Hypothesis not supported; lexicon test parked for RQ3 | `gpt_failures_by_length` | 22cd31e |
-| E18 | 2026-11-12 | The not-sound calibration example was itself a "no judgment" passage | F5.1 by prompt condition (rows); conditions in which F5.1 fragments failed | F5.1 in 7 zero-shot vs 13 few-shot confirmed rows; all 13 F5.1 fragments failed with examples, none only without | Pending discussion (finding on F5.1) | `f51_by_condition` | (this commit) |
+| E18 | 2026-11-12 | The not-sound calibration example was itself a "no judgment" passage | F5.1 by prompt condition (rows); conditions in which F5.1 fragments failed | F5.1 in 7 zero-shot vs 13 few-shot confirmed rows; all 13 F5.1 fragments failed with examples, none only without | Pending discussion (finding on F5.1) | `f51_by_condition` | 8ca56e6 |
 
 ---
 
