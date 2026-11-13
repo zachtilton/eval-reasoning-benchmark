@@ -51,6 +51,7 @@ Commits are on `main`.
 | E18 | 2026-11-12 | The not-sound calibration example was itself a "no judgment" passage | F5.1 by prompt condition (rows); conditions in which F5.1 fragments failed | F5.1 in 7 zero-shot vs 13 few-shot confirmed rows; all 13 F5.1 fragments failed with examples, none only without | Pending discussion (finding on F5.1) | `f51_by_condition` | 8ca56e6 |
 | E19 | 2026-11-12 | Calibration-boundary hypothesis predicts missed F5.1 passages have evidence | Evidence codes (F2.x) among the 13 confirmed F5.1 fragments, by conditions failed | 8 of 13 lack an evidence code; but 5 of the 6 missed only with examples DO carry F2.2, while all 7 missed in both conditions lack one | Prediction (as stated) not supported for the example-induced misses; hypothesis not adopted as stated | `f51_by_condition` | 3ce2fc8 |
 
+| E20 | 2026-11-12 | RQ3: proposal's construct-validity questions; author asked to raise Stairway propagation now | D4 vs D2 codes; D6 codes by condition; challenge Criterion 1 share by criterion; D5 co-occurrence with D1–D4 codes in confirmed fragments | D2 13 vs D4 10; D6 1 vs 4 rows; sustainability 54% vs relevance 41%; 16 of 20 D5 fragments also carry lower-level codes | Queued in `rq3.md` for interpretation | `theory_checks` | (this commit) |
 ---
 
 ## Corrections caught during analysis

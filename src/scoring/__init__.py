@@ -4,7 +4,7 @@ src/scoring — Automated scoring pipeline for the evaluative reasoning benchmar
 Module layout
 -------------
 config.py      — Indicator lists, LLM prompt, path constants, pipeline params
-coherence.py   — Tiered coherence validation (rule-based → LLM), RC2 support
+coherence.py   — Tiered coherence validation (rule-based → LLM), RC3 support
 accuracy.py    — Gold standard loading, classification accuracy, outcome
                  assignment, fragment adjudication, performance metrics
 edge_cases.py  — Edge case detection and handling (G.6 decision rules)
@@ -23,9 +23,9 @@ Run individual pipeline steps:
     adjudicate_fragment_outcomes(database_df)
     calculate_performance_metrics(fragment_df, database_df)
 
-RC2 reliability check:
-    select_rc2_sample(database_df)
-    calculate_rc2_reliability(database_df, manual_reviews_df)
+RC3 reliability check:
+    select_rc3_sample(database_df)
+    calculate_rc3_reliability(database_df, manual_reviews_df)
 
 Failure coding preparation:
     identify_failures_for_coding(fragment_df, database_df)
@@ -36,8 +36,8 @@ from .pipeline import run_scoring_pipeline
 from .coherence import (
     validate_all_responses,
     validate_coherence,
-    select_rc2_sample,
-    calculate_rc2_reliability,
+    select_rc3_sample,
+    calculate_rc3_reliability,
 )
 from .accuracy import (
     load_gold_standard,
@@ -60,8 +60,8 @@ __all__ = [
     # Coherence
     "validate_all_responses",
     "validate_coherence",
-    "select_rc2_sample",
-    "calculate_rc2_reliability",
+    "select_rc3_sample",
+    "calculate_rc3_reliability",
     # Accuracy & outcomes
     "load_gold_standard",
     "compare_to_gold_standard",

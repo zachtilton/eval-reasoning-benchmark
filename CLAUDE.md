@@ -11,7 +11,9 @@ zero-shot and few-shot conditions. 5,400 total API calls.
   then Claude Haiku at temp 0 (Tier 2) for ambiguous cases
 - Exactly 2 calibration examples (1 sound, 1 not sound)
 - Only Type 1 failures (coherent but wrong) receive failure mode coding
-- RC2 validates automated coherence pipeline against human judgment
+- Reliability checks (proposal table): RC1 expert test-retest; RC2 anchor–panel
+  equivalence (Multi-Rater Agreement Statistical Turing Test); RC3 validates the
+  automated coherence pipeline against human judgment; RC4 failure-coding recode
 - Framework/template analysis, not grounded theory
 - 22-checkpoint Integrated Evaluative Reasoning Checklist across 6 domains
 

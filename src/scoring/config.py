@@ -23,12 +23,12 @@ LOGS_DIR = PROJECT_ROOT / "logs"
 RESPONSE_DB_PATH = RESPONSES_DIR / "response_database.csv"
 SCORED_DB_PATH = RESPONSES_DIR / "scored_database.csv"
 FRAGMENT_OUTCOMES_PATH = RESPONSES_DIR / "fragment_outcomes.csv"
-RC2_SAMPLE_PATH = LOGS_DIR / "rc2_manual_review_sample.csv"
+RC3_SAMPLE_PATH = LOGS_DIR / "rc3_manual_review_sample.csv"
 
 # ---------------------------------------------------------------------------
-# RC2-corrected scoring (provisional-final; see src/scoring/corrected_scoring.py)
+# RC3-corrected scoring (provisional-final; see src/scoring/corrected_scoring.py)
 # ---------------------------------------------------------------------------
-# RC2's blind human review (2026-11-05, logs/human_review_blinded.csv +
+# RC3's blind human review (2026-11-05, logs/human_review_blinded.csv +
 # human_review_key.csv) found 0% agreement between the automated coherence
 # pipeline's "incoherent"/"ambiguous" calls and human judgment across every
 # tested sub-stratum (incoherent_confident 64/64 overridden, all three
@@ -40,7 +40,7 @@ RC2_SAMPLE_PATH = LOGS_DIR / "rc2_manual_review_sample.csv"
 # score classification accuracy for every response. Written to separate
 # *_corrected paths -- the original scored_database.csv / fragment_outcomes
 # .csv / performance_matrix.csv are left untouched as the as-designed,
-# pre-RC2 historical results.
+# pre-RC3 historical results.
 SCORED_DB_CORRECTED_PATH = RESPONSES_DIR / "scored_database_corrected.csv"
 FRAGMENT_OUTCOMES_CORRECTED_PATH = RESPONSES_DIR / "fragment_outcomes_corrected.csv"
 PERFORMANCE_MATRIX_CORRECTED_PATH = RESPONSES_DIR / "performance_matrix_corrected.csv"
@@ -89,7 +89,7 @@ FRAGMENT_OUTCOMES_TRIANGULATED_PATH = RESPONSES_DIR / "fragment_outcomes_triangu
 H2_TRIANGULATED_RESULTS_PATH = RESULTS_DIR / "H2_statistical_tests_triangulated.json"
 
 # ---------------------------------------------------------------------------
-# RC2 stratified sample sizes (spec Section 2.4, Step 1)
+# RC3 stratified sample sizes (spec Section 2.4, Step 1)
 # ---------------------------------------------------------------------------
 
 # RAISED from the original spec's flat 20/20/10, 2026-11-04: those sizes
@@ -99,18 +99,18 @@ H2_TRIANGULATED_RESULTS_PATH = RESULTS_DIR / "H2_statistical_tests_triangulated.
 # margin (95% CI, p=0.5, finite-population-corrected):
 #   coherent:   n = 1.96^2*0.25/0.01, FPC-adjusted for N=3,967  -> ~94
 #   incoherent: n = 1.96^2*0.25/0.01, FPC-adjusted for N=216    -> ~67
-# The ambiguous arm is no longer a flat random draw of RC2_AMBIGUOUS_MAX --
+# The ambiguous arm is no longer a flat random draw of RC3_AMBIGUOUS_MAX --
 # see triangulation.py::select_stratified_human_review_sample, which
 # stratifies it using the Luna triangulation triage (full census of the
 # 64 three-way-split cases + a precision-sized proportional sample of the
 # rest) instead of treating "ambiguous" as one undifferentiated bucket.
-RC2_COHERENT_SAMPLE = 94
-RC2_INCOHERENT_SAMPLE = 67
-# Kept for select_rc2_sample's original spec-literal behavior (and its
+RC3_COHERENT_SAMPLE = 94
+RC3_INCOHERENT_SAMPLE = 67
+# Kept for select_rc3_sample's original spec-literal behavior (and its
 # existing tests) -- not used by the triangulation-informed ambiguous
 # sampling actually run in practice; see comment above.
-RC2_AMBIGUOUS_MAX = 10    # "or all ambiguous if < 10"
-RC2_KAPPA_TARGET = 0.80
+RC3_AMBIGUOUS_MAX = 10    # "or all ambiguous if < 10"
+RC3_KAPPA_TARGET = 0.80
 
 # ---------------------------------------------------------------------------
 # Primary diagnostic model (spec Section 2.2)

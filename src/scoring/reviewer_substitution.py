@@ -1,5 +1,5 @@
 """
-Secondary label-substitution analyses on top of the RC2-corrected scoring.
+Secondary label-substitution analyses on top of the RC3-corrected scoring.
 
 Re-scores the corrected database against a reference label in which a
 specified set of fragments carries an alternative classification, then
@@ -62,7 +62,7 @@ def rescore_with_label_overrides(
     except the fragment_ids in label_overrides.
 
     Args:
-        database_df: RC2-corrected scored database.
+        database_df: RC3-corrected scored database.
         label_overrides: {fragment_id: "sound" | "not_sound"} substitutions.
         suffix: Column suffix for the new label/accuracy/outcome columns.
 
@@ -110,7 +110,7 @@ def run_label_substitution_analysis(
         scored_db_output_path: Where to write the re-scored run-level database.
         fragment_outcomes_output_path: Where to write fragment outcomes.
         results_output_path: Where to write the H2 test results JSON.
-        scored_db_input_path: RC2-corrected scored database to start from.
+        scored_db_input_path: RC3-corrected scored database to start from.
 
     Returns:
         Dict with the three H2 test results.

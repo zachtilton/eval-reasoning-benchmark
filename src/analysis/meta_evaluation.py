@@ -157,13 +157,18 @@ def _gold_standard_defensibility(
 
 def _reliability_synthesis(reliability_results: dict) -> dict:
     """
-    Summarize RC1, RC2, RC3 reliability checks against κ ≥ 0.80 target.
+    Summarize the kappa-based reliability checks against the κ ≥ 0.80 target.
+
+    Numbering follows the proposal's reliability table: RC1 expert test-retest,
+    RC2 anchor–panel equivalence (Multi-Rater Agreement Statistical Turing
+    Test; non-inferiority margin, not a κ target -- reported separately),
+    RC3 automated coherence validation, RC4 failure-coding recode.
     """
     checks = []
     specs = [
         ("rc1", "Expert temporal consistency"),
-        ("rc2", "Automated coherence validation"),
-        ("rc3", "Failure mode coding temporal consistency"),
+        ("rc3", "Automated coherence validation"),
+        ("rc4", "Failure mode coding temporal consistency"),
     ]
     all_met: list[bool | str] = []
 
@@ -189,7 +194,7 @@ def _reliability_synthesis(reliability_results: dict) -> dict:
     # If any check is still pending, the overall verdict is also pending.
     if all_met and len(all_met) == len(specs):
         if all(all_met):
-            overall = "All reliability targets met (κ ≥ 0.80 for RC1, RC2, RC3)."
+            overall = "All reliability targets met (κ ≥ 0.80 for RC1, RC3, RC4)."
         elif any(all_met):
             # zip against specs in order; only bool entries are counted
             failed = [
@@ -324,7 +329,7 @@ def conduct_meta_evaluation(
         failure_codes_df: GPT 5.2 Type 1 failure codes.
         gold_standard_df: Gold standard DataFrame; optionally includes a
             'boundary_case_flag' column.
-        reliability_results: Dict with RC1/RC2/RC3 kappa results.
+        reliability_results: Dict with RC1/RC3/RC4 kappa results.
             Accepts flat {'rc1_kappa': x} or nested {'rc1': {'kappa': x}}.
         challenge_results: Output from :func:`challenge_cases.identify_challenge_cases`.
 

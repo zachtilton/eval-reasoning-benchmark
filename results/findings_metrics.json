@@ -1222,6 +1222,76 @@
       "F3.1": 1
     }
   },
+  "theory_checks": {
+    "construct_validity": {
+      "q1_synthesis_vs_evidence": {
+        "domain_2": {
+          "any_position": 13,
+          "primary": 3
+        },
+        "domain_4": {
+          "any_position": 10,
+          "primary": 3
+        },
+        "n_confirmed_fragments": 28
+      },
+      "q2_domain6_by_condition": {
+        "zero_shot": {
+          "confirmed_rows": 15,
+          "rows_with_domain_6": 1
+        },
+        "few_shot": {
+          "confirmed_rows": 27,
+          "rows_with_domain_6": 4
+        }
+      },
+      "q3_challenge_by_criterion": {
+        "coherence": {
+          "n_fragments": 7,
+          "challenge_fragments": 4,
+          "challenge_pct": 57.1
+        },
+        "effectiveness": {
+          "n_fragments": 17,
+          "challenge_fragments": 8,
+          "challenge_pct": 47.1
+        },
+        "efficiency": {
+          "n_fragments": 25,
+          "challenge_fragments": 8,
+          "challenge_pct": 32.0
+        },
+        "impact": {
+          "n_fragments": 17,
+          "challenge_fragments": 10,
+          "challenge_pct": 58.8
+        },
+        "other": {
+          "n_fragments": 22,
+          "challenge_fragments": 12,
+          "challenge_pct": 54.5
+        },
+        "relevance": {
+          "n_fragments": 27,
+          "challenge_fragments": 11,
+          "challenge_pct": 40.7
+        },
+        "sustainability": {
+          "n_fragments": 35,
+          "challenge_fragments": 19,
+          "challenge_pct": 54.3
+        }
+      }
+    },
+    "stairway_within_passage": {
+      "confirmed_with_domain_5": 20,
+      "domain_5_with_lower_level": 16,
+      "domain_5_only": 4,
+      "lower_level_without_domain_5": 8,
+      "domain_5_primary_with_lower_level_secondary": 14,
+      "note": "Codes describe flaws the primary model missed in a single passage; co-occurrence is within-passage only."
+    }
+  },
   "shared_failures": {
     "per_model_any_condition_fail_rate_pct": {
       "gpt_5_6_sol": 50.7,

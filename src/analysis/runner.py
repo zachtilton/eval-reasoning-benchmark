@@ -77,7 +77,7 @@ def _build_reliability_results(fragment_df: pd.DataFrame) -> dict:
     Attempt to load reliability check results from the scored database.
 
     If the scored_database.csv exists and has the expected columns, extracts
-    RC2 summary stats. RC1 and RC3 are recorded manually; this function
+    RC3 (coherence) summary stats. RC1, RC2 and RC4 are recorded manually; this function
     returns '[PENDING]' for those unless a results JSON already exists.
     """
     reliability: dict = {}

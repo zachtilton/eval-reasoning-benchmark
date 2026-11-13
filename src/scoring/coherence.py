@@ -9,10 +9,10 @@ Covers Appendix G.4.  Key corrections over the appendix code:
 - validate_coherence output keys now match the scored_database schema
   (coherence_final, coherence_rule_based, strength_indicator_count, etc.)
   rather than the appendix's mismatched names.
-- select_rc2_sample now implements the stratified spec requirement
+- select_rc3_sample now implements the stratified spec requirement
   (20 coherent + 20 incoherent + 10 ambiguous) instead of a random 10%
   of ambiguous cases only.
-- calculate_rc2_reliability now compares coherence_final (the pipeline's
+- calculate_rc3_reliability now compares coherence_final (the pipeline's
   definitive output) rather than rule_based_result.
 - LLM call uses the ANTHROPIC_API_VERSION constant instead of a hardcoded
   date string.
@@ -33,11 +33,11 @@ from .config import (
     CONFIDENCE_THRESHOLD,
     HAIKU_MODEL_ID,
     LLM_COHERENCE_PROMPT,
-    RC2_AMBIGUOUS_MAX,
-    RC2_COHERENT_SAMPLE,
-    RC2_INCOHERENT_SAMPLE,
-    RC2_KAPPA_TARGET,
-    RC2_SAMPLE_PATH,
+    RC3_AMBIGUOUS_MAX,
+    RC3_COHERENT_SAMPLE,
+    RC3_INCOHERENT_SAMPLE,
+    RC3_KAPPA_TARGET,
+    RC3_SAMPLE_PATH,
     STRENGTH_INDICATORS,
     WEAKNESS_INDICATORS,
 )
@@ -321,16 +321,16 @@ def validate_all_responses(
 
 
 # ---------------------------------------------------------------------------
-# RC2: coherence pipeline validation
+# RC3: coherence pipeline validation
 # ---------------------------------------------------------------------------
 
-def select_rc2_sample(
+def select_rc3_sample(
     database_df: pd.DataFrame,
     seed: int = 42,
-    output_path: Path = RC2_SAMPLE_PATH,
+    output_path: Path = RC3_SAMPLE_PATH,
 ) -> pd.DataFrame:
     """
-    Select a stratified manual review sample for RC2 reliability check.
+    Select a stratified manual review sample for RC3 reliability check.
 
     Stratification follows spec Section 2.4 exactly:
       - 20 coherent responses (random sample)
@@ -359,10 +359,10 @@ def select_rc2_sample(
     incoherent_pool = database_df[database_df["coherence_final"] == "incoherent"]
     ambiguous_pool = database_df[database_df["coherence_final"] == "ambiguous"]
 
-    coherent_sample = sample_stratum(coherent_pool, RC2_COHERENT_SAMPLE)
-    incoherent_sample = sample_stratum(incoherent_pool, RC2_INCOHERENT_SAMPLE)
+    coherent_sample = sample_stratum(coherent_pool, RC3_COHERENT_SAMPLE)
+    incoherent_sample = sample_stratum(incoherent_pool, RC3_INCOHERENT_SAMPLE)
     # "all ambiguous if < 10"
-    ambiguous_n = min(len(ambiguous_pool), RC2_AMBIGUOUS_MAX)
+    ambiguous_n = min(len(ambiguous_pool), RC3_AMBIGUOUS_MAX)
     ambiguous_sample = (
         ambiguous_pool.sample(n=ambiguous_n, random_state=seed)
         if ambiguous_n > 0
@@ -377,7 +377,7 @@ def select_rc2_sample(
     output_path.parent.mkdir(parents=True, exist_ok=True)
     sample_df.to_csv(output_path, index=False)
 
-    print(f"\nRC2 Sample Selected:")
+    print(f"\nRC3 Sample Selected:")
     print(f"  Coherent:   {len(coherent_sample)} / {len(coherent_pool)} available")
     print(f"  Incoherent: {len(incoherent_sample)} / {len(incoherent_pool)} available")
     print(f"  Ambiguous:  {len(ambiguous_sample)} / {len(ambiguous_pool)} available")
@@ -396,7 +396,7 @@ def record_manual_review_decision(
     reviewer_notes: str = "",
 ) -> dict:
     """
-    Build a manual coherence review record for RC2 reliability tracking.
+    Build a manual coherence review record for RC3 reliability tracking.
 
     Args:
         fragment_id: Fragment identifier.
@@ -420,12 +420,12 @@ def record_manual_review_decision(
     }
 
 
-def calculate_rc2_reliability(
+def calculate_rc3_reliability(
     database_df: pd.DataFrame,
     manual_reviews_df: pd.DataFrame,
 ) -> dict:
     """
-    Calculate Cohen's kappa for RC2 (automated coherence pipeline vs. manual).
+    Calculate Cohen's kappa for RC3 (automated coherence pipeline vs. manual).
 
     Uses coherence_final (the pipeline's definitive output) as the automated
     judgment, not rule_based_result as the appendix incorrectly specified.
@@ -468,12 +468,12 @@ def calculate_rc2_reliability(
         "kappa": round(kappa, 3),
         "agreement_rate": round(agreement, 4),
         "sample_size": len(merged),
-        "target_met": kappa >= RC2_KAPPA_TARGET,
+        "target_met": kappa >= RC3_KAPPA_TARGET,
         "confusion_matrix": cm,
     }
 
-    print(f"\nRC2 Reliability Check:")
-    print(f"  Cohen's kappa:   {kappa:.3f}  (target ≥ {RC2_KAPPA_TARGET})")
+    print(f"\nRC3 Reliability Check:")
+    print(f"  Cohen's kappa:   {kappa:.3f}  (target ≥ {RC3_KAPPA_TARGET})")
     print(f"  Agreement rate:  {agreement:.1%}")
     print(f"  Sample size:     {len(merged)}")
     print(f"  Target met:      {'YES' if results['target_met'] else 'NO — recalibrate'}")

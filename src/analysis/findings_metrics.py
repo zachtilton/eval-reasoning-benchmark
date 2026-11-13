@@ -863,6 +863,74 @@ def f51_by_condition(rows: pd.DataFrame, frags: pd.DataFrame) -> dict:
             "f51_co_codes": f51[["secondary_code", "tertiary_code"]].stack().replace("", np.nan).dropna().value_counts().to_dict()}
 
 
+def theory_checks(rows: pd.DataFrame, frags: pd.DataFrame, outcomes: pd.DataFrame, gold: pd.DataFrame, primary_model: str = PRIMARY_MODEL) -> dict:
+    """
+    RQ3 checks: the proposal's three construct-validity questions and a
+    within-passage reading of Meldrum & Gullickson's (2025) Stairway
+    ("failures at lower levels propagate upward").
+
+    Domains are parsed from code strings (F<d>.<k>). Construct validity:
+    (1) Domain 4 (synthesis) vs Domain 2 (evidence) among confirmed
+    fragments; (2) Domain 6 codes by prompt condition (rows); (3) share of
+    fragments in challenge Criterion 1 by evaluation criterion. Stairway:
+    among confirmed fragments carrying a Domain 5 (conclusion) code, how many
+    also carry a lower-level code (Domains 1-4), and vice versa.
+
+    Args:
+        rows: Row-level coding sheet.
+        frags: Fragment-level coding.
+        outcomes: Corrected fragment outcomes.
+        gold: Locked gold with criterion.
+        primary_model: Primary diagnostic model.
+
+    Returns:
+        Dict with the three construct-validity tabulations and the Stairway
+        co-occurrence counts.
+    """
+    from .config import CORE_CRITERIA
+
+    code_cols = ["primary_code", "secondary_code", "tertiary_code"]
+
+    def domains(df: pd.DataFrame, cols=code_cols) -> pd.Series:
+        return df[cols].astype(str).apply(
+            lambda r: {int(c[1]) for c in r if len(c) >= 2 and c.startswith("F") and c[1].isdigit()}, axis=1)
+
+    conf = frags[frags["genuine"]].copy()
+    conf["doms"] = domains(conf)
+    conf["primary_dom"] = domains(conf, ["primary_code"]).apply(lambda s: next(iter(s), None))
+    q1 = {f"domain_{d}": {"any_position": int(conf["doms"].apply(lambda s: d in s).sum()),
+                          "primary": int((conf["primary_dom"] == d).sum())} for d in (2, 4)}
+    q1["n_confirmed_fragments"] = int(len(conf))
+
+    r = rows[rows["genuine"]].copy()
+    r["doms"] = domains(r)
+    q2 = {c: {"confirmed_rows": int((r["prompt_condition"] == c).sum()),
+              "rows_with_domain_6": int(r.loc[r["prompt_condition"] == c, "doms"].apply(lambda s: 6 in s).sum())} for c in PROMPT_ORDER}
+
+    fail = outcomes.assign(f=outcomes["fragment_outcome"] == "fail")
+    gpt = fail[(fail["model_family"] == primary_model) & fail["f"]][["fragment_id", "prompt_condition"]]
+    others = fail[(fail["model_family"] != primary_model) & fail["f"]].groupby(["fragment_id", "prompt_condition"]).size().rename("n_other").reset_index()
+    c1 = gpt.merge(others, on=["fragment_id", "prompt_condition"], how="left").fillna({"n_other": 0})
+    c1_frags = set(c1.loc[c1["n_other"] >= 2, "fragment_id"])
+    g = gold[["fragment_id", "criterion"]].copy()
+    g["crit"] = g["criterion"].where(g["criterion"].isin(CORE_CRITERIA), "other")
+    q3 = {k: {"n_fragments": int(len(d)), "challenge_fragments": int(d["fragment_id"].isin(c1_frags).sum()),
+              "challenge_pct": _pct(d["fragment_id"].isin(c1_frags).mean())} for k, d in g.groupby("crit")}
+
+    has5 = conf["doms"].apply(lambda s: 5 in s)
+    lower = conf["doms"].apply(lambda s: bool(s & {1, 2, 3, 4}))
+    stair = {
+        "confirmed_with_domain_5": int(has5.sum()),
+        "domain_5_with_lower_level": int((has5 & lower).sum()),
+        "domain_5_only": int((has5 & ~lower).sum()),
+        "lower_level_without_domain_5": int((~has5 & lower).sum()),
+        "domain_5_primary_with_lower_level_secondary": int(((conf["primary_dom"] == 5) & lower).sum()),
+        "note": "Codes describe flaws the primary model missed in a single passage; co-occurrence is within-passage only.",
+    }
+    return {"construct_validity": {"q1_synthesis_vs_evidence": q1, "q2_domain6_by_condition": q2, "q3_challenge_by_criterion": q3},
+            "stairway_within_passage": stair}
+
+
 def unanimity(outcomes: pd.DataFrame) -> dict:
     """
     Run-to-run consistency: share of combinations with 3/3 agreement.
@@ -1163,6 +1231,7 @@ def run_findings_metrics(output_path: Path = FINDINGS_METRICS_PATH) -> dict:
         "length_moderation": length_moderation(maj, gold, retest),
         "gpt_failures_by_length": gpt_failures_by_length(frags, gold, outcomes),
         "f51_by_condition": f51_by_condition(rows, frags),
+        "theory_checks": theory_checks(rows, frags, outcomes, gold),
         "shared_failures": shared_failures(outcomes, gold, resolved, frags),
         "challenge_cases": challenge_case_summary(outcomes, rows),
         "contested_review": {

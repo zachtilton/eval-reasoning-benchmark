@@ -260,7 +260,7 @@ def revision_summary(
     Args:
         frags: Fragment-level coding sheet.
         supplement: gold_standard_rationale_supplement.csv.
-        scored_db: RC2-corrected scored database.
+        scored_db: RC3-corrected scored database.
 
     Returns:
         Dict with revision counts, coder disposition, and pass-rate table.

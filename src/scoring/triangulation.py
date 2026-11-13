@@ -3,7 +3,7 @@ Supplementary triangulation check for the ambiguous-coherence bucket.
 
 NOT part of the official scoring pipeline (see pipeline.py / coherence.py
 for that) -- this is a one-time diagnostic added after the scoring run
-to inform how to size and target the human RC2 check on the 1,217
+to inform how to size and target the human RC3 check on the 1,217
 responses the pipeline flagged 'ambiguous' (Tier 1 rule-based and Tier 2
 Haiku disagreed on coherence).
 
@@ -25,7 +25,7 @@ IMPORTANT interpretive limit: this measures RELIABILITY (do independent
 automated methods agree with each other), not VALIDITY (does any of them
 match a human's judgment of actual coherence). Three automated judges can
 converge on the same wrong answer by sharing systematic biases. This
-triages which ambiguous cases most need the human RC2 check -- it does
+triages which ambiguous cases most need the human RC3 check -- it does
 not substitute for it.
 """
 
@@ -41,8 +41,8 @@ import requests
 from .config import (
     LLM_COHERENCE_PROMPT,
     LOGS_DIR,
-    RC2_COHERENT_SAMPLE,
-    RC2_INCOHERENT_SAMPLE,
+    RC3_COHERENT_SAMPLE,
+    RC3_INCOHERENT_SAMPLE,
     SCORED_DB_PATH,
     TRIANGULATION_ENDPOINT,
     TRIANGULATION_MODEL_ID,
@@ -240,13 +240,13 @@ def summarize_triangulation(triangulation_df: pd.DataFrame) -> dict:
     print(f"  Luna sides with Tier 1 (rule):    {sides_with_rule} ({sides_with_rule/total:.1%})")
     print(f"  3-way split (Luna='ambiguous'):   {three_way_split} ({three_way_split/total:.1%})")
     print(f"  Majority leans COHERENT:          {majority_coherent} ({majority_coherent/total:.1%})")
-    print(f"  (reliability triage only — not a validity claim; human RC2 still required)")
+    print(f"  (reliability triage only — not a validity claim; human RC3 still required)")
 
     return summary
 
 
 # ---------------------------------------------------------------------------
-# Stratified human review sample (RC2, ambiguous arm informed by triage)
+# Stratified human review sample (RC3, ambiguous arm informed by triage)
 # ---------------------------------------------------------------------------
 
 def _margin_of_error_sample_size(
@@ -282,18 +282,18 @@ def select_stratified_human_review_sample(
     blinded_output_path: Path = HUMAN_REVIEW_BLINDED_PATH,
     key_output_path: Path = HUMAN_REVIEW_KEY_PATH,
     seed: int = 42,
-    coherent_n: int = RC2_COHERENT_SAMPLE,
-    incoherent_n: int = RC2_INCOHERENT_SAMPLE,
+    coherent_n: int = RC3_COHERENT_SAMPLE,
+    incoherent_n: int = RC3_INCOHERENT_SAMPLE,
     ambiguous_margin: float = 0.10,
 ) -> tuple[pd.DataFrame, pd.DataFrame]:
     """
-    Build the RC2 human-review sample, sized to a ~10pp margin of error
+    Build the RC3 human-review sample, sized to a ~10pp margin of error
     per stratum, with the ambiguous arm stratified by the Luna
     triangulation triage rather than drawn as one flat random sample.
 
     Coherent and incoherent strata: simple random samples sized by
-    :func:`_margin_of_error_sample_size` (RC2_COHERENT_SAMPLE=94,
-    RC2_INCOHERENT_SAMPLE=67 at the default 10pp margin).
+    :func:`_margin_of_error_sample_size` (RC3_COHERENT_SAMPLE=94,
+    RC3_INCOHERENT_SAMPLE=67 at the default 10pp margin).
 
     Ambiguous stratum, three sub-groups from triangulation.py's triage:
       - 3-way split (Luna itself said 'ambiguous'): FULL CENSUS. Smallest

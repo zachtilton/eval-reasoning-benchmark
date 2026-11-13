@@ -26,8 +26,8 @@ data/raw/*
 !data/responses/fragment_outcomes.csv
 !data/responses/performance_matrix.csv
 !data/responses/gpt_5_6_sol_failures_for_coding.csv
-# RC2-corrected (accuracy-only) scoring outputs and the Luna triage that
-# informed RC2's stratified sample -- the triage cost real API calls.
+# RC3-corrected (accuracy-only) scoring outputs and the Luna triage that
+# informed RC3's stratified sample -- the triage cost real API calls.
 !data/responses/scored_database_corrected.csv
 !data/responses/fragment_outcomes_corrected.csv
 !data/responses/performance_matrix_corrected.csv
@@ -60,7 +60,7 @@ logs/*
 !logs/failed_calls.jsonl
 !logs/corpus_token_audit.csv
 !logs/calibration_token_audit.csv
-# RC2 blind human review and the contested-fragment external review packet,
+# RC3 blind human coherence review and the contested-fragment external review packet,
 # returned ratings (original .numbers + CSV conversion), and blinding keys.
 !logs/human_review_blinded.csv
 !logs/human_review_key.csv

@@ -1,8 +1,8 @@
 """
-RC2-corrected re-scoring: provisional-final results with the coherence
+RC3-corrected re-scoring: provisional-final results with the coherence
 gate removed from Step 2 (spec Section 2.4).
 
-Background: RC2's blind stratified human review (2026-11-05) found that
+Background: RC3's blind stratified human review (2026-11-05) found that
 the automated coherence pipeline's "incoherent" and "ambiguous" calls had
 0% agreement with human judgment in every tested sub-stratum --
 incoherent_confident (64/64 overridden, including the 7 cases where Tier 2
@@ -14,13 +14,13 @@ scoring gate.
 
 This module does NOT modify the original scored_database.csv /
 fragment_outcomes.csv / performance_matrix.csv -- those remain the
-as-designed, pre-RC2 historical results. It re-runs Steps 2-4 from the
+as-designed, pre-RC3 historical results. It re-runs Steps 2-4 from the
 already-scored database (Step 1 coherence columns are kept as a retained
 diagnostic, not deleted) with one change: classification accuracy is
 computed for every response with a usable classification, regardless of
 coherence_final. Genuinely unusable rows (no classification_output to
 compare, or a parsing error_flag) remain excluded exactly as before --
-RC2 only impugns the coherence *instrument*, not those independent
+RC3 only impugns the coherence *instrument*, not those independent
 exclusions.
 """
 
@@ -53,7 +53,7 @@ def compare_to_gold_standard_corrected(
     Compare model classifications to the gold standard for every response.
 
     Unlike the original compare_to_gold_standard, this does not bypass
-    rows where coherence_final != "coherent" -- RC2 found that bypass
+    rows where coherence_final != "coherent" -- RC3 found that bypass
     rule's input (the coherence pipeline) unreliable in the "not coherent"
     direction. A response is scored whenever it has a usable
     classification_output and did not fail to parse (error_flag).
@@ -81,7 +81,7 @@ def compare_to_gold_standard_corrected(
 
     def _accuracy(row: pd.Series) -> str | None:
         if row.get("error_flag"):
-            return None  # parsing failure — nothing to score, unrelated to RC2
+            return None  # parsing failure — nothing to score, unrelated to RC3
         if pd.isna(row["classification_output"]) or pd.isna(row["expert_classification"]):
             return None  # no usable classification to compare
         if row["classification_output"] == row["expert_classification"]:
@@ -143,11 +143,11 @@ def run_corrected_scoring(
     primary_model: str = PRIMARY_MODEL,
 ) -> dict:
     """
-    Re-run Steps 2-4 from the existing scored database with the RC2-informed
+    Re-run Steps 2-4 from the existing scored database with the RC3-informed
     accuracy-only outcome rule, writing to separate *_corrected files.
 
     Does not touch scored_database.csv / fragment_outcomes.csv /
-    performance_matrix.csv -- those remain the original, pre-RC2 results.
+    performance_matrix.csv -- those remain the original, pre-RC3 results.
 
     Args:
         scored_db_path: Path to the existing (Step-1-complete) scored database.
@@ -160,7 +160,7 @@ def run_corrected_scoring(
     """
     sep = "=" * 70
     print(f"\n{sep}")
-    print("RC2-CORRECTED RE-SCORING — START")
+    print("RC3-CORRECTED RE-SCORING — START")
     print(f"  Source (original scored database): {scored_db_path}")
     print(f"{sep}\n")
 
@@ -263,7 +263,7 @@ def run_corrected_scoring(
     }
 
     print(f"\n{sep}")
-    print("RC2-CORRECTED RE-SCORING — COMPLETE")
+    print("RC3-CORRECTED RE-SCORING — COMPLETE")
     print(f"{sep}\n")
 
     return summary
