@@ -66,5 +66,11 @@ design); poster (one headline + one figure per RQ; new figures for RQ1/RQ2).
 - Alternative calibration sets for the few-shot condition (stimulus
   sampling), ~$50 per variant across all models.
 
+## Documentation
+- [ ] Backfill `analysis_log.md` with unplanned work from earlier sessions
+  (e.g., external-reviewer triangulation of the 35 contested fragments,
+  blind Haiku gold-label audit, pre-lock rationale restoration, Luna
+  triage of ambiguous runs, corrected-scoring decision record).
+
 ## Housekeeping (not poster-critical)
 Rename RC2 → RC3 in code references (`corrected_scoring.py`, `*_corrected`).
