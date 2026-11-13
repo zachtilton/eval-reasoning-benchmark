@@ -1442,6 +1442,45 @@
     },
     "note": "Three models per family; a purposive sample of top-performing models in each family, not a sample of families."
   },
+  "rater_leniency": {
+    "n_fragments": 38,
+    "rater_1_vs_anchor_pass2": {
+      "missed": 9,
+      "of_not_sound": 24,
+      "missed_pct": 37.5,
+      "rejected": 6,
+      "of_sound": 14,
+      "rejected_pct": 42.9,
+      "ratio": 0.88
+    },
+    "rater_1_vs_locked": {
+      "missed": 4,
+      "of_not_sound": 19,
+      "missed_pct": 21.1,
+      "rejected": 6,
+      "of_sound": 19,
+      "rejected_pct": 31.6,
+      "ratio": 0.67
+    },
+    "rater_2_vs_anchor_pass2": {
+      "missed": 12,
+      "of_not_sound": 24,
+      "missed_pct": 50.0,
+      "rejected": 5,
+      "of_sound": 14,
+      "rejected_pct": 35.7,
+      "ratio": 1.4
+    },
+    "rater_2_vs_locked": {
+      "missed": 7,
+      "of_not_sound": 19,
+      "missed_pct": 36.8,
+      "rejected": 5,
+      "of_sound": 19,
+      "rejected_pct": 26.3,
+      "ratio": 1.4
+    }
+  },
   "shared_failures": {
     "per_model_any_condition_fail_rate_pct": {
       "gpt_5_6_sol": 50.7,

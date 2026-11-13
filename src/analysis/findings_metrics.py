@@ -1012,6 +1012,41 @@ def family_checks(maj: pd.DataFrame, gold: pd.DataFrame, outcomes: pd.DataFrame,
             "note": "Three models per family; a purposive sample of top-performing models in each family, not a sample of families."}
 
 
+def rater_leniency(gold: pd.DataFrame, retest: pd.DataFrame) -> dict:
+    """
+    Are the human RC2 raters lenient relative to the expert, as models are?
+
+    On the RC2 fragments in the benchmark, each rater's missed-flaw rate
+    (reference not sound, rater sound) and wrongly-rejected rate (reference
+    sound, rater not sound) against the expert's blind pass-2 ratings and the
+    locked gold, with counts, so they can be set beside the models' figures
+    (`leniency_vs_human_raters`).
+
+    Args:
+        gold: Locked gold.
+        retest: RC2 blind retest.
+
+    Returns:
+        Dict per rater and reference.
+    """
+    h = retest.rename(columns={"report_id": "fragment_id"}).copy()
+    for c in ("rater_1", "rater_2", "anchor3_pass2"):
+        h[c] = _norm_label(h[c])
+    h = h.merge(gold[["fragment_id", "expert_classification"]].rename(columns={"expert_classification": "locked"}), on="fragment_id")
+    out = {"n_fragments": int(len(h))}
+    for rater in ("rater_1", "rater_2"):
+        for ref_name, ref in (("anchor_pass2", "anchor3_pass2"), ("locked", "locked")):
+            ns, s = h[h[ref] == "not_sound"], h[h[ref] == "sound"]
+            missed, rejected = int((ns[rater] == "sound").sum()), int((s[rater] == "not_sound").sum())
+            mr, rr = missed / len(ns), rejected / len(s)
+            out[f"{rater}_vs_{ref_name}"] = {
+                "missed": missed, "of_not_sound": int(len(ns)), "missed_pct": _pct(mr),
+                "rejected": rejected, "of_sound": int(len(s)), "rejected_pct": _pct(rr),
+                "ratio": round(mr / rr, 2) if rr > 0 else None,
+            }
+    return out
+
+
 def unanimity(outcomes: pd.DataFrame) -> dict:
     """
     Run-to-run consistency: share of combinations with 3/3 agreement.
@@ -1314,6 +1349,7 @@ def run_findings_metrics(output_path: Path = FINDINGS_METRICS_PATH) -> dict:
         "f51_by_condition": f51_by_condition(rows, frags),
         "theory_checks": theory_checks(rows, frags, outcomes, gold),
         "family_checks": family_checks(maj, gold, outcomes),
+        "rater_leniency": rater_leniency(gold, retest),
         "shared_failures": shared_failures(outcomes, gold, resolved, frags),
         "challenge_cases": challenge_case_summary(outcomes, rows),
         "contested_review": {
