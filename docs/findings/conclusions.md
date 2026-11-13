@@ -73,8 +73,53 @@ Levels: Falls short / Partial / Human parity / Expert level.
    post hoc choice matters little; if they differ, the dependence is
    visible.
 
+### Domain 4 — Synthesis (first pass 2026-11-13; post hoc)
+
+Method: qualitative weight and sum (Scriven; Davidson, 2005). Importance
+levels and the synthesis rule were set by the author before they were applied.
+
+| Criterion | Importance | Landing |
+|---|---|---|
+| C4 Detecting an absent judgment | Extremely important | Partial |
+| C1 Verdict agreement | Very important | Human parity |
+| C5 Checklist evidence in rationales | Very important | Insufficient evidence, promising signal |
+| C2 Error structure | Important | Parity zero-shot; falls short few-shot |
+| C3 Robustness to irrelevant features | Important | Falls short |
+
+**Rule (weighted, no bar):**
+- *Can do (human parity)*: parity on all extremely and very important
+  criteria, and no "falls short" on any important one.
+- *Partly can*: very important criteria at parity or partial; extremely
+  important at least partial.
+- *Cannot yet*: extremely important falls short, or very important fall short.
+
+**Bar version:** C4 must reach human parity for the overall verdict to
+exceed "partly can."
+
+**Results:**
+- Weighted: **partly can.** "Can do" fails on C4 (partial) and C3 (falls
+  short). "Cannot yet" is not triggered: neither C4 nor C1 falls short.
+  This holds in both conditions; examples move C2 to "falls short" and
+  C4 toward it, but neither crosses a threshold in the rule.
+- Bar: **partly can** (capped by C4 at partial).
+- The two agree, so by safeguard 3 the post hoc emphasis on C4 does not
+  drive the verdict.
+
+**Open issues (author to decide):**
+1. *C5 "insufficient evidence" is not a level the rule names.* As applied
+   above it is left unrated, and the verdict rests on the other criteria. The
+   alternative is to count the promising signal as partial. The verdict
+   is the same either way.
+2. *The agreement is partly structural.* As worded, the bar can only cap the
+   verdict at "partly can," and the weighted rule already landed there.
+   A bar that could have changed the result would be a hurdle: if C4 falls
+   short, the verdict is "cannot yet." C4 clears that hurdle in both
+   conditions, but only narrowly with examples (61% missed).
+3. *The bar's validity (author's concern, 2026-11-13):* to be articulated.
+   One candidate: C4's parity standard has no rater benchmark, so a bar keyed
+   to "comparable to raters" is set against an unmeasured comparison.
+
 ### Remaining steps
 - Domain 2–3: link each criterion to its findings and warrants.
-- Domain 4: synthesis, both ways (bar / no bar).
 - Domain 5: explicit judgment — to what extent.
 - Domain 6: qualifications; evidence-rubric rating.
