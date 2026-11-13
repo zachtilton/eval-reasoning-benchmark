@@ -394,6 +394,86 @@ are what test it.
 
 ---
 
+## Finding 2.5 — Missing the missing judgment (agreed 2026-11-12)
+
+### Headline
+
+> **The most common genuine failure was missing that a passage never
+> reaches an evaluative judgment: models passed conclusions that discuss
+> performance without ever saying how good it was. The study's calibration
+> examples made this worse, even though the "not sound" example was itself
+> a passage with no judgment.**
+
+### Expanded
+
+> On re-review, the most common reason a primary-model failure was genuine
+> was that the passage reached no evaluative judgment (F5.1, "evaluative
+> judgment absent"): 13 of 28 confirmed failures, about half at every
+> passage length. These passages typically assemble evidence, name criteria
+> and use evaluative vocabulary, but stop short of a verdict on the
+> criterion. The calibration examples made the problem worse rather than
+> better. Without examples, the model missed 7 such passages; with them, 13,
+> and every judgment-absent passage it missed was missed with the examples
+> present. This happened even though the "not sound" example was itself a
+> passage with no judgment. The extra misses introduced by the examples were
+> mostly passages that lacked both a judgment and adequate evidence (5 of
+> 6), so a simple account of the examples teaching "not sound means no
+> judgment and no evidence" does not fit. Why the examples made the problem
+> worse remains open. Because nearly all the primary model's failures were
+> shared by other models (2.1), this is likely a failure pattern of models
+> generally, not of one model.
+
+### Named phenomena (conjecture; for RQ3)
+
+- **Evaluative veneer** (preferred): text with the surface of evaluation —
+  criteria, evidence, evaluative vocabulary — but no verdict. Models may
+  respond to the markers that usually accompany a judgment rather than to
+  the judgment itself; related to verbosity bias in LLM judges (Zheng et
+  al., 2023; Saito et al., 2023) and shortcut learning (Geirhos et al.,
+  2020).
+- **Description–evaluation gap** (to develop): the distinction in
+  evaluation theory between describing performance and judging its merit or
+  worth (Scriven's logic of evaluation); F5.1 failures are cases where the
+  missing second step went unnoticed.
+
+### Evidence
+
+| | Zero-shot | Few-shot |
+|---|---|---|
+| Confirmed failure rows | 15 | 27 |
+| Coded F5.1 | 7 (47%) | 13 (48%) |
+
+| The 13 confirmed F5.1 passages | n | Also coded F2.2 (evidence insufficient) |
+|---|---|---|
+| Missed in both conditions | 7 | 0 |
+| Missed only with examples | 6 | 5 |
+| Missed only without examples | 0 | — |
+
+- F5.1 as primary code: 13 of 28 confirmed fragments (next: F5.2 4, F2.2 3,
+  F4.2 3); in any position F5.1 and F2.2 tie at 13.
+- By length: F5.1 in 5 of 11 (short), 2 of 5 (medium), 6 of 12 (long)
+  confirmed failures.
+- Calibration "not sound" example rationale: "No judgment, and there is
+  really no supporting evidence" (`config/prompts/few_shot_template.txt`).
+- `results/findings_metrics.json` → `f51_by_condition`,
+  `gpt_failures_by_length`; `results/failure_coding_synthesis.json` →
+  `codes`. Exploratory: E17–E19 in `analysis_log.md`.
+
+### Caveats
+
+- Primary model only; generalized to other models through the
+  shared-failure bridge (2.1), which covers what was missed, not why.
+- One coder; RC4 pending; the re-review is not independent of the expert's
+  labels.
+- Boundary question: whether a passage "reaches a judgment" depends on where
+  the line is drawn (strict vs lenient rule; grammatical-object test); some
+  F5.1 cases may be disagreements over the line rather than plain misses.
+- Mechanism unexplained: the calibration-boundary prediction failed (E19);
+  example content, order and length are confounded (stimulus sampling).
+- Small numbers (13 fragments; 7 and 6).
+
+---
+
 ## Still to discuss
 
 - GPT close-up: disposition (28/76 confirmed), failure-code profile
