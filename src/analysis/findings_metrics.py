@@ -822,6 +822,37 @@ def gpt_failures_by_length(frags: pd.DataFrame, gold: pd.DataFrame, outcomes: pd
     return out
 
 
+def f51_by_condition(rows: pd.DataFrame, frags: pd.DataFrame) -> dict:
+    """
+    Did "evaluative judgment absent" (F5.1) failures persist when the few-shot
+    prompt's not-sound example was itself a passage with no judgment?
+
+    Row level (fragment x condition): confirmed failures and F5.1 (primary and
+    any position) per condition. Fragment level: for fragments with an F5.1
+    code, which conditions they failed in.
+
+    Args:
+        rows: Row-level coding sheet (load_coding_sheet).
+        frags: Fragment-level coding (to_fragment_level).
+
+    Returns:
+        Dict per condition plus the fragment-level condition pattern.
+    """
+    code_cols = ["primary_code", "secondary_code", "tertiary_code"]
+    r = rows.assign(f51_any=rows[code_cols].astype(str).apply(lambda x: "F5.1" in set(x), axis=1))
+    per = {}
+    for cond in PROMPT_ORDER:
+        d = r[(r["prompt_condition"] == cond) & r["genuine"]]
+        per[cond] = {"confirmed_rows": int(len(d)), "f51_primary": int((d["primary_code"] == "F5.1").sum()),
+                     "f51_any": int(d["f51_any"].sum()),
+                     "f51_any_pct_of_confirmed": _pct(d["f51_any"].mean()) if len(d) else None}
+    f = frags.assign(f51_any=frags[code_cols].astype(str).apply(lambda x: "F5.1" in set(x), axis=1))
+    f51 = f[f["genuine"] & f["f51_any"]]
+    return {"by_condition_rows": per,
+            "f51_fragments": int(len(f51)),
+            "f51_fragments_failed_in": f51["conditions"].value_counts().to_dict()}
+
+
 def unanimity(outcomes: pd.DataFrame) -> dict:
     """
     Run-to-run consistency: share of combinations with 3/3 agreement.
@@ -1121,6 +1152,7 @@ def run_findings_metrics(output_path: Path = FINDINGS_METRICS_PATH) -> dict:
         "leniency_ratio_uncertainty": leniency_ratio_uncertainty(maj, gold, retest),
         "length_moderation": length_moderation(maj, gold, retest),
         "gpt_failures_by_length": gpt_failures_by_length(frags, gold, outcomes),
+        "f51_by_condition": f51_by_condition(rows, frags),
         "shared_failures": shared_failures(outcomes, gold, resolved, frags),
         "challenge_cases": challenge_case_summary(outcomes, rows),
         "contested_review": {

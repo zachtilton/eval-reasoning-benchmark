@@ -1178,6 +1178,27 @@
       "confirmed_with_f51_any": 6
     }
   },
+  "f51_by_condition": {
+    "by_condition_rows": {
+      "zero_shot": {
+        "confirmed_rows": 15,
+        "f51_primary": 7,
+        "f51_any": 7,
+        "f51_any_pct_of_confirmed": 46.7
+      },
+      "few_shot": {
+        "confirmed_rows": 27,
+        "f51_primary": 13,
+        "f51_any": 13,
+        "f51_any_pct_of_confirmed": 48.1
+      }
+    },
+    "f51_fragments": 13,
+    "f51_fragments_failed_in": {
+      "few_shot+zero_shot": 7,
+      "few_shot": 6
+    }
+  },
   "shared_failures": {
     "per_model_any_condition_fail_rate_pct": {
       "gpt_5_6_sol": 50.7,
