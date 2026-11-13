@@ -15,10 +15,11 @@ One topline conclusion per RQ, supported by findings; 2–3 supporting findings 
 - [x] Passage-length moderation — folded into 2.2 (leniency grows with length; explains RC2-subset reversal)
 - [x] #5 / #9 absorbed into 2.1, with a bridging sentence: GPT's coded flaws likely describe what other models missed (shared failures); reasoning coded for GPT only
 - [x] 2.4 Disposition: re-review changed the expert's mind (#6, #7); named concept: argumentative capability
-- [ ] #8 F5.1 / code profile — the most direct answer to RQ2 (check F5.1 by condition: the not-sound example was "no judgment")
+- [x] 2.5 Missing the missing judgment (F5.1; examples made it worse); named phenomena: evaluative veneer (preferred), description–evaluation gap
 - [ ] RQ2 mainline answer + conclusion-level rating
 
 ## RQ3 — not started
+Develop the named phenomena from RQ2: **evaluative veneer** (2.5; links to verbosity bias, shortcut learning), the **description–evaluation gap** (Scriven's logic of evaluation), and **argumentative capability** (2.4).
 Domain profile and theory linkage; **parked lexicon test**: do surface
 evaluative features (evaluative-term density, rating scales, criterion
 references; pre-specified) predict models' sound calls beyond length and

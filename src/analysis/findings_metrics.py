@@ -853,6 +853,8 @@ def f51_by_condition(rows: pd.DataFrame, frags: pd.DataFrame) -> dict:
     has_f2 = f51[code_cols].astype(str).apply(lambda x: any(c.startswith("F2.") for c in x), axis=1)
     f2_by = {k: {"n": int(len(d)), "with_evidence_code": int(has_f2[d.index].sum())} for k, d in f51.groupby("conditions")}
     return {"by_condition_rows": per,
+            "confirmed_fragments": int(f["genuine"].sum()),
+            "f51_primary_fragments": int((f["genuine"] & (f["primary_code"] == "F5.1")).sum()),
             "f51_fragments": int(len(f51)),
             "f51_fragments_failed_in": f51["conditions"].value_counts().to_dict(),
             "f51_fragments_with_evidence_code_f2": int(has_f2.sum()),

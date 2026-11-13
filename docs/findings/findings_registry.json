@@ -1,7 +1,7 @@
 {
   "about": "Machine-readable provenance for the written findings in docs/findings/*.md. Each claim lists the metric values that corroborate it (as <results file>:<dot.path>), the procedure, the data sources and the code that produced it. tests/test_findings_registry.py checks every listed value against the results files, so prose and numbers cannot drift apart silently.",
   "conventions": {
-    "metric_ref": "<file under results/>:<dot.separated.path>; keyed dicts (e.g. by_combination.<model>|<condition>) rather than list indices",
+    "metric_ref": "<file under results/>:<dot.separated.path>; keyed dicts (e.g. by_combination.<model>|<condition>) rather than list indices; keys containing dots (e.g. code labels like F5.1) cannot be addressed — expose a plain scalar key instead",
     "unit": "Majority label per fragment x model x prompt condition unless stated; corrected (accuracy-only) scoring; locked gold 2026-10-03 unless stated",
     "status": "agreed = wording agreed with the author; draft = discussed, wording open"
   },
@@ -1547,6 +1547,109 @@
             "contested_review"
           ],
           "code": "src/analysis/findings_metrics.py:run_findings_metrics"
+        }
+      ]
+    },
+    {
+      "id": "RQ2.5",
+      "research_question": "What systematic failure patterns emerge from the LLM artifacts?",
+      "status": "agreed",
+      "document": "docs/findings/rq2.md",
+      "headline": "The most common genuine failure was missing that a passage never reaches an evaluative judgment: models passed conclusions that discuss performance without ever saying how good it was. The study's calibration examples made this worse, even though the \"not sound\" example was itself a passage with no judgment.",
+      "claims": [
+        {
+          "id": "RQ2.5.a",
+          "text": "F5.1 (evaluative judgment absent) is the most common primary code among confirmed failures: 13 of 28, about half at every length.",
+          "values": [
+            {
+              "metric": "findings_metrics.json:f51_by_condition.f51_primary_fragments",
+              "value": 13
+            },
+            {
+              "metric": "findings_metrics.json:f51_by_condition.confirmed_fragments",
+              "value": 28
+            },
+            {
+              "metric": "findings_metrics.json:gpt_failures_by_length.1-3 paragraphs.confirmed_with_f51_primary",
+              "value": 5
+            },
+            {
+              "metric": "findings_metrics.json:gpt_failures_by_length.4-6 paragraphs.confirmed_with_f51_primary",
+              "value": 2
+            },
+            {
+              "metric": "findings_metrics.json:gpt_failures_by_length.7+ paragraphs.confirmed_with_f51_primary",
+              "value": 6
+            }
+          ],
+          "procedure": "Primary codes among fragments the expert confirmed as genuine GPT failures (Appendix D.1); cross-tabulated with paragraph-count bins.",
+          "sources": [
+            "gpt_coding",
+            "gold_locked"
+          ],
+          "code": "src/analysis/findings_metrics.py:f51_by_condition, gpt_failures_by_length",
+          "caveat": "Primary model only; one coder; RC4 pending; boundary of what counts as a judgment."
+        },
+        {
+          "id": "RQ2.5.b",
+          "text": "With the calibration examples GPT missed more judgment-absent passages (13 vs 7 confirmed rows); all 13 F5.1 fragments failed with examples, 6 only with them.",
+          "values": [
+            {
+              "metric": "findings_metrics.json:f51_by_condition.by_condition_rows.zero_shot.f51_any",
+              "value": 7
+            },
+            {
+              "metric": "findings_metrics.json:f51_by_condition.by_condition_rows.few_shot.f51_any",
+              "value": 13
+            },
+            {
+              "metric": "findings_metrics.json:f51_by_condition.f51_fragments",
+              "value": 13
+            },
+            {
+              "metric": "findings_metrics.json:f51_by_condition.f51_fragments_failed_in",
+              "value": {
+                "few_shot+zero_shot": 7,
+                "few_shot": 6
+              }
+            }
+          ],
+          "procedure": "F5.1 among confirmed failure rows by prompt condition; conditions in which each F5.1 fragment failed.",
+          "sources": [
+            "gpt_coding",
+            "few_shot_template"
+          ],
+          "code": "src/analysis/findings_metrics.py:f51_by_condition",
+          "caveat": "Small numbers; example content, order and length confounded."
+        },
+        {
+          "id": "RQ2.5.c",
+          "text": "The extra misses introduced by the examples mostly lacked both a judgment and adequate evidence (5 of 6 carry F2.2), so the 'no judgment and no evidence' boundary account does not fit.",
+          "values": [
+            {
+              "metric": "findings_metrics.json:f51_by_condition.f51_evidence_code_by_failed_in",
+              "value": {
+                "few_shot": {
+                  "n": 6,
+                  "with_evidence_code": 5
+                },
+                "few_shot+zero_shot": {
+                  "n": 7,
+                  "with_evidence_code": 0
+                }
+              }
+            },
+            {
+              "metric": "findings_metrics.json:f51_by_condition.f51_fragments_with_evidence_code_f2",
+              "value": 5
+            }
+          ],
+          "procedure": "Evidence codes (F2.x) among confirmed F5.1 fragments, by conditions failed (exploratory E19).",
+          "sources": [
+            "gpt_coding"
+          ],
+          "code": "src/analysis/findings_metrics.py:f51_by_condition",
+          "caveat": "Post hoc refinements of the boundary account would be exploratory."
         }
       ]
     }

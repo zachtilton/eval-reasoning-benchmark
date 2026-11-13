@@ -1193,6 +1193,8 @@
         "f51_any_pct_of_confirmed": 48.1
       }
     },
+    "confirmed_fragments": 28,
+    "f51_primary_fragments": 13,
     "f51_fragments": 13,
     "f51_fragments_failed_in": {
       "few_shot+zero_shot": 7,
