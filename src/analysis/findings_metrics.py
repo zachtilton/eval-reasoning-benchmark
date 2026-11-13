@@ -1255,7 +1255,19 @@ def judgment_absent_rates(maj: pd.DataFrame, reasons: pd.DataFrame, n_gold: int)
     by_model = {f"{mod}|{c}": _pct(d["missed"].mean())
                 for (mod, c), d in m[m["not_sound_reason"] == "judgment_absent"].groupby(["model_family", "prompt_condition"])}
     known = sum(v for k, v in counts.items() if k != "stale_rationale")
+    from scipy.stats import binomtest
+
+    def wilson(k: int) -> list[float]:
+        ci = binomtest(k, n_gold).proportion_ci(method="wilson")
+        return [_pct(ci.low), _pct(ci.high)]
+
+    k_abs = int(counts.get("judgment_absent", 0))
+    k_upper = k_abs + int(counts.get("stale_rationale", 0))
     return {"counts": {k: int(v) for k, v in counts.items()},
+            "prevalence_judgment_absent_pct": _pct(k_abs / n_gold),
+            "prevalence_ci_95_wilson_pct": wilson(k_abs),
+            "prevalence_if_stale_also_absent_pct": _pct(k_upper / n_gold),
+            "prevalence_if_stale_also_absent_ci_95_pct": wilson(k_upper),
             "judgment_absent_pct_of_known_not_sound": _pct(counts.get("judgment_absent", 0) / known),
             "judgment_absent_pct_of_all_passages": _pct(counts.get("judgment_absent", 0) / n_gold),
             "pooled_miss_rate": pooled, "judgment_absent_miss_rate_by_model": by_model}

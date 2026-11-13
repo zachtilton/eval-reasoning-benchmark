@@ -66,9 +66,66 @@
     "few_shot_template": {
       "path": "config/prompts/few_shot_template.txt",
       "description": "Few-shot prompt with the two calibration examples"
+    },
+    "gold_not_sound_reasons": {
+      "path": "data/analysis/gold_not_sound_reasons.csv",
+      "description": "Author classification of not-sound gold rationales by reason (2026-11-13)"
     }
   },
   "findings": [
+    {
+      "id": "CORPUS.0.1",
+      "research_question": "(context) What reasoning is being judged?",
+      "status": "agreed",
+      "document": "docs/findings/corpus.md",
+      "headline": "Missing judgments are common in UN evaluation conclusions: about a third of the sampled conclusion passages (32%, 95% CI 25–40%) discussed performance without ever saying how good it was.",
+      "claims": [
+        {
+          "id": "CORPUS.0.1.a",
+          "text": "48 of 150 passages (32%, 95% CI 25–40%) lack an evaluative judgment by the expert's rationales; 36% (CI 29–44%) if the six stale cases also did.",
+          "values": [
+            {
+              "metric": "findings_metrics.json:judgment_absent_rates.counts.judgment_absent",
+              "value": 48
+            },
+            {
+              "metric": "findings_metrics.json:judgment_absent_rates.prevalence_judgment_absent_pct",
+              "value": 32.0
+            },
+            {
+              "metric": "findings_metrics.json:judgment_absent_rates.prevalence_ci_95_wilson_pct",
+              "value": [
+                25.1,
+                39.8
+              ]
+            },
+            {
+              "metric": "findings_metrics.json:judgment_absent_rates.prevalence_if_stale_also_absent_pct",
+              "value": 36.0
+            },
+            {
+              "metric": "findings_metrics.json:judgment_absent_rates.prevalence_if_stale_also_absent_ci_95_pct",
+              "value": [
+                28.8,
+                43.9
+              ]
+            },
+            {
+              "metric": "findings_metrics.json:judgment_absent_rates.judgment_absent_pct_of_known_not_sound",
+              "value": 70.6
+            }
+          ],
+          "procedure": "Not-sound gold rationales classified by stated reason (phrase match plus author-confirmed cases); Wilson 95% CI for the share of all 150 passages.",
+          "sources": [
+            "gold_locked",
+            "gold_supplement",
+            "gold_not_sound_reasons"
+          ],
+          "code": "src/analysis/findings_metrics.py:judgment_absent_rates",
+          "caveat": "Screened passages (mainly descriptive fragments excluded; likely conservative); expert's standard; one passage per report."
+        }
+      ]
+    },
     {
       "id": "RQ1.1",
       "research_question": "To what extent can large language models accurately assess the quality of evaluative reasoning?",
@@ -1281,7 +1338,7 @@
       "research_question": "What systematic failure patterns emerge from the LLM artifacts?",
       "status": "agreed",
       "document": "docs/findings/rq2.md",
-      "headline": "Models might be taken in by evaluative veneer: their most common genuine failure was passing conclusions that discuss performance without ever saying how good it was, and the study's calibration examples made it worse.",
+      "headline": "Models might be taken in by evaluative veneer: about a third of the passages discussed performance without ever saying how good it was, and models missed about half of them, more with the study's calibration examples.",
       "claims": [
         {
           "id": "RQ2.3.a",
@@ -1376,6 +1433,35 @@
           ],
           "code": "src/analysis/findings_metrics.py:f51_by_condition",
           "caveat": "Post hoc refinements of the boundary account would be exploratory."
+        },
+        {
+          "id": "RQ2.3.d",
+          "text": "Models called judgment-absent passages sound 51% of the time without examples and 61% with them; other flaws 42% / 55%.",
+          "values": [
+            {
+              "metric": "findings_metrics.json:judgment_absent_rates.pooled_miss_rate.zero_shot.judgment_absent.miss_rate_pct",
+              "value": 50.7
+            },
+            {
+              "metric": "findings_metrics.json:judgment_absent_rates.pooled_miss_rate.few_shot.judgment_absent.miss_rate_pct",
+              "value": 60.6
+            },
+            {
+              "metric": "findings_metrics.json:judgment_absent_rates.pooled_miss_rate.zero_shot.other_flaw.miss_rate_pct",
+              "value": 41.7
+            },
+            {
+              "metric": "findings_metrics.json:judgment_absent_rates.pooled_miss_rate.few_shot.other_flaw.miss_rate_pct",
+              "value": 54.8
+            }
+          ],
+          "procedure": "Majority labels on not-sound passages by stated reason; share called sound (missed flaw), per condition.",
+          "sources": [
+            "scored_db_corrected",
+            "gold_not_sound_reasons"
+          ],
+          "code": "src/analysis/findings_metrics.py:judgment_absent_rates",
+          "caveat": "Other-flaw group is small (14 passages)."
         }
       ],
       "previous_headline": "The most common genuine failure was missing that a passage never reaches an evaluative judgment: models passed conclusions that discuss performance without ever saying how good it was. The study's calibration examples made this worse, even though the \"not sound\" example was itself a passage with no judgment."

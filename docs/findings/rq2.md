@@ -259,10 +259,12 @@ confirmed lenient as share of gold-not-sound passages 36% / 26% / 44%
 
 ### Headline
 
-> **Models might be taken in by evaluative veneer: their most common genuine
-> failure was passing conclusions that discuss performance without ever
-> saying how good it was, and the study's calibration examples made it
-> worse.**
+> **Models might be taken in by evaluative veneer: about a third of the
+> passages discussed performance without ever saying how good it was, and
+> models missed about half of them, more with the study's calibration
+> examples.**
+
+*Previous headline (implication-first, 2026-11-13):* Models might be taken in by evaluative veneer: their most common genuine failure was passing conclusions that discuss performance without ever saying how good it was, and the study's calibration examples made it worse.
 
 *Previous (descriptive) headline:* The most common genuine failure was missing that a passage never reaches an evaluative judgment: models passed conclusions that discuss performance without ever saying how good it was. The study's calibration examples made this worse, even though the "not sound" example was itself a passage with no judgment.
 
@@ -284,6 +286,15 @@ confirmed lenient as share of gold-not-sound passages 36% / 26% / 44%
 > worse remains open. Because nearly all the primary model's failures were
 > shared by other models (2.1), this is likely a failure pattern of models
 > generally, not of one model.
+
+**Prevalence and miss rate (added 2026-11-13, E25).** Using the expert's
+not-sound rationales as a denominator, 48 of 150 passages lacked a judgment
+(32%; corpus Finding 0.1). Models called such passages sound 51% of the
+time without examples and 61% with them. They missed other flaws nearly as
+often (42% / 55%, n = 14 passages), so missing judgments dominate the
+confirmed failures largely because they dominate the flaws — a prevalence
+effect, not evidence of a uniquely hard flaw. GPT's 13 of 28 confirmed
+failures remain the coded detail.
 
 ### Named phenomena (conjecture; for RQ3)
 

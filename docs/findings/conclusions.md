@@ -8,8 +8,9 @@ evidence rubric (pending).
 ## Candidate conclusions
 
 ### C-a. Models carry a blind spot for a flaw common in real reports (kept 2026-11-12)
-Models most often missed passages that never reach an evaluative judgment
-(2.3). Empirical studies of evaluation reports find that omitted or
+Models missed about half of the passages that never reach an evaluative
+judgment (2.3), and such passages made up about a third of the sampled UN
+conclusions (Finding 0.1). Empirical studies of evaluation reports find that omitted or
 unsupported evaluative conclusions are common (Nunns et al., 2015; see also
 Hurteau et al., 2009 on absent synthesis). Models used for meta-evaluation
 would therefore carry a blind spot for one of the flaws a meta-evaluator
@@ -17,8 +18,12 @@ most needs to catch, which calls for added caution in using them for that
 purpose.
 
 - Grounds: 2.3 (F5.1, primary model; generalized via 2.1); 2.2 (leniency).
-- Qualifier: Nunns et al.'s sample (30 New Zealand reports) is narrower than
-  the UN corpus; prevalence in UN reports not estimated here.
+- Grounds (added 2026-11-13): corpus Finding 0.1 — about a third of sampled
+  UN conclusion passages (32%, CI 25–40%) lack a judgment; models missed
+  about half of them (51% zero-shot, 61% few-shot; E25).
+- Qualifier: Nunns et al.'s sample (30 New Zealand reports) is narrower; the
+  UN estimate rests on the expert's ratings of screened passages and is
+  likely conservative (mainly descriptive fragments were excluded).
 - Rebuttal to address: F5.1 rests on one model's coded failures and one
   coder; RC4 pending.
 
@@ -50,7 +55,7 @@ Levels: Falls short / Partial / Human parity / Expert level.
 | C1 Verdict agreement with the expert | Chance (κ ≈ 0) / above chance, below raters / within raters' range (55–61% with expert's blind ratings) / expert's own consistency (85%, κ = 0.70) | Human parity (≈57%; κ ≈ 0.20 overall) | Pre-specified (primary outcome) |
 | C2 Error structure | Strong one-way bias outside human range / at its edge / within it (raters 0.88, 1.40) / no lean | Parity without examples (0.85, short passages); falls short with them (3.05) | Emergent (leniency analyses) |
 | C3 Robustness to irrelevant features | Substantial / moderate / comparable to humans / unaffected | Falls short (length; calibration examples); humans not tested | Emergent (length, calibration-example analyses) |
-| C4 Detecting an absent judgment | Routinely misses / inconsistent / comparable to raters / reliable | Falls short to partial (F5.1 most common genuine failure; worse with examples); no rater comparison | Pre-specified domain (Domain 5); emphasis post hoc |
+| C4 Detecting an absent judgment | Routinely misses / inconsistent / comparable to raters / reliable | **Partial**: models caught about half of judgment-absent passages without examples (missed 51%) and about two in five with them (missed 61%), edging toward falls short; similar to other flaws (E25); no rater comparison | Pre-specified domain (Domain 5); emphasis post hoc |
 | C5 Checklist evidence in rationales (artifacts) | Lacks elements / some, inconsistently / arguments an expert accepts / improve on the expert's | Insufficient evidence, promising signal (GPT failure rationales often persuaded the expert; strict ones nearly all defensible) | Pre-specified instrument; use as a standard post hoc |
 
 ### Safeguards for post hoc criteria (adopted 2026-11-13)

@@ -1,6 +1,7 @@
 # Results roadmap (working, 2026-11-12)
 
 ## Structure
+Corpus finding 0.1 (`corpus.md`, context before the RQs): about a third of sampled UN conclusion passages lack a judgment.
 One topline conclusion per RQ, supported by findings; 2–3 supporting findings per RQ on the poster.
 
 ## RQ1 — done (answer + findings 1.1–1.3; 2.4 re-homed as 1.3, 2026-11-13)

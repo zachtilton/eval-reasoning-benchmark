@@ -1599,6 +1599,16 @@
       "stale_rationale": 6,
       "buried_judgment": 6
     },
+    "prevalence_judgment_absent_pct": 32.0,
+    "prevalence_ci_95_wilson_pct": [
+      25.1,
+      39.8
+    ],
+    "prevalence_if_stale_also_absent_pct": 36.0,
+    "prevalence_if_stale_also_absent_ci_95_pct": [
+      28.8,
+      43.9
+    ],
     "judgment_absent_pct_of_known_not_sound": 70.6,
     "judgment_absent_pct_of_all_passages": 32.0,
     "pooled_miss_rate": {
