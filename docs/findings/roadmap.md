@@ -3,7 +3,7 @@
 ## Structure
 One topline conclusion per RQ, supported by findings; 2–3 supporting findings per RQ on the poster.
 
-## RQ1 — done
+## RQ1 — done (answer + findings 1.1–1.3; 2.4 re-homed as 1.3, 2026-11-13)
 `rq1.md`. Resolved 2026-11-13: the leniency clause stays as a pooled statement (≈2.3:1, CI 1.7–3.1); RQ2's answer carries the length and calibration-example nuance.
 
 ## RQ2 — in progress (`rq2.md`)
@@ -13,7 +13,7 @@ One topline conclusion per RQ, supported by findings; 2–3 supporting findings 
 - [x] #4 Failure by evaluation criterion — folded into 2.2 (criterion explains nothing once gold label is held constant)
 - [x] Passage-length moderation — folded into 2.2 (leniency grows with length; explains RC2-subset reversal)
 - [x] #5 / #9 absorbed into 2.1, with a bridging sentence: GPT's coded flaws likely describe what other models missed (shared failures); reasoning coded for GPT only
-- [x] 2.4 Disposition: re-review changed the expert's mind (#6, #7); named concept: argumentative capability
+- [x] 2.4 Disposition → re-homed to RQ1 as 1.3 (2026-11-13); named concept: argumentative capability
 - [x] 2.5 Missing the missing judgment (F5.1; examples made it worse); named phenomena: evaluative veneer (preferred), description–evaluation gap
 - [x] RQ2 answer agreed (2026-11-13): lenient, esp. longer passages and calibration examples, most often missed judgments; supporting 2.2, 2.5
 
@@ -54,6 +54,9 @@ explanations, scope); "rate the claim as worded." For now apply at the
 conclusion level per RQ, plus the 2–3 load-bearing findings. To do: verify
 Mastrandrea et al. (2010); write descriptors and the evidence × agreement
 rule; add bootstrap CIs for the leniency ratios.
+
+## Findings review (author request, 2026-11-13)
+- [ ] Revisit every finding headline: would leading with the implication (as in 1.3) be stronger than the current descriptive lead?
 
 ## After findings
 Per-RQ conclusions (rated); study-level limitations (ethics, representation,

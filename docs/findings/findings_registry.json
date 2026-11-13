@@ -69,11 +69,11 @@
   },
   "findings": [
     {
-      "id": "RQ1",
+      "id": "RQ1.1",
       "research_question": "To what extent can large language models accurately assess the quality of evaluative reasoning?",
       "status": "agreed",
       "document": "docs/findings/rq1.md",
-      "headline": "LLMs agreed with the expert 60% of the time, barely better than a coin flip but about as often as trained human evaluators did, and they erred toward leniency.",
+      "headline": "Models agreed with the expert 60% of the time, modestly above chance and well below the expert's own consistency, and they caught flawed reasoning far less reliably than they affirmed sound reasoning.",
       "claims": [
         {
           "id": "RQ1.a",
@@ -149,6 +149,131 @@
           "code": "results/reliability_checks.json (consumed by src/analysis/runner.py:_build_reliability_results)"
         },
         {
+          "id": "RQ1.f",
+          "text": "Models affirmed sound reasoning far more reliably than they detected flawed reasoning (75% vs 44%).",
+          "values": [
+            {
+              "metric": "findings_metrics.json:model_anchor_agreement.accuracy_on_gold_sound_mean_pct",
+              "value": 75.4
+            },
+            {
+              "metric": "findings_metrics.json:model_anchor_agreement.accuracy_on_gold_not_sound_mean_pct",
+              "value": 44.2
+            }
+          ],
+          "procedure": "Accuracy within each gold label, per model x condition, averaged.",
+          "sources": [
+            "scored_db_corrected",
+            "gold_locked"
+          ],
+          "code": "src/analysis/findings_metrics.py:model_anchor_agreement"
+        },
+        {
+          "id": "RQ1.h",
+          "text": "No significant differences between the six models or between closed and open models.",
+          "values": [
+            {
+              "metric": "H2_statistical_tests_corrected.json:test_2_chi_squared.omnibus.chi_squared",
+              "value": 3.2378
+            },
+            {
+              "metric": "H2_statistical_tests_corrected.json:test_2_chi_squared.omnibus.p_value",
+              "value": 0.663383
+            },
+            {
+              "metric": "H2_statistical_tests_corrected.json:test_3_z_test.p_value",
+              "value": 0.386695
+            }
+          ],
+          "procedure": "Chi-squared test of pass/fail across six models (df = 5); two-proportion z-test closed vs open.",
+          "sources": [
+            "fragment_outcomes_corrected"
+          ],
+          "code": "src/analysis/statistics.py:chi_squared_model_comparison, architecture_z_test"
+        },
+        {
+          "id": "RQ1.i",
+          "text": "Run-to-run consistency: all three runs agreed in 86.8% of combinations.",
+          "values": [
+            {
+              "metric": "findings_metrics.json:unanimity_corrected.unanimous_pct",
+              "value": 86.8
+            }
+          ],
+          "procedure": "Share of fragment x model x condition combinations with 3/3 runs passing or 3/3 failing.",
+          "sources": [
+            "fragment_outcomes_corrected"
+          ],
+          "code": "src/scoring/accuracy.py:adjudicate_fragment_outcomes"
+        }
+      ],
+      "methods_notes": [
+        {
+          "id": "RQ1.m1",
+          "text": "Deviation: pre-registered scoring with the coherence gate gave 43.3%; RC3 found 0 of 217 sampled flagged runs incoherent, so the gate was removed.",
+          "sources": [
+            "fragment_outcomes_as_designed",
+            "scored_db_as_designed",
+            "rc3_review",
+            "rc3_blinded",
+            "luna_triage"
+          ],
+          "code": "src/analysis/findings_metrics.py:rc3_deviation",
+          "values": [
+            {
+              "metric": "findings_metrics.json:rc3_deviation.as_designed_pass_rate_pct",
+              "value": 43.3
+            },
+            {
+              "metric": "findings_metrics.json:rc3_deviation.non_coherent_total",
+              "value": 1433
+            },
+            {
+              "metric": "findings_metrics.json:rc3_deviation.review.flagged_rated",
+              "value": 217
+            },
+            {
+              "metric": "findings_metrics.json:rc3_deviation.review.flagged_rated_incoherent",
+              "value": 0
+            },
+            {
+              "metric": "findings_metrics.json:rc3_deviation.review.incoherent_rated",
+              "value": 64
+            },
+            {
+              "metric": "findings_metrics.json:rc3_deviation.review.ambiguous_rated",
+              "value": 153
+            },
+            {
+              "metric": "findings_metrics.json:rc3_deviation.review.rated_incoherent",
+              "value": 0
+            },
+            {
+              "metric": "findings_metrics.json:rc3_deviation.luna_triage.coherent",
+              "value": 1153
+            },
+            {
+              "metric": "findings_metrics.json:rc3_deviation.unreviewed_bound.max_incoherent_unreviewed_total",
+              "value": 43.0
+            },
+            {
+              "metric": "findings_metrics.json:rc3_deviation.unreviewed_bound.max_incoherent_unreviewed_pct_of_all_runs",
+              "value": 0.8
+            }
+          ],
+          "procedure": "As-designed pass rate from the pre-registered outcomes. RC3: stratified human review of coherence-flagged runs; rule-of-three (3/n) upper bound on the incoherence rate per stratum, applied to the unreviewed remainder.",
+          "caveat": "The rater never assigned 'incoherent' (including 94 controls), so RC3 cannot fully separate a mis-firing pipeline from a high personal threshold for incoherence."
+        }
+      ]
+    },
+    {
+      "id": "RQ1.2",
+      "research_question": "To what extent can large language models accurately assess the quality of evaluative reasoning?",
+      "status": "agreed",
+      "document": "docs/findings/rq1.md",
+      "headline": "Matching the expert was hard for everyone: models agreed with the expert about as often as two trained evaluators did (about 57% vs 55–61%).",
+      "claims": [
+        {
           "id": "RQ1.d",
           "text": "Comparable to trained human evaluators' agreement with the same expert's independent ratings.",
           "values": [
@@ -187,6 +312,14 @@
             {
               "metric": "findings_metrics.json:human_comparison.shared.locked_matches_anchor_pass2_pct",
               "value": 86.8
+            },
+            {
+              "metric": "findings_metrics.json:human_comparison.all_40.rater_1_vs_anchor_original.agreement_pct",
+              "value": 52.5
+            },
+            {
+              "metric": "findings_metrics.json:human_comparison.all_40.rater_2_vs_anchor_original.agreement_pct",
+              "value": 52.5
             }
           ],
           "procedure": "Percent agreement on the 38 RC2 fragments in the benchmark: each human rater vs the anchor's pass-2 (independent) ratings; each model x condition majority label vs the same, averaged.",
@@ -246,92 +379,6 @@
           "code": "src/scoring/reviewer_substitution.py:run_reviewer_triangulation"
         },
         {
-          "id": "RQ1.f",
-          "text": "Models affirmed sound reasoning far more reliably than they detected flawed reasoning (75% vs 44%).",
-          "values": [
-            {
-              "metric": "findings_metrics.json:model_anchor_agreement.accuracy_on_gold_sound_mean_pct",
-              "value": 75.4
-            },
-            {
-              "metric": "findings_metrics.json:model_anchor_agreement.accuracy_on_gold_not_sound_mean_pct",
-              "value": 44.2
-            }
-          ],
-          "procedure": "Accuracy within each gold label, per model x condition, averaged.",
-          "sources": [
-            "scored_db_corrected",
-            "gold_locked"
-          ],
-          "code": "src/analysis/findings_metrics.py:model_anchor_agreement"
-        },
-        {
-          "id": "RQ1.g",
-          "text": "The expert's own re-review of the primary model's errors confirmed most lenient errors (27 of 43) and attributed nearly all strict errors (32 of 33) to the gold standard.",
-          "values": [
-            {
-              "metric": "failure_coding_synthesis.json:direction.lenient.genuine",
-              "value": 27
-            },
-            {
-              "metric": "failure_coding_synthesis.json:direction.lenient.n",
-              "value": 43
-            },
-            {
-              "metric": "failure_coding_synthesis.json:direction.strict.doubt_gold",
-              "value": 32
-            },
-            {
-              "metric": "failure_coding_synthesis.json:direction.strict.n",
-              "value": 33
-            }
-          ],
-          "procedure": "GPT failure coding: each failed fragment either coded as a genuine failure (Appendix D.1) or marked coder_doubts_gold_standard; split by error direction.",
-          "sources": [
-            "gpt_coding"
-          ],
-          "code": "src/analysis/coding_synthesis.py:direction_summary",
-          "caveat": "Not independent: the expert reconsidering the expert's own labels with GPT's rationale in view."
-        },
-        {
-          "id": "RQ1.h",
-          "text": "No significant differences between the six models or between closed and open models.",
-          "values": [
-            {
-              "metric": "H2_statistical_tests_corrected.json:test_2_chi_squared.omnibus.chi_squared",
-              "value": 3.2378
-            },
-            {
-              "metric": "H2_statistical_tests_corrected.json:test_2_chi_squared.omnibus.p_value",
-              "value": 0.663383
-            },
-            {
-              "metric": "H2_statistical_tests_corrected.json:test_3_z_test.p_value",
-              "value": 0.386695
-            }
-          ],
-          "procedure": "Chi-squared test of pass/fail across six models (df = 5); two-proportion z-test closed vs open.",
-          "sources": [
-            "fragment_outcomes_corrected"
-          ],
-          "code": "src/analysis/statistics.py:chi_squared_model_comparison, architecture_z_test"
-        },
-        {
-          "id": "RQ1.i",
-          "text": "Run-to-run consistency: all three runs agreed in 86.8% of combinations.",
-          "values": [
-            {
-              "metric": "findings_metrics.json:unanimity_corrected.unanimous_pct",
-              "value": 86.8
-            }
-          ],
-          "procedure": "Share of fragment x model x condition combinations with 3/3 runs passing or 3/3 failing.",
-          "sources": [
-            "fragment_outcomes_corrected"
-          ],
-          "code": "src/scoring/accuracy.py:adjudicate_fragment_outcomes"
-        },
-        {
           "id": "RQ1.j",
           "text": "Roughly one in four fragments split qualified evaluators.",
           "values": [
@@ -385,63 +432,120 @@
           ],
           "code": "src/analysis/findings_metrics.py:contested_overlap"
         }
-      ],
-      "methods_notes": [
+      ]
+    },
+    {
+      "id": "RQ1.3",
+      "research_question": "To what extent can large language models accurately assess the quality of evaluative reasoning?",
+      "status": "agreed",
+      "document": "docs/findings/rq1.md",
+      "headline": "The benchmark likely understates model capability: on re-review, most of the primary model's apparent failures rested on labels the expert no longer defended.",
+      "claims": [
         {
-          "id": "RQ1.m1",
-          "text": "Deviation: pre-registered scoring with the coherence gate gave 43.3%; RC3 found 0 of 217 sampled flagged runs incoherent, so the gate was removed.",
-          "sources": [
-            "fragment_outcomes_as_designed",
-            "scored_db_as_designed",
-            "rc3_review",
-            "rc3_blinded",
-            "luna_triage"
-          ],
-          "code": "src/analysis/findings_metrics.py:rc3_deviation",
+          "id": "RQ1.3.a",
+          "text": "Of 76 failed passages, 28 were confirmed and 48 rested on labels the expert no longer defended; failure rate 37.3% to 14.0%.",
           "values": [
             {
-              "metric": "findings_metrics.json:rc3_deviation.as_designed_pass_rate_pct",
-              "value": 43.3
+              "metric": "failure_coding_synthesis.json:disposition.fragments.n",
+              "value": 76
             },
             {
-              "metric": "findings_metrics.json:rc3_deviation.non_coherent_total",
-              "value": 1433
+              "metric": "failure_coding_synthesis.json:disposition.fragments.genuine",
+              "value": 28
             },
             {
-              "metric": "findings_metrics.json:rc3_deviation.review.flagged_rated",
-              "value": 217
+              "metric": "failure_coding_synthesis.json:disposition.fragments.doubt_gold",
+              "value": 48
             },
             {
-              "metric": "findings_metrics.json:rc3_deviation.review.flagged_rated_incoherent",
-              "value": 0
+              "metric": "failure_coding_synthesis.json:disposition.failure_rate_locked_gold_pct",
+              "value": 37.3
             },
             {
-              "metric": "findings_metrics.json:rc3_deviation.review.incoherent_rated",
-              "value": 64
-            },
-            {
-              "metric": "findings_metrics.json:rc3_deviation.review.ambiguous_rated",
-              "value": 153
-            },
-            {
-              "metric": "findings_metrics.json:rc3_deviation.review.rated_incoherent",
-              "value": 0
-            },
-            {
-              "metric": "findings_metrics.json:rc3_deviation.luna_triage.coherent",
-              "value": 1153
-            },
-            {
-              "metric": "findings_metrics.json:rc3_deviation.unreviewed_bound.max_incoherent_unreviewed_total",
-              "value": 43.0
-            },
-            {
-              "metric": "findings_metrics.json:rc3_deviation.unreviewed_bound.max_incoherent_unreviewed_pct_of_all_runs",
-              "value": 0.8
+              "metric": "failure_coding_synthesis.json:disposition.failure_rate_coder_confirmed_pct",
+              "value": 14.0
             }
           ],
-          "procedure": "As-designed pass rate from the pre-registered outcomes. RC3: stratified human review of coherence-flagged runs; rule-of-three (3/n) upper bound on the incoherence rate per stratum, applied to the unreviewed remainder.",
-          "caveat": "The rater never assigned 'incoherent' (including 94 controls), so RC3 cannot fully separate a mis-firing pipeline from a high personal threshold for incoherence."
+          "procedure": "Expert re-review of every GPT failure with GPT's rationale in view: coded as genuine failure (Appendix D.1) or coder_doubts_gold_standard.",
+          "sources": [
+            "gpt_coding"
+          ],
+          "code": "src/analysis/coding_synthesis.py:disposition_summary",
+          "caveat": "Not independent; one-sided (failures only), so 14% is biased downward; RC4 pending."
+        },
+        {
+          "id": "RQ1.3.b",
+          "text": "The expert sided with the model on 32 of 33 stricter calls but 16 of 43 more lenient ones.",
+          "values": [
+            {
+              "metric": "failure_coding_synthesis.json:direction.strict.doubt_gold",
+              "value": 32
+            },
+            {
+              "metric": "failure_coding_synthesis.json:direction.strict.n",
+              "value": 33
+            },
+            {
+              "metric": "failure_coding_synthesis.json:direction.lenient.doubt_gold",
+              "value": 16
+            },
+            {
+              "metric": "failure_coding_synthesis.json:direction.lenient.n",
+              "value": 43
+            }
+          ],
+          "procedure": "Disposition split by error direction (fragment level).",
+          "sources": [
+            "gpt_coding"
+          ],
+          "code": "src/analysis/coding_synthesis.py:direction_summary"
+        },
+        {
+          "id": "RQ1.3.c",
+          "text": "An independent third reviewer sided with the models on 25 of 35 contested passages.",
+          "values": [
+            {
+              "metric": "findings_metrics.json:contested_review.reviewer_sides_models",
+              "value": 25
+            },
+            {
+              "metric": "findings_metrics.json:contested_review.n",
+              "value": 35
+            }
+          ],
+          "procedure": "Blind classification of the 35 contested fragments by a third reviewer.",
+          "sources": [
+            "contested_review"
+          ],
+          "code": "src/analysis/findings_metrics.py:run_findings_metrics"
+        },
+        {
+          "id": "RQ1.3.d",
+          "text": "The expert's own re-review of the primary model's errors confirmed most lenient errors (27 of 43) and attributed nearly all strict errors (32 of 33) to the gold standard.",
+          "values": [
+            {
+              "metric": "failure_coding_synthesis.json:direction.lenient.genuine",
+              "value": 27
+            },
+            {
+              "metric": "failure_coding_synthesis.json:direction.lenient.n",
+              "value": 43
+            },
+            {
+              "metric": "failure_coding_synthesis.json:direction.strict.doubt_gold",
+              "value": 32
+            },
+            {
+              "metric": "failure_coding_synthesis.json:direction.strict.n",
+              "value": 33
+            }
+          ],
+          "procedure": "GPT failure coding: each failed fragment either coded as a genuine failure (Appendix D.1) or marked coder_doubts_gold_standard; split by error direction.",
+          "sources": [
+            "gpt_coding"
+          ],
+          "code": "src/analysis/coding_synthesis.py:direction_summary",
+          "caveat": "Not independent: the expert reconsidering the expert's own labels with GPT's rationale in view."
         }
       ]
     },
@@ -1464,93 +1568,6 @@
       ]
     },
     {
-      "id": "RQ2.4",
-      "research_question": "What systematic failure patterns emerge from the LLM artifacts?",
-      "status": "agreed",
-      "document": "docs/findings/rq2.md",
-      "headline": "Re-examining the primary model's disagreements changed the expert's mind more often than not: on re-review, most of its apparent failures, nearly all of its stricter calls, rested on labels the expert no longer defended. The benchmark's scores likely understate how often models reach a defensible verdict.",
-      "claims": [
-        {
-          "id": "RQ2.4.a",
-          "text": "Of 76 failed passages, 28 were confirmed and 48 rested on labels the expert no longer defended; failure rate 37.3% to 14.0%.",
-          "values": [
-            {
-              "metric": "failure_coding_synthesis.json:disposition.fragments.n",
-              "value": 76
-            },
-            {
-              "metric": "failure_coding_synthesis.json:disposition.fragments.genuine",
-              "value": 28
-            },
-            {
-              "metric": "failure_coding_synthesis.json:disposition.fragments.doubt_gold",
-              "value": 48
-            },
-            {
-              "metric": "failure_coding_synthesis.json:disposition.failure_rate_locked_gold_pct",
-              "value": 37.3
-            },
-            {
-              "metric": "failure_coding_synthesis.json:disposition.failure_rate_coder_confirmed_pct",
-              "value": 14.0
-            }
-          ],
-          "procedure": "Expert re-review of every GPT failure with GPT's rationale in view: coded as genuine failure (Appendix D.1) or coder_doubts_gold_standard.",
-          "sources": [
-            "gpt_coding"
-          ],
-          "code": "src/analysis/coding_synthesis.py:disposition_summary",
-          "caveat": "Not independent; one-sided (failures only), so 14% is biased downward; RC4 pending."
-        },
-        {
-          "id": "RQ2.4.b",
-          "text": "The expert sided with the model on 32 of 33 stricter calls but 16 of 43 more lenient ones.",
-          "values": [
-            {
-              "metric": "failure_coding_synthesis.json:direction.strict.doubt_gold",
-              "value": 32
-            },
-            {
-              "metric": "failure_coding_synthesis.json:direction.strict.n",
-              "value": 33
-            },
-            {
-              "metric": "failure_coding_synthesis.json:direction.lenient.doubt_gold",
-              "value": 16
-            },
-            {
-              "metric": "failure_coding_synthesis.json:direction.lenient.n",
-              "value": 43
-            }
-          ],
-          "procedure": "Disposition split by error direction (fragment level).",
-          "sources": [
-            "gpt_coding"
-          ],
-          "code": "src/analysis/coding_synthesis.py:direction_summary"
-        },
-        {
-          "id": "RQ2.4.c",
-          "text": "An independent third reviewer sided with the models on 25 of 35 contested passages.",
-          "values": [
-            {
-              "metric": "findings_metrics.json:contested_review.reviewer_sides_models",
-              "value": 25
-            },
-            {
-              "metric": "findings_metrics.json:contested_review.n",
-              "value": 35
-            }
-          ],
-          "procedure": "Blind classification of the 35 contested fragments by a third reviewer.",
-          "sources": [
-            "contested_review"
-          ],
-          "code": "src/analysis/findings_metrics.py:run_findings_metrics"
-        }
-      ]
-    },
-    {
       "id": "RQ2.5",
       "research_question": "What systematic failure patterns emerge from the LLM artifacts?",
       "status": "agreed",
@@ -1820,6 +1837,16 @@
         "RQ2.3"
       ],
       "document": "docs/findings/rq4.md"
+    },
+    "RQ1": {
+      "answer": "LLMs agreed with the expert 60% of the time, barely better than a coin flip but about as often as trained human evaluators did, and they erred toward leniency.",
+      "status": "agreed",
+      "supporting_findings": [
+        "RQ1.1",
+        "RQ1.2",
+        "RQ1.3"
+      ],
+      "document": "docs/findings/rq1.md"
     }
   }
 }

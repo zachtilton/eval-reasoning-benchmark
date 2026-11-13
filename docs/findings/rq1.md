@@ -29,6 +29,121 @@ scoring against the locked gold standard
 > model's errors confirmed most lenient errors (27 of 43) as genuine and
 > attributed nearly all strict errors (32 of 33) to the gold standard.
 
+## Findings
+
+The RQ1 answer is supported by three findings (structure agreed 2026-11-13).
+
+### Finding 1.1 — Accuracy (agreed 2026-11-13)
+
+> **Models agreed with the expert 60% of the time, modestly above chance and well below the expert's own consistency, and they caught flawed reasoning far less reliably than they affirmed sound reasoning.**
+
+Pooled across six models and two conditions, models agreed with the expert
+on 59.9% of passages (95% CI 54.3–65.5%; 59.6% at the run level).
+Chance-corrected agreement was κ ≈ 0.20 (0.10–0.29 across model ×
+condition), against the expert's own blind test-retest of 85% (κ = 0.70,
+n = 20). The six models were statistically indistinguishable (χ²(5) = 3.24,
+p = .66; closed vs open p = .39). Models got 75% of gold-sound passages
+right but only 44% of gold-not-sound passages. All three runs agreed in
+86.8% of model × condition × passage combinations.
+
+### Finding 1.2 — The human yardstick (agreed 2026-11-13)
+
+> **Matching the expert was hard for everyone: models agreed with the expert about as often as two trained evaluators did (about 57% vs 55–61%).**
+
+On the 38 RC2 passages in the benchmark, models agreed with the expert's
+blind pass-2 ratings 57.5% of the time on average (42–76% across model ×
+condition); the two trained evaluators agreed with the same ratings 60.5%
+and 55.3% of the time. The evaluators agreed with each other on 75% of
+passages (κ = 0.50), disagreeing on one in four, and disagreed with the
+expert's pass-2 ratings on about two in five (about one in two against the
+expert's original ratings). Against the locked gold the evaluators agreed
+68–74%, partly circular because the gold was revised toward them. A third
+reviewer, rating the 35 passages where at least five models agreed against
+the expert, sided with the models on 25; substituting those judgments raised
+overall model agreement from 60% to 74% (95% CI 69–78%), an adjustment that
+can only raise the figure.
+
+### Finding 1.3 — Re-review changed the expert's mind (agreed 2026-11-12 as 2.4; re-homed and headline revised 2026-11-13)
+
+#### Headline
+
+> **The benchmark likely understates model capability: on re-review, most of the primary model's apparent failures rested on labels the expert no longer defended.**
+
+*Earlier headline (2.4):* Re-examining the primary model's disagreements
+changed the expert's mind more often than not: on re-review, most of its
+apparent failures — nearly all of its stricter calls — rested on labels the
+expert no longer defended.
+
+#### Expanded
+
+> The expert re-reviewed every passage the primary model (GPT) failed, with
+> the model's rationale in view, and either confirmed the failure or doubted
+> the original label. Of 76 failed passages, 28 were confirmed and 48 rested
+> on labels the expert no longer defended, cutting the model's failure rate
+> from 37% to 14% of its 300 fragment-condition cases. The doubts were not
+> spread evenly: the expert sided with the model on 32 of 33 cases where the
+> model was stricter than the original label, but on only 16 of 43 where it
+> was more lenient. That selectivity argues against simple deference to
+> fluent model reasoning, and it moved the gold standard stricter — the
+> second time reconsidering the standard did so (the first was the RC2
+> calibration before the lock). An independent third reviewer pointed the
+> same way, siding with the models on 25 of 35 contested passages. Because
+> only the model's disagreements were re-examined, the direction is clear
+> (the benchmark understates defensible model verdicts) but the size is not:
+> errors where the model agreed with a mistaken label were never looked for.
+
+#### Interpretation: argumentative capability
+
+The model's reasoning was good enough to change an expert's mind. That is a
+capability the benchmark score does not measure: classification accuracy is
+scored against a fixed label, while argumentative capability is the
+capacity of a model's rationale to move a qualified human's judgment. It
+carries a promise and a risk for evaluation practice:
+
+- **Promise:** a model as a second reader that surfaces weaknesses in expert
+  judgment — here, mainly where the expert's first pass was too generous.
+- **Risk:** fluency that persuades whether or not it is right. A
+  well-argued rationale can pull a reviewer toward its verdict; the
+  asymmetry above is evidence against pure persuasion here, but a blind
+  check is needed (RC4 persuasion check).
+
+#### Reflexive note
+
+The expert's view of many of their own labels changed during the
+re-review. This is reported as analytic data, not as proof that the model
+was right; the asymmetry, the third reviewer and the planned blind re-rating
+are what test it.
+
+### Evidence
+
+| | Failed passages | Confirmed | Gold doubted |
+|---|---|---|---|
+| All | 76 | 28 (37%) | 48 (63%) |
+| Model stricter than label | 33 | 1 | 32 (97%) |
+| Model more lenient than label | 43 | 27 | 16 (37%) |
+
+- Failure rate: 37.3% against the locked gold → 14.0% counting only
+  confirmed failures (of 300 GPT fragment × condition cases).
+- Third reviewer on the 35 contested passages: sided with the models on 25.
+- Reconsiderations of the standard: RC2 calibration (15 of 18 pre-lock
+  revisions sound → not sound; blind pass 2 called 36.8% of 38 passages
+  sound vs 57.9% originally) and this re-review (net 32 stricter vs 16 more
+  lenient).
+- `results/failure_coding_synthesis.json`, `results/findings_metrics.json`.
+
+### Caveats
+
+- Not independent: the expert reconsidered the expert's own labels with the
+  model's rationale in view (persuasion is a live rival explanation).
+- One-sided: only failures were re-reviewed, so 14% understates the model's
+  error rate by an unknown amount, and 63% describes inspected failures, not
+  the gold's overall error rate.
+- Coding stability untested (RC4 pending); one model; one coder.
+- The expert and the third reviewer barely agreed on which contested labels
+  were wrong (κ = 0.04).
+
+---
+
 ## Evidence
 
 | Claim | Figure | Source |
@@ -60,8 +175,10 @@ scoring against the locked gold standard
   vs the anchor's original rating + third reviewer), with the locked gold
   following the RC2 raters and the models following the other two. The
   other six were flipped by the anchor applying the calibration rule.
-- Roughly one in four fragments split qualified evaluators (human–human
-  agreement 75%; 35/150 contested).
+- Roughly one in four fragments split qualified evaluators: the two RC2
+  raters disagreed on 25% (primary estimate). The contested set (35/150,
+  23%) is a looser proxy; the third reviewer disagreed with the expert on 25
+  of those (17% of all passages, a floor).
 
 ## Caveats
 

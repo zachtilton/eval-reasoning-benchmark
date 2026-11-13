@@ -16,8 +16,8 @@ Supporting findings: **2.2** (leniency; length and calibration examples)
 and **2.5** (missing the missing judgment). 2.1 (shared failures) supports
 the generalization from the primary model's coding but is not in the
 answer, since its significance is not self-evident to a reader. 2.3 is a
-candidate supporting finding for RQ4 (prompting); 2.4 for RQ1 (model
-capability and the gold standard).
+candidate supporting finding for RQ4 (prompting); 2.4 was re-homed to RQ1
+as Finding 1.3.
 
 ---
 
@@ -326,83 +326,10 @@ the shift. Source: `config/prompts/few_shot_template.txt`.
 
 ---
 
-## Finding 2.4 — Re-review changed the expert's mind (agreed 2026-11-12)
+## Finding 2.4 — moved
 
-### Headline
-
-> **Re-examining the primary model's disagreements changed the expert's mind
-> more often than not: on re-review, most of its apparent failures — nearly
-> all of its stricter calls — rested on labels the expert no longer
-> defended. The benchmark's scores likely understate how often models reach
-> a defensible verdict.**
-
-### Expanded
-
-> The expert re-reviewed every passage the primary model (GPT) failed, with
-> the model's rationale in view, and either confirmed the failure or doubted
-> the original label. Of 76 failed passages, 28 were confirmed and 48 rested
-> on labels the expert no longer defended, cutting the model's failure rate
-> from 37% to 14% of its 300 fragment-condition cases. The doubts were not
-> spread evenly: the expert sided with the model on 32 of 33 cases where the
-> model was stricter than the original label, but on only 16 of 43 where it
-> was more lenient. That selectivity argues against simple deference to
-> fluent model reasoning, and it moved the gold standard stricter — the
-> second time reconsidering the standard did so (the first was the RC2
-> calibration before the lock). An independent third reviewer pointed the
-> same way, siding with the models on 25 of 35 contested passages. Because
-> only the model's disagreements were re-examined, the direction is clear
-> (the benchmark understates defensible model verdicts) but the size is not:
-> errors where the model agreed with a mistaken label were never looked for.
-
-### Interpretation: argumentative capability
-
-The model's reasoning was good enough to change an expert's mind. That is a
-capability the benchmark score does not measure: classification accuracy is
-scored against a fixed label, while argumentative capability is the
-capacity of a model's rationale to move a qualified human's judgment. It
-carries a promise and a risk for evaluation practice:
-
-- **Promise:** a model as a second reader that surfaces weaknesses in expert
-  judgment — here, mainly where the expert's first pass was too generous.
-- **Risk:** fluency that persuades whether or not it is right. A
-  well-argued rationale can pull a reviewer toward its verdict; the
-  asymmetry above is evidence against pure persuasion here, but a blind
-  check is needed (RC4 persuasion check).
-
-### Reflexive note
-
-The expert's view of many of their own labels changed during the
-re-review. This is reported as analytic data, not as proof that the model
-was right; the asymmetry, the third reviewer and the planned blind re-rating
-are what test it.
-
-### Evidence
-
-| | Failed passages | Confirmed | Gold doubted |
-|---|---|---|---|
-| All | 76 | 28 (37%) | 48 (63%) |
-| Model stricter than label | 33 | 1 | 32 (97%) |
-| Model more lenient than label | 43 | 27 | 16 (37%) |
-
-- Failure rate: 37.3% against the locked gold → 14.0% counting only
-  confirmed failures (of 300 GPT fragment × condition cases).
-- Third reviewer on the 35 contested passages: sided with the models on 25.
-- Reconsiderations of the standard: RC2 calibration (15 of 18 pre-lock
-  revisions sound → not sound; blind pass 2 called 36.8% of 38 passages
-  sound vs 57.9% originally) and this re-review (net 32 stricter vs 16 more
-  lenient).
-- `results/failure_coding_synthesis.json`, `results/findings_metrics.json`.
-
-### Caveats
-
-- Not independent: the expert reconsidered the expert's own labels with the
-  model's rationale in view (persuasion is a live rival explanation).
-- One-sided: only failures were re-reviewed, so 14% understates the model's
-  error rate by an unknown amount, and 63% describes inspected failures, not
-  the gold's overall error rate.
-- Coding stability untested (RC4 pending); one model; one coder.
-- The expert and the third reviewer barely agreed on which contested labels
-  were wrong (κ = 0.04).
+Re-homed to RQ1 as **Finding 1.3** (2026-11-13); see `rq1.md`. Numbering of
+2.5 is unchanged.
 
 ---
 
