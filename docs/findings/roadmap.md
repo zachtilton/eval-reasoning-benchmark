@@ -14,7 +14,8 @@ One topline conclusion per RQ, supported by findings; 2–3 supporting findings 
 - [x] #4 Failure by evaluation criterion — folded into 2.2 (criterion explains nothing once gold label is held constant)
 - [x] Passage-length moderation — folded into 2.2 (leniency grows with length; explains RC2-subset reversal)
 - [x] #5 / #9 absorbed into 2.1, with a bridging sentence: GPT's coded flaws likely describe what other models missed (shared failures); reasoning coded for GPT only
-- [ ] GPT close-up (#6 disposition, #7 confirmed errors lenient, #8 code profile / F5.1) — likely 2.4
+- [x] 2.4 Disposition: re-review changed the expert's mind (#6, #7); named concept: argumentative capability
+- [ ] #8 F5.1 / code profile — the most direct answer to RQ2 (check F5.1 by condition: the not-sound example was "no judgment")
 - [ ] RQ2 mainline answer + conclusion-level rating
 
 ## RQ3 — not started
@@ -23,7 +24,7 @@ evaluative features (evaluative-term density, rating scales, criterion
 references; pre-specified) predict models' sound calls beyond length and
 gold label? Hypothesis about impact conclusions being weaker (gold 71% vs
 33% relevance; suggestive only); framework adequacy (0 emergent codes);
-"looks evaluative" mechanism hypothesis; contested reference standard;
+"looks evaluative" mechanism hypothesis; human-and-model first-pass leniency hypothesis (expert's reconsiderations moved the gold stricter twice; MRST gap narrowed after the stricter calibration) — conjecture needing testing; contested reference standard;
 proposal construct-validity questions (Domain 4 vs 2; few-shot and Domain 6;
 challenge cases by criterion). Mostly interpretive writing by the author.
 

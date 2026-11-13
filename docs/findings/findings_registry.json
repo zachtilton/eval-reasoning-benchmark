@@ -1462,6 +1462,93 @@
           "code": "src/analysis/findings_metrics.py:few_shot_shift, model_model_kappa"
         }
       ]
+    },
+    {
+      "id": "RQ2.4",
+      "research_question": "What systematic failure patterns emerge from the LLM artifacts?",
+      "status": "agreed",
+      "document": "docs/findings/rq2.md",
+      "headline": "Re-examining the primary model's disagreements changed the expert's mind more often than not: on re-review, most of its apparent failures, nearly all of its stricter calls, rested on labels the expert no longer defended. The benchmark's scores likely understate how often models reach a defensible verdict.",
+      "claims": [
+        {
+          "id": "RQ2.4.a",
+          "text": "Of 76 failed passages, 28 were confirmed and 48 rested on labels the expert no longer defended; failure rate 37.3% to 14.0%.",
+          "values": [
+            {
+              "metric": "failure_coding_synthesis.json:disposition.fragments.n",
+              "value": 76
+            },
+            {
+              "metric": "failure_coding_synthesis.json:disposition.fragments.genuine",
+              "value": 28
+            },
+            {
+              "metric": "failure_coding_synthesis.json:disposition.fragments.doubt_gold",
+              "value": 48
+            },
+            {
+              "metric": "failure_coding_synthesis.json:disposition.failure_rate_locked_gold_pct",
+              "value": 37.3
+            },
+            {
+              "metric": "failure_coding_synthesis.json:disposition.failure_rate_coder_confirmed_pct",
+              "value": 14.0
+            }
+          ],
+          "procedure": "Expert re-review of every GPT failure with GPT's rationale in view: coded as genuine failure (Appendix D.1) or coder_doubts_gold_standard.",
+          "sources": [
+            "gpt_coding"
+          ],
+          "code": "src/analysis/coding_synthesis.py:disposition_summary",
+          "caveat": "Not independent; one-sided (failures only), so 14% is biased downward; RC4 pending."
+        },
+        {
+          "id": "RQ2.4.b",
+          "text": "The expert sided with the model on 32 of 33 stricter calls but 16 of 43 more lenient ones.",
+          "values": [
+            {
+              "metric": "failure_coding_synthesis.json:direction.strict.doubt_gold",
+              "value": 32
+            },
+            {
+              "metric": "failure_coding_synthesis.json:direction.strict.n",
+              "value": 33
+            },
+            {
+              "metric": "failure_coding_synthesis.json:direction.lenient.doubt_gold",
+              "value": 16
+            },
+            {
+              "metric": "failure_coding_synthesis.json:direction.lenient.n",
+              "value": 43
+            }
+          ],
+          "procedure": "Disposition split by error direction (fragment level).",
+          "sources": [
+            "gpt_coding"
+          ],
+          "code": "src/analysis/coding_synthesis.py:direction_summary"
+        },
+        {
+          "id": "RQ2.4.c",
+          "text": "An independent third reviewer sided with the models on 25 of 35 contested passages.",
+          "values": [
+            {
+              "metric": "findings_metrics.json:contested_review.reviewer_sides_models",
+              "value": 25
+            },
+            {
+              "metric": "findings_metrics.json:contested_review.n",
+              "value": 35
+            }
+          ],
+          "procedure": "Blind classification of the 35 contested fragments by a third reviewer.",
+          "sources": [
+            "contested_review"
+          ],
+          "code": "src/analysis/findings_metrics.py:run_findings_metrics"
+        }
+      ]
     }
   ]
 }
