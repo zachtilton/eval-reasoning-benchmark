@@ -1656,9 +1656,9 @@
     {
       "id": "RQ4.evidence",
       "research_question": "How do failure patterns vary across model families (frontier vs. open-source) and prompting conditions (zero-shot vs. few-shot)?",
-      "status": "draft",
+      "status": "agreed",
       "document": "docs/findings/rq4.md",
-      "headline": "(RQ4 answer to be drafted by the author)",
+      "headline": "Model families did not differ in accuracy, but the open-source models were somewhat more lenient. The calibration examples increased leniency in both families alike, without significantly improving accuracy.",
       "claims": [
         {
           "id": "RQ4.a",
@@ -1810,6 +1810,16 @@
         "RQ2.5"
       ],
       "document": "docs/findings/rq2.md"
+    },
+    "RQ4": {
+      "answer": "Model families did not differ in accuracy, but the open-source models were somewhat more lenient. The calibration examples increased leniency in both families alike, without significantly improving accuracy.",
+      "status": "agreed",
+      "supporting_findings": [
+        "RQ4.evidence",
+        "RQ2.2",
+        "RQ2.3"
+      ],
+      "document": "docs/findings/rq4.md"
     }
   }
 }

@@ -1,4 +1,4 @@
-# RQ4 — Findings (in progress)
+# RQ4 — Findings
 
 **Research question (verbatim, proposal):** *How do failure patterns vary
 across model families (frontier vs. open-source) and prompting conditions
@@ -72,6 +72,11 @@ Reading notes:
 
 ---
 
-## RQ4 answer
+## RQ4 answer (agreed 2026-11-13)
 
-*(to be drafted by the author)*
+> **Model families did not differ in accuracy, but the open-source models were somewhat more lenient. The calibration examples increased leniency in both families alike, without significantly improving accuracy.**
+
+Supporting evidence: H.2 tests (family and prompting accuracy), 2.2 and 2.3
+(verdicts and leniency with calibration examples), and the family checks
+above (E21). "Somewhat" reflects three models per family; "calibration
+examples" rather than "prompting" reflects the single calibration set.

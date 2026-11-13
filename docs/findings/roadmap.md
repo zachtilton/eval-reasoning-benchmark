@@ -30,7 +30,7 @@ gold label? Hypothesis about impact conclusions being weaker (gold 71% vs
 proposal construct-validity questions (Domain 4 vs 2; few-shot and Domain 6;
 challenge cases by criterion). Mostly interpretive writing by the author.
 
-## RQ4 — evidence assembled (`rq4.md`); answer to be drafted by the author
+## RQ4 — answer agreed 2026-11-13 (`rq4.md`)
 Prompting (largely 2.2/2.3); model family (H2 chi-squared, closed vs open
 z-test); check whether leniency aligns with family; conclusion and rating.
 
