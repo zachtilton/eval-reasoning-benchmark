@@ -9,17 +9,17 @@ One topline conclusion per RQ, supported by findings; 2–3 supporting findings 
 ## RQ2 — in progress (`rq2.md`)
 - [x] 2.1 Shared failures
 - [x] 2.2 Leniency (headline settled: leniency / length / calibration examples, three sentences)
-- [x] 2.3 Calibration examples shifted verdicts, not accuracy
+- [x] Former 2.3 Calibration examples → moved to RQ4 as 4.2 (2026-11-13)
 - [x] #4 Failure by evaluation criterion — folded into 2.2 (criterion explains nothing once gold label is held constant)
 - [x] Passage-length moderation — folded into 2.2 (leniency grows with length; explains RC2-subset reversal)
 - [x] #5 / #9 absorbed into 2.1, with a bridging sentence: GPT's coded flaws likely describe what other models missed (shared failures); reasoning coded for GPT only
 - [x] 2.4 Disposition → re-homed to RQ1 as 1.3 (2026-11-13); named concept: argumentative capability
-- [x] 2.4 (formerly 2.5) Missing the missing judgment (F5.1; examples made it worse); named phenomena: evaluative veneer (preferred), description–evaluation gap
-- [x] RQ2 answer agreed (2026-11-13): lenient, esp. longer passages and calibration examples, most often missed judgments; supporting 2.2, 2.4
+- [x] 2.3 (formerly 2.5, then 2.4) Missing the missing judgment (F5.1; examples made it worse); named phenomena: evaluative veneer (preferred), description–evaluation gap
+- [x] RQ2 answer agreed (2026-11-13): lenient, esp. longer passages and calibration examples, most often missed judgments; supporting 2.2, 2.3
 
 ## RQ3 — tabled (2026-11-13); provisional answer in `rq3.md`; Stairway marked dead end; conclusions candidates in `conclusions.md`
 **Scope decision (2026-11-12):** the proposal's named frameworks lead (Scriven's general logic and Nunns et al.'s variation; JCSEE; Toulmin; Hurteau et al.; Gullickson; Meldrum & Gullickson), with abductive extensions accompanying (verbosity bias, shortcut learning, in-context-learning literature). Proposal commitments 1–3 (named-framework interpretation, checklist as sensitizing concepts, emergent-code / framework-adequacy analysis) are met procedurally by the coding; the interpretive relating to theory remains to be written. Construct-validity questions (D4 vs D2; few-shot and D6; criterion clustering) to be reported as weak/null checks. Candidate connections: Gullickson's (Stake's) "fully describe / fully judge" for the description–evaluation gap (conjecture; revisit data); Nunns et al. on omitted conclusions as a practical stake for meta-evaluation; Stairway propagation within a passage (suggestive only).
-Develop the named phenomena from RQ2: **evaluative veneer** (2.4; links to verbosity bias, shortcut learning), the **description–evaluation gap** (Scriven's logic of evaluation), and **argumentative capability** (1.3).
+Develop the named phenomena from RQ2: **evaluative veneer** (2.3; links to verbosity bias, shortcut learning), the **description–evaluation gap** (Scriven's logic of evaluation), and **argumentative capability** (1.3).
 Domain profile and theory linkage; **parked lexicon test**: do surface
 evaluative features (evaluative-term density, rating scales, criterion
 references; pre-specified) predict models' sound calls beyond length and
@@ -29,8 +29,8 @@ gold label? Hypothesis about impact conclusions being weaker (gold 71% vs
 proposal construct-validity questions (Domain 4 vs 2; few-shot and Domain 6;
 challenge cases by criterion). Mostly interpretive writing by the author.
 
-## RQ4 — answer agreed 2026-11-13 (`rq4.md`)
-Prompting (largely 2.2/2.3); model family (H2 chi-squared, closed vs open
+## RQ4 — answer agreed 2026-11-13 (`rq4.md`); findings 4.1 family, 4.2 calibration examples (former 2.3), 4.3 crossing
+Prompting (2.2, 4.2); model family (H2 chi-squared, closed vs open
 z-test); check whether leniency aligns with family; conclusion and rating.
 
 ## Reliability
@@ -56,7 +56,7 @@ Mastrandrea et al. (2010); write descriptors and the evidence × agreement
 rule; add bootstrap CIs for the leniency ratios.
 
 ## Findings review (author request, 2026-11-13)
-- [x] Headline review done (2026-11-13): implication-first headlines applied to 1.1, 1.2, 2.1–2.4 (1.3 already); former 2.5 renumbered 2.4.
+- [x] Headline review done (2026-11-13): implication-first headlines applied to 1.1, 1.2, 2.1–2.4 (1.3 already); former 2.5 renumbered 2.4, then 2.3 when the former 2.3 moved to RQ4 as 4.2.
 
 ## After findings
 Per-RQ conclusions (rated); study-level limitations (ethics, representation,

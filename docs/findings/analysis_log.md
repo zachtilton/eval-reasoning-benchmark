@@ -15,7 +15,7 @@ Conventions: **Status** = planned-but-modified / exploratory / correction.
 **Metric** = key in `results/findings_metrics.json` unless stated.
 Commits are on `main`.
 
-**Numbering note (2026-11-13):** Finding 2.4 (re-review) was re-homed to RQ1 as 1.3, and Finding 2.5 (missing judgment, F5.1) renumbered 2.4. Earlier entries and commit messages use the old numbers.
+**Numbering note (2026-11-13):** Finding 2.4 (re-review) was re-homed to RQ1 as 1.3, and Finding 2.5 (missing judgment, F5.1) renumbered 2.4; then Finding 2.3 (calibration examples) moved to RQ4 as 4.2 and the missing-judgment finding became 2.3. Earlier entries and commit messages use the old numbers.
 
 ---
 

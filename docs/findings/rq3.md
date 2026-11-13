@@ -24,13 +24,13 @@ for the interpretive relating.
 | RQ1 | ~60% agreement; ~as often as trained humans; lenient | What does "accurately" mean when qualified judges split ~1 in 4? |
 | 2.1 | Same passages wrong; passage, not model | What property of a passage makes evaluative reasoning hard to judge? |
 | 2.2 | Lenient; grows with length; examples amplify | Verbosity bias vs. "more checkpoints met": which does theory predict? |
-| 2.3 | Examples shifted verdicts, not accuracy | What do examples transmit — a standard, or surface features? (Fournier: general vs. working logic) |
+| 4.2 | Examples shifted verdicts, not accuracy | What do examples transmit — a standard, or surface features? (Fournier: general vs. working logic) |
 | 1.3 | Re-review changed the expert's mind | Argumentative capability; Toulmin warrants; first-pass vs. considered judgment |
-| 2.4 | Missing the missing judgment (F5.1); examples worsened it | Evaluative veneer; description–evaluation gap |
+| 2.3 | Missing the missing judgment (F5.1); examples worsened it | Evaluative veneer; description–evaluation gap |
 
 ### Named phenomena (conjecture unless stated)
-- **Evaluative veneer** (2.4): surface of evaluation without the verdict.
-- **Description–evaluation gap** (2.4): candidate link to Gullickson's (2020)
+- **Evaluative veneer** (2.3): surface of evaluation without the verdict.
+- **Description–evaluation gap** (2.3): candidate link to Gullickson's (2020)
   use of Stake's "fully describe / fully judge"; revisit data before
   developing.
 - **Argumentative capability** (1.3): a model rationale's capacity to move a
