@@ -37,6 +37,12 @@ z-test); check whether leniency aligns with family; conclusion and rating.
   (rows / 76 fragments / 28 coded), layers (disposition and/or codes),
   κ basis (primary code, domain). Earliest date: ~2026-11-18 (last coding
   session 2026-11-11).
+  **Persuasion check (added 2026-11-12):** re-rate a sample blind to BOTH the
+  gold label and GPT's rationale, including GPT passes as well as failures.
+  Tests (a) stability of codes/dispositions, (b) whether re-review
+  dispositions were driven by exposure to GPT's rationale, and (c) gold
+  errors on the side never re-reviewed (passes), which bias the 14%
+  confirmed failure rate downward.
 
 ## Evidence rubric — pinned
 Adapted rubric with IPCC summary layer (evidence × agreement → low / medium
