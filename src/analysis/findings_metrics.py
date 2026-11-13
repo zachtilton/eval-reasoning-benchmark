@@ -1153,6 +1153,80 @@ def reading_corrections(db: pd.DataFrame, maj: pd.DataFrame, gold: pd.DataFrame,
     return out
 
 
+def pooling_bootstrap(maj: pd.DataFrame, gold: pd.DataFrame, n_fixed: int = BOOTSTRAP_RESAMPLES,
+                      n_nested: int = 2000, n_folds: int = 5, seed: int = FINDINGS_SEED) -> dict:
+    """
+    Bootstrap CIs for the pooling rule (R2) in P1 -- NOT pre-specified (E24).
+
+    (a) Fixed rule: k fixed at 6 (the value cross-validation chose in every
+        few-shot fold); fragment-clustered bootstrap of the difference in
+        balanced accuracy between the pooled verdict and the mean of the six
+        individual models.
+    (b) Whole procedure: in each bootstrap resample of passages, re-run one
+        stratified 5-fold cross-validation (folds assigned to unique passages
+        so duplicates never straddle train and test), choosing k in training
+        folds and scoring on test folds; CI of the test-fold difference.
+
+    Args:
+        maj: Output of majority_labels.
+        gold: Locked gold.
+        n_fixed: Resamples for (a).
+        n_nested: Resamples for (b).
+        n_folds: Folds for (b).
+        seed: RNG seed.
+
+    Returns:
+        Dict per condition.
+    """
+    rng = np.random.default_rng(seed)
+    g = gold.set_index("fragment_id")["expert_classification"]
+    out = {}
+    for cond in PROMPT_ORDER:
+        b = maj[(maj["pred"] != "none") & (maj["prompt_condition"] == cond)]
+        wide = b.pivot_table(index="fragment_id", columns="model_family", values="pred", aggfunc="first").dropna()
+        frags = wide.index.to_numpy()
+        ref = g.reindex(frags).to_numpy()
+        preds = wide[MODEL_ORDER].to_numpy()
+        ks = (preds == "sound").sum(axis=1)
+
+        def diff(ix, k):
+            pooled = _balanced(np.where(ks[ix] >= k, "sound", "not_sound"), ref[ix])["balanced"]
+            indiv = np.mean([_balanced(preds[ix, j], ref[ix])["balanced"] for j in range(preds.shape[1])])
+            return pooled - indiv
+
+        full = np.arange(len(frags))
+        fixed = [diff(rng.integers(0, len(frags), len(frags)), 6) for _ in range(n_fixed)]
+
+        nested = []
+        for _ in range(n_nested):
+            ix = rng.integers(0, len(frags), len(frags))
+            uniq = np.unique(ix)
+            fold_of = {}
+            for lab in LABELS:
+                u = uniq[ref[uniq] == lab].copy()
+                rng.shuffle(u)
+                for i, f in enumerate(u):
+                    fold_of[f] = i % n_folds
+            folds = np.array([fold_of[i] for i in ix])
+            num = den = 0.0
+            for fo in range(n_folds):
+                tr, te = ix[folds != fo], ix[folds == fo]
+                if len(te) == 0:
+                    continue
+                best = max(range(1, 7), key=lambda k: (_balanced(np.where(ks[tr] >= k, "sound", "not_sound"), ref[tr])["balanced"], -abs(k - 3.5)))
+                num += diff(te, best) * len(te); den += len(te)
+            nested.append(num / den)
+        out[cond] = {
+            "fixed_k6_difference_pp": round(100 * diff(full, 6), 1),
+            "fixed_k6_ci_95_pp": [round(100 * x, 1) for x in np.percentile(fixed, [2.5, 97.5])],
+            "nested_cv_difference_mean_pp": round(100 * float(np.mean(nested)), 1),
+            "nested_cv_ci_95_pp": [round(100 * x, 1) for x in np.percentile(nested, [2.5, 97.5])],
+            "n_passages": int(len(frags)), "resamples_fixed": n_fixed, "resamples_nested": n_nested,
+        }
+    out["note"] = "Not pre-specified (added after P1 results, at the author's request); see analysis_log E24."
+    return out
+
+
 def unanimity(outcomes: pd.DataFrame) -> dict:
     """
     Run-to-run consistency: share of combinations with 3/3 agreement.
@@ -1457,6 +1531,7 @@ def run_findings_metrics(output_path: Path = FINDINGS_METRICS_PATH) -> dict:
         "family_checks": family_checks(maj, gold, outcomes),
         "rater_leniency": rater_leniency(gold, retest),
         "reading_corrections": reading_corrections(db, maj, gold),
+        "pooling_bootstrap": pooling_bootstrap(maj, gold),
         "shared_failures": shared_failures(outcomes, gold, resolved, frags),
         "challenge_cases": challenge_case_summary(outcomes, rows),
         "contested_review": {

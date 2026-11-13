@@ -1559,6 +1559,39 @@
       }
     }
   },
+  "pooling_bootstrap": {
+    "zero_shot": {
+      "fixed_k6_difference_pp": -1.6,
+      "fixed_k6_ci_95_pp": [
+        -6.3,
+        3.5
+      ],
+      "nested_cv_difference_mean_pp": -0.4,
+      "nested_cv_ci_95_pp": [
+        -8.0,
+        6.7
+      ],
+      "n_passages": 149,
+      "resamples_fixed": 5000,
+      "resamples_nested": 2000
+    },
+    "few_shot": {
+      "fixed_k6_difference_pp": 5.7,
+      "fixed_k6_ci_95_pp": [
+        0.8,
+        10.7
+      ],
+      "nested_cv_difference_mean_pp": 3.9,
+      "nested_cv_ci_95_pp": [
+        -5.0,
+        10.4
+      ],
+      "n_passages": 148,
+      "resamples_fixed": 5000,
+      "resamples_nested": 2000
+    },
+    "note": "Not pre-specified (added after P1 results, at the author's request); see analysis_log E24."
+  },
   "shared_failures": {
     "per_model_any_condition_fail_rate_pct": {
       "gpt_5_6_sol": 50.7,
