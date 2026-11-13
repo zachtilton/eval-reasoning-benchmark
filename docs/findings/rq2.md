@@ -29,6 +29,10 @@ patterns first, then GPT (primary diagnostic model) close-up.
 > passages every model failed, 26 were among those where the models jointly
 > disagreed with the expert, and on expert review 13 were confirmed as
 > genuine model errors while 18 rested on reference labels open to question.
+> Because the primary model's failures were almost all shared, the flaws
+> identified in its coded failures (for example, a passage that never
+> reaches a judgment) likely describe what the other models missed as well.
+> Why each model missed them was coded for the primary model only.
 
 ### Plain-language version
 

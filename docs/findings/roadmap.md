@@ -13,7 +13,7 @@ One topline conclusion per RQ, supported by findings; 2–3 supporting findings 
 - [x] 2.3 Calibration examples shifted verdicts, not accuracy
 - [x] #4 Failure by evaluation criterion — folded into 2.2 (criterion explains nothing once gold label is held constant)
 - [x] Passage-length moderation — folded into 2.2 (leniency grows with length; explains RC2-subset reversal)
-- [ ] #5 / #9 GPT failures shared; recurring codes ⊂ cross-model failures — confirm absorbed into 2.1
+- [x] #5 / #9 absorbed into 2.1, with a bridging sentence: GPT's coded flaws likely describe what other models missed (shared failures); reasoning coded for GPT only
 - [ ] GPT close-up (#6 disposition, #7 confirmed errors lenient, #8 code profile / F5.1) — likely 2.4
 - [ ] RQ2 mainline answer + conclusion-level rating
 
@@ -50,6 +50,14 @@ rule; add bootstrap CIs for the leniency ratios.
 ## After findings
 Per-RQ conclusions (rated); study-level limitations (ethics, representation,
 design); poster (one headline + one figure per RQ; new figures for RQ1/RQ2).
+
+## Post-poster extensions
+- Automated coding of all six models' rationales against Appendix D codes,
+  validated against the author's GPT coding (κ); tests whether models miss
+  the same flaws for the same reasons. Risks: LLM-codes-LLM circularity,
+  small single-coder validation set.
+- Alternative calibration sets for the few-shot condition (stimulus
+  sampling), ~$50 per variant across all models.
 
 ## Housekeeping (not poster-critical)
 Rename RC2 → RC3 in code references (`corrected_scoring.py`, `*_corrected`).

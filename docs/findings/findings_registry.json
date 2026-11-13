@@ -508,7 +508,7 @@
         },
         {
           "id": "RQ2.1.c",
-          "text": "Nearly all of the primary model's failures (107 of 112) were shared with at least two other models.",
+          "text": "Nearly all of the primary model's failures (107 of 112) were shared with at least two other models. Because failures are almost all shared and the codes describe flaws in the passage, the flaws in GPT's coded failures likely describe what other models missed too; why each model missed them was coded for GPT only.",
           "values": [
             {
               "metric": "findings_metrics.json:challenge_cases.criterion_1_cases",
@@ -536,7 +536,8 @@
             "fragment_outcomes_corrected",
             "gpt_coding"
           ],
-          "code": "src/analysis/challenge_cases.py:identify_challenge_cases"
+          "code": "src/analysis/challenge_cases.py:identify_challenge_cases",
+          "caveat": "Generalizes which flaws go undetected on shared failures, not each model's reasoning; failures by other models on passages GPT got right are not covered."
         },
         {
           "id": "RQ2.1.d",
