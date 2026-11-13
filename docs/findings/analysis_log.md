@@ -19,6 +19,46 @@ Commits are on `main`.
 
 ---
 
+## Pre-specifications (written before running)
+
+### P1 — Output-side ("reading") corrections for model leniency (2026-11-13; adopted by the author before any results)
+
+**Question.** Can rules applied to the existing model outputs, without new
+runs, improve model judgment of evaluative reasoning?
+
+**Primary outcome.** Balanced accuracy against the locked gold (mean of
+accuracy on gold-sound and on gold-not-sound passages). It decides whether a
+rule "improves" judgment and is the criterion used to choose any tuned
+parameter inside training folds.
+
+**Secondary outcomes (reported whatever they show).** Plain agreement with
+the gold; leniency ratio (missed-flaw rate ÷ wrongly-rejected rate).
+
+**Rules (two only).**
+- **R1 Stricter vote:** a model's verdict on a passage is "sound" only if all
+  of its usable runs (at least two) say sound; otherwise "not sound".
+  No tuned parameter. Compared with the baseline 2-of-3 majority label on the
+  same fragment × model × condition units.
+- **R2 Pooling across models:** one verdict per passage × condition: "sound"
+  only if at least k of the six models' majority labels say sound. k ∈ {1,…,6}
+  chosen by balanced accuracy in training folds. Compared with the mean of the
+  six individual models' balanced accuracy on the same test passages.
+
+**Conditions.** Zero-shot and few-shot, reported separately.
+
+**Validation.** R2: 5-fold cross-validation over passages, stratified by
+gold label, repeated 20 times (seed 42); report the mean test-fold result,
+the spread across repeats, and the distribution of chosen k. R1 has no tuned
+parameter and is evaluated on all 150 passages, with a fragment-clustered
+bootstrap 95% CI (5,000 resamples, seed 42) for the difference from
+baseline.
+
+**Status.** Exploratory. Any improvement is measured against the expert's
+labels and on the passages used here; it would need testing on new passages
+or prompts before being claimed generally.
+
+---
+
 ## Deviations from planned analyses
 
 | ID | Date | Planned analysis | Departure | Why | Effect |
