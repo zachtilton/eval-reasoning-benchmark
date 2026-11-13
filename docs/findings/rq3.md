@@ -40,7 +40,7 @@ for the interpretive relating.
 
 ---
 
-## Construct-validity questions (proposal; weak / null checks)
+## Construct-validity questions (proposal; weak / null checks — reported briefly as not borne out)
 
 Source: `results/findings_metrics.json` → `theory_checks.construct_validity`.
 
@@ -67,12 +67,25 @@ not report-level propagation.
 - 14 fragments have D5 as the primary code with a lower-level secondary.
 - 8 fragments have lower-level codes without D5.
 
-Question for interpretation: does a conclusion-level failure that travels
-with lower-level flaws read as propagation (Stairway), as the coder tracing
-causes downward, or as passages that are weak throughout? What would
-distinguish these?
+**Status: dead end (author, 2026-11-13).** Co-occurring codes from one
+coder cannot show that lower-level flaws produced the conclusion-level
+failure (that would need ordering or independently assigned codes), and
+even if verified the result says little about how LLMs judge. Recorded so
+the consideration is visible; not pursued.
 
 ---
+
+## Provisional RQ3 answer (placeholder until the author's interpretation)
+
+> The failure patterns fit the theory-derived checklist without remainder
+> (no emergent codes were needed) and concentrated at the final step of the
+> general logic of evaluation, synthesizing evidence into a judgment
+> (Domain 5 was the primary domain in 64% of confirmed failures; missing
+> judgments were the most common). The proposal's theory-based predictions
+> about relative difficulty (synthesis harder than evidence, examples
+> helping tacit judgment, complex criteria harder) were not borne out. The
+> patterns also match known biases of LLMs used as judges, such as favoring
+> longer text.
 
 ## Space for the author's interpretation
 

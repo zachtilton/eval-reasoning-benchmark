@@ -1,4 +1,4 @@
-# RQ2 — Findings (in progress)
+# RQ2 — Findings
 
 **Research question (verbatim, proposal):** *What systematic failure patterns
 emerge from the LLM artifacts?*
@@ -6,6 +6,18 @@ emerge from the LLM artifacts?*
 **Status:** working, started 2026-11-12. Corrected (accuracy-only) scoring;
 majority labels per fragment × model × condition. Structure: all-model
 patterns first, then GPT (primary diagnostic model) close-up.
+
+## RQ2 answer (agreed 2026-11-13)
+
+> **Models were lenient judges of evaluative conclusions, especially on longer passages and with calibration examples, most often by passing conclusions that never reach a judgment.**
+
+Observational answer; conclusions are drawn separately (`conclusions.md`).
+Supporting findings: **2.2** (leniency; length and calibration examples)
+and **2.5** (missing the missing judgment). 2.1 (shared failures) supports
+the generalization from the primary model's coding but is not in the
+answer, since its significance is not self-evident to a reader. 2.3 is a
+candidate supporting finding for RQ4 (prompting); 2.4 for RQ1 (model
+capability and the gold standard).
 
 ---
 

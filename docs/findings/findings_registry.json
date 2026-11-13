@@ -1653,5 +1653,16 @@
         }
       ]
     }
-  ]
+  ],
+  "rq_answers": {
+    "RQ2": {
+      "answer": "Models were lenient judges of evaluative conclusions, especially on longer passages and with calibration examples, most often by passing conclusions that never reach a judgment.",
+      "status": "agreed",
+      "supporting_findings": [
+        "RQ2.2",
+        "RQ2.5"
+      ],
+      "document": "docs/findings/rq2.md"
+    }
+  }
 }

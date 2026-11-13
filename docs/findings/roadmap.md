@@ -16,9 +16,9 @@ One topline conclusion per RQ, supported by findings; 2–3 supporting findings 
 - [x] #5 / #9 absorbed into 2.1, with a bridging sentence: GPT's coded flaws likely describe what other models missed (shared failures); reasoning coded for GPT only
 - [x] 2.4 Disposition: re-review changed the expert's mind (#6, #7); named concept: argumentative capability
 - [x] 2.5 Missing the missing judgment (F5.1; examples made it worse); named phenomena: evaluative veneer (preferred), description–evaluation gap
-- [ ] RQ2 mainline answer + conclusion-level rating
+- [x] RQ2 answer agreed (2026-11-13): lenient, esp. longer passages and calibration examples, most often missed judgments; supporting 2.2, 2.5
 
-## RQ3 — workspace started (`rq3.md`); conclusions candidates in `conclusions.md`
+## RQ3 — tabled (2026-11-13); provisional answer in `rq3.md`; Stairway marked dead end; conclusions candidates in `conclusions.md`
 **Scope decision (2026-11-12):** the proposal's named frameworks lead (Scriven's general logic and Nunns et al.'s variation; JCSEE; Toulmin; Hurteau et al.; Gullickson; Meldrum & Gullickson), with abductive extensions accompanying (verbosity bias, shortcut learning, in-context-learning literature). Proposal commitments 1–3 (named-framework interpretation, checklist as sensitizing concepts, emergent-code / framework-adequacy analysis) are met procedurally by the coding; the interpretive relating to theory remains to be written. Construct-validity questions (D4 vs D2; few-shot and D6; criterion clustering) to be reported as weak/null checks. Candidate connections: Gullickson's (Stake's) "fully describe / fully judge" for the description–evaluation gap (conjecture; revisit data); Nunns et al. on omitted conclusions as a practical stake for meta-evaluation; Stairway propagation within a passage (suggestive only).
 Develop the named phenomena from RQ2: **evaluative veneer** (2.5; links to verbosity bias, shortcut learning), the **description–evaluation gap** (Scriven's logic of evaluation), and **argumentative capability** (2.4).
 Domain profile and theory linkage; **parked lexicon test**: do surface
@@ -30,7 +30,7 @@ gold label? Hypothesis about impact conclusions being weaker (gold 71% vs
 proposal construct-validity questions (Domain 4 vs 2; few-shot and Domain 6;
 challenge cases by criterion). Mostly interpretive writing by the author.
 
-## RQ4 — not started
+## RQ4 — next
 Prompting (largely 2.2/2.3); model family (H2 chi-squared, closed vs open
 z-test); check whether leniency aligns with family; conclusion and rating.
 
