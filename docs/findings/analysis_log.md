@@ -49,6 +49,7 @@ Commits are on `main`.
 | E16 | 2026-11-12 | Author: RC2 fragments were stratified to 1–3 paragraphs | Leniency by paragraph-count bin (bins chosen **after** this prompt); word count vs models' sound calls | No zero-shot lean on 1–3 paragraphs, clear on 7+; models' sound calls rise with length, gold's do not | 2.2 headline (length); RC2 reversal explained | `length_moderation` | cbe69c7 |
 | E17 | 2026-11-12 | Does long text hide missing judgments (F5.1)? | GPT confirmed failures by length; F5.1 share by length | F5.1 ≈ half at every length; strict failures concentrate in short passages but gold doubted at every length | Hypothesis not supported; lexicon test parked for RQ3 | `gpt_failures_by_length` | 22cd31e |
 | E18 | 2026-11-12 | The not-sound calibration example was itself a "no judgment" passage | F5.1 by prompt condition (rows); conditions in which F5.1 fragments failed | F5.1 in 7 zero-shot vs 13 few-shot confirmed rows; all 13 F5.1 fragments failed with examples, none only without | Pending discussion (finding on F5.1) | `f51_by_condition` | 8ca56e6 |
+| E19 | 2026-11-12 | Calibration-boundary hypothesis predicts missed F5.1 passages have evidence | Evidence codes (F2.x) among the 13 confirmed F5.1 fragments, by conditions failed | 8 of 13 lack an evidence code; but 5 of the 6 missed only with examples DO carry F2.2, while all 7 missed in both conditions lack one | Prediction (as stated) not supported for the example-induced misses; hypothesis not adopted as stated | `f51_by_condition` | (this commit) |
 
 ---
 

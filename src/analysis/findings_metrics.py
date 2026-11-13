@@ -829,7 +829,9 @@ def f51_by_condition(rows: pd.DataFrame, frags: pd.DataFrame) -> dict:
 
     Row level (fragment x condition): confirmed failures and F5.1 (primary and
     any position) per condition. Fragment level: for fragments with an F5.1
-    code, which conditions they failed in.
+    code, which conditions they failed in, and whether they also carry an
+    evidence code (F2.x) -- the calibration-boundary hypothesis predicts
+    missed F5.1 passages mostly do NOT (they have evidence, lack judgment).
 
     Args:
         rows: Row-level coding sheet (load_coding_sheet).
@@ -848,9 +850,15 @@ def f51_by_condition(rows: pd.DataFrame, frags: pd.DataFrame) -> dict:
                      "f51_any_pct_of_confirmed": _pct(d["f51_any"].mean()) if len(d) else None}
     f = frags.assign(f51_any=frags[code_cols].astype(str).apply(lambda x: "F5.1" in set(x), axis=1))
     f51 = f[f["genuine"] & f["f51_any"]]
+    has_f2 = f51[code_cols].astype(str).apply(lambda x: any(c.startswith("F2.") for c in x), axis=1)
+    f2_by = {k: {"n": int(len(d)), "with_evidence_code": int(has_f2[d.index].sum())} for k, d in f51.groupby("conditions")}
     return {"by_condition_rows": per,
             "f51_fragments": int(len(f51)),
-            "f51_fragments_failed_in": f51["conditions"].value_counts().to_dict()}
+            "f51_fragments_failed_in": f51["conditions"].value_counts().to_dict(),
+            "f51_fragments_with_evidence_code_f2": int(has_f2.sum()),
+            "f51_fragments_without_evidence_code": int((~has_f2).sum()),
+            "f51_evidence_code_by_failed_in": f2_by,
+            "f51_co_codes": f51[["secondary_code", "tertiary_code"]].stack().replace("", np.nan).dropna().value_counts().to_dict()}
 
 
 def unanimity(outcomes: pd.DataFrame) -> dict:

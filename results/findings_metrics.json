@@ -1197,6 +1197,27 @@
     "f51_fragments_failed_in": {
       "few_shot+zero_shot": 7,
       "few_shot": 6
+    },
+    "f51_fragments_with_evidence_code_f2": 5,
+    "f51_fragments_without_evidence_code": 8,
+    "f51_evidence_code_by_failed_in": {
+      "few_shot": {
+        "n": 6,
+        "with_evidence_code": 5
+      },
+      "few_shot+zero_shot": {
+        "n": 7,
+        "with_evidence_code": 0
+      }
+    },
+    "f51_co_codes": {
+      "F2.2": 5,
+      "F1.3": 2,
+      "F3.2": 2,
+      "F4.2": 2,
+      "F4.1": 1,
+      "F6.1": 1,
+      "F3.1": 1
     }
   },
   "shared_failures": {
