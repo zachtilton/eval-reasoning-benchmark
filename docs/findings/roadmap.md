@@ -4,8 +4,7 @@
 One topline conclusion per RQ, supported by findings; 2–3 supporting findings per RQ on the poster.
 
 ## RQ1 — done
-`rq1.md`. Open: revisit the mainline leniency clause in light of RQ2.2
-(zero-shot vs few-shot split).
+`rq1.md`. Resolved 2026-11-13: the leniency clause stays as a pooled statement (≈2.3:1, CI 1.7–3.1); RQ2's answer carries the length and calibration-example nuance.
 
 ## RQ2 — in progress (`rq2.md`)
 - [x] 2.1 Shared failures
