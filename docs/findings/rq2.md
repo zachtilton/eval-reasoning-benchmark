@@ -3,6 +3,10 @@
 **Research question (verbatim, proposal):** *What systematic failure patterns
 emerge from the LLM artifacts?*
 
+**Headline convention (2026-11-13):** finding headlines lead with a local
+implication, followed by the observation that warrants it; cross-finding
+conclusions are in `conclusions.md`.
+
 **Status:** working, started 2026-11-12. Corrected (accuracy-only) scoring;
 majority labels per fragment × model × condition. Structure: all-model
 patterns first, then GPT (primary diagnostic model) close-up.
@@ -13,11 +17,11 @@ patterns first, then GPT (primary diagnostic model) close-up.
 
 Observational answer; conclusions are drawn separately (`conclusions.md`).
 Supporting findings: **2.2** (leniency; length and calibration examples)
-and **2.5** (missing the missing judgment). 2.1 (shared failures) supports
+and **2.4** (missing the missing judgment). 2.1 (shared failures) supports
 the generalization from the primary model's coding but is not in the
 answer, since its significance is not self-evident to a reader. 2.3 is a
-candidate supporting finding for RQ4 (prompting); 2.4 was re-homed to RQ1
-as Finding 1.3.
+candidate supporting finding for RQ4 (prompting); the former 2.4 (re-review) was
+re-homed to RQ1 as Finding 1.3, and the former 2.5 renumbered 2.4.
 
 ---
 
@@ -25,8 +29,11 @@ as Finding 1.3.
 
 ### Headline
 
-> **The six models got the same passages wrong: what mattered was which
-> passage was being judged, not which model judged it.**
+> **Switching models is unlikely to fix these errors: the six models got the
+> same passages wrong, so what mattered was which passage was judged, not
+> which model judged it.**
+
+*Previous (descriptive) headline:* The six models got the same passages wrong: what mattered was which passage was being judged, not which model judged it.
 
 ### Expanded
 
@@ -101,11 +108,13 @@ clusters are largely missed flaws.
 
 ### Headline
 
-> **Models were lenient judges: they missed flawed reasoning more often
-> than they rejected sound reasoning. Without examples, the lean depended on
-> passage length: none on short passages, about 2 to 1 on long ones. The
-> study's calibration examples amplified it at every length, to about 5 to 1
-> on long passages.**
+> **Used as reviewers, models would let weak reasoning through: they missed
+> flawed reasoning more often than they rejected sound reasoning. Without
+> examples, the lean depended on passage length: none on short passages,
+> about 2 to 1 on long ones. The study's calibration examples amplified it
+> at every length, to about 5 to 1 on long passages.**
+
+*Previous (descriptive) headline:* Models were lenient judges: they missed flawed reasoning more often than they rejected sound reasoning. Without examples, the lean depended on passage length: none on short passages, about 2 to 1 on long ones. The study's calibration examples amplified it at every length, to about 5 to 1 on long passages.
 
 ### Expanded
 
@@ -249,9 +258,11 @@ confirmed lenient as share of gold-not-sound passages 36% / 26% / 44%
 
 ### Headline
 
-> **A balanced, expert-written pair of calibration examples shifted five of
-> six models toward calling reasoning sound, without reliably improving
-> accuracy.**
+> **Calibration examples can introduce bias that accuracy scores hide: a
+> balanced, expert-written pair shifted five of six models toward calling
+> reasoning sound, without reliably improving accuracy.**
+
+*Previous (descriptive) headline:* A balanced, expert-written pair of calibration examples shifted five of six models toward calling reasoning sound, without reliably improving accuracy.
 
 ### Expanded
 
@@ -326,22 +337,16 @@ the shift. Source: `config/prompts/few_shot_template.txt`.
 
 ---
 
-## Finding 2.4 — moved
-
-Re-homed to RQ1 as **Finding 1.3** (2026-11-13); see `rq1.md`. Numbering of
-2.5 is unchanged.
-
----
-
-## Finding 2.5 — Missing the missing judgment (agreed 2026-11-12)
+## Finding 2.4 — Missing the missing judgment (agreed 2026-11-12 as 2.5; renumbered 2026-11-13)
 
 ### Headline
 
-> **The most common genuine failure was missing that a passage never
-> reaches an evaluative judgment: models passed conclusions that discuss
-> performance without ever saying how good it was. The study's calibration
-> examples made this worse, even though the "not sound" example was itself
-> a passage with no judgment.**
+> **Models might be taken in by evaluative veneer: their most common genuine
+> failure was passing conclusions that discuss performance without ever
+> saying how good it was, and the study's calibration examples made it
+> worse.**
+
+*Previous (descriptive) headline:* The most common genuine failure was missing that a passage never reaches an evaluative judgment: models passed conclusions that discuss performance without ever saying how good it was. The study's calibration examples made this worse, even though the "not sound" example was itself a passage with no judgment.
 
 ### Expanded
 

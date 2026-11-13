@@ -25,17 +25,17 @@ for the interpretive relating.
 | 2.1 | Same passages wrong; passage, not model | What property of a passage makes evaluative reasoning hard to judge? |
 | 2.2 | Lenient; grows with length; examples amplify | Verbosity bias vs. "more checkpoints met": which does theory predict? |
 | 2.3 | Examples shifted verdicts, not accuracy | What do examples transmit — a standard, or surface features? (Fournier: general vs. working logic) |
-| 2.4 | Re-review changed the expert's mind | Argumentative capability; Toulmin warrants; first-pass vs. considered judgment |
-| 2.5 | Missing the missing judgment (F5.1); examples worsened it | Evaluative veneer; description–evaluation gap |
+| 1.3 | Re-review changed the expert's mind | Argumentative capability; Toulmin warrants; first-pass vs. considered judgment |
+| 2.4 | Missing the missing judgment (F5.1); examples worsened it | Evaluative veneer; description–evaluation gap |
 
 ### Named phenomena (conjecture unless stated)
-- **Evaluative veneer** (2.5): surface of evaluation without the verdict.
-- **Description–evaluation gap** (2.5): candidate link to Gullickson's (2020)
+- **Evaluative veneer** (2.4): surface of evaluation without the verdict.
+- **Description–evaluation gap** (2.4): candidate link to Gullickson's (2020)
   use of Stake's "fully describe / fully judge"; revisit data before
   developing.
-- **Argumentative capability** (2.4): a model rationale's capacity to move a
+- **Argumentative capability** (1.3): a model rationale's capacity to move a
   qualified human's judgment; promise and risk.
-- **First-pass leniency in humans and models** (2.4, RQ3 roadmap): the
+- **First-pass leniency in humans and models** (1.3, RQ3 roadmap): the
   expert's reconsiderations moved the gold stricter twice; untested.
 
 ---

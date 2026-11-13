@@ -32,10 +32,16 @@ scoring against the locked gold standard
 ## Findings
 
 The RQ1 answer is supported by three findings (structure agreed 2026-11-13).
+Headline convention: each finding leads with a local implication, followed
+by the observation that warrants it.
 
 ### Finding 1.1 — Accuracy (agreed 2026-11-13)
 
-> **Models agreed with the expert 60% of the time, modestly above chance and well below the expert's own consistency, and they caught flawed reasoning far less reliably than they affirmed sound reasoning.**
+> **Models are not yet reliable judges of evaluative reasoning: they agreed
+> with the expert 60% of the time, modestly above chance, and caught
+> flawed reasoning far less reliably than they affirmed sound reasoning.**
+
+*Previous (descriptive) headline:* Models agreed with the expert 60% of the time, modestly above chance and well below the expert's own consistency, and they caught flawed reasoning far less reliably than they affirmed sound reasoning.
 
 Pooled across six models and two conditions, models agreed with the expert
 on 59.9% of passages (95% CI 54.3–65.5%; 59.6% at the run level).
@@ -48,7 +54,10 @@ right but only 44% of gold-not-sound passages. All three runs agreed in
 
 ### Finding 1.2 — The human yardstick (agreed 2026-11-13)
 
-> **Matching the expert was hard for everyone: models agreed with the expert about as often as two trained evaluators did (about 57% vs 55–61%).**
+> **Expert judgment is a contested yardstick: models agreed with the expert
+> about as often as two trained evaluators did (about 57% vs 55–61%).**
+
+*Previous (descriptive) headline:* Matching the expert was hard for everyone: models agreed with the expert about as often as two trained evaluators did (about 57% vs 55–61%).
 
 On the 38 RC2 passages in the benchmark, models agreed with the expert's
 blind pass-2 ratings 57.5% of the time on average (42–76% across model ×

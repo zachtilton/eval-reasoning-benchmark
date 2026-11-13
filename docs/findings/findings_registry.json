@@ -3,7 +3,8 @@
   "conventions": {
     "metric_ref": "<file under results/>:<dot.separated.path>; keyed dicts (e.g. by_combination.<model>|<condition>) rather than list indices; keys containing dots (e.g. code labels like F5.1) cannot be addressed — expose a plain scalar key instead",
     "unit": "Majority label per fragment x model x prompt condition unless stated; corrected (accuracy-only) scoring; locked gold 2026-10-03 unless stated",
-    "status": "agreed = wording agreed with the author; draft = discussed, wording open"
+    "status": "agreed = wording agreed with the author; draft = discussed, wording open",
+    "headlines": "Finding headlines lead with a local implication, followed by the observation that warrants it (2026-11-13); previous_headline keeps the descriptive version."
   },
   "sources": {
     "scored_db_corrected": {
@@ -73,7 +74,7 @@
       "research_question": "To what extent can large language models accurately assess the quality of evaluative reasoning?",
       "status": "agreed",
       "document": "docs/findings/rq1.md",
-      "headline": "Models agreed with the expert 60% of the time, modestly above chance and well below the expert's own consistency, and they caught flawed reasoning far less reliably than they affirmed sound reasoning.",
+      "headline": "Models are not yet reliable judges of evaluative reasoning: they agreed with the expert 60% of the time, modestly above chance, and caught flawed reasoning far less reliably than they affirmed sound reasoning.",
       "claims": [
         {
           "id": "RQ1.a",
@@ -264,14 +265,15 @@
           "procedure": "As-designed pass rate from the pre-registered outcomes. RC3: stratified human review of coherence-flagged runs; rule-of-three (3/n) upper bound on the incoherence rate per stratum, applied to the unreviewed remainder.",
           "caveat": "The rater never assigned 'incoherent' (including 94 controls), so RC3 cannot fully separate a mis-firing pipeline from a high personal threshold for incoherence."
         }
-      ]
+      ],
+      "previous_headline": "Models agreed with the expert 60% of the time, modestly above chance and well below the expert's own consistency, and they caught flawed reasoning far less reliably than they affirmed sound reasoning."
     },
     {
       "id": "RQ1.2",
       "research_question": "To what extent can large language models accurately assess the quality of evaluative reasoning?",
       "status": "agreed",
       "document": "docs/findings/rq1.md",
-      "headline": "Matching the expert was hard for everyone: models agreed with the expert about as often as two trained evaluators did (about 57% vs 55–61%).",
+      "headline": "Expert judgment is a contested yardstick: models agreed with the expert about as often as two trained evaluators did (about 57% vs 55–61%).",
       "claims": [
         {
           "id": "RQ1.d",
@@ -432,7 +434,8 @@
           ],
           "code": "src/analysis/findings_metrics.py:contested_overlap"
         }
-      ]
+      ],
+      "previous_headline": "Matching the expert was hard for everyone: models agreed with the expert about as often as two trained evaluators did (about 57% vs 55–61%)."
     },
     {
       "id": "RQ1.3",
@@ -554,7 +557,7 @@
       "research_question": "What systematic failure patterns emerge from the LLM artifacts?",
       "status": "agreed",
       "document": "docs/findings/rq2.md",
-      "headline": "The six models got the same passages wrong: what mattered was which passage was being judged, not which model judged it.",
+      "headline": "Switching models is unlikely to fix these errors: the six models got the same passages wrong, so what mattered was which passage was judged, not which model judged it.",
       "claims": [
         {
           "id": "RQ2.1.a",
@@ -673,14 +676,15 @@
           ],
           "code": "src/analysis/findings_metrics.py:shared_failures"
         }
-      ]
+      ],
+      "previous_headline": "The six models got the same passages wrong: what mattered was which passage was being judged, not which model judged it."
     },
     {
       "id": "RQ2.2",
       "research_question": "What systematic failure patterns emerge from the LLM artifacts?",
       "status": "agreed",
       "document": "docs/findings/rq2.md",
-      "headline": "Models were lenient judges: they missed flawed reasoning more often than they rejected sound reasoning. Without examples, the lean depended on passage length: none on short passages, about 2 to 1 on long ones. The study's calibration examples amplified it at every length, to about 5 to 1 on long passages.",
+      "headline": "Used as reviewers, models would let weak reasoning through: they missed flawed reasoning more often than they rejected sound reasoning. Without examples, the lean depended on passage length: none on short passages, about 2 to 1 on long ones. The study's calibration examples amplified it at every length, to about 5 to 1 on long passages.",
       "claims": [
         {
           "id": "RQ2.2.a",
@@ -1269,14 +1273,15 @@
           "code": "src/analysis/findings_metrics.py:gpt_failures_by_length",
           "caveat": "GPT only; small cells (5-17); re-review not independent of the expert's labels."
         }
-      ]
+      ],
+      "previous_headline": "Models were lenient judges: they missed flawed reasoning more often than they rejected sound reasoning. Without examples, the lean depended on passage length: none on short passages, about 2 to 1 on long ones. The study's calibration examples amplified it at every length, to about 5 to 1 on long passages."
     },
     {
       "id": "RQ2.3",
       "research_question": "What systematic failure patterns emerge from the LLM artifacts?",
       "status": "agreed",
       "document": "docs/findings/rq2.md",
-      "headline": "A balanced, expert-written pair of calibration examples shifted five of six models toward calling reasoning sound, without reliably improving accuracy.",
+      "headline": "Calibration examples can introduce bias that accuracy scores hide: a balanced, expert-written pair shifted five of six models toward calling reasoning sound, without reliably improving accuracy.",
       "claims": [
         {
           "id": "RQ2.3.a",
@@ -1565,17 +1570,18 @@
           ],
           "code": "src/analysis/findings_metrics.py:few_shot_shift, model_model_kappa"
         }
-      ]
+      ],
+      "previous_headline": "A balanced, expert-written pair of calibration examples shifted five of six models toward calling reasoning sound, without reliably improving accuracy."
     },
     {
-      "id": "RQ2.5",
+      "id": "RQ2.4",
       "research_question": "What systematic failure patterns emerge from the LLM artifacts?",
       "status": "agreed",
       "document": "docs/findings/rq2.md",
-      "headline": "The most common genuine failure was missing that a passage never reaches an evaluative judgment: models passed conclusions that discuss performance without ever saying how good it was. The study's calibration examples made this worse, even though the \"not sound\" example was itself a passage with no judgment.",
+      "headline": "Models might be taken in by evaluative veneer: their most common genuine failure was passing conclusions that discuss performance without ever saying how good it was, and the study's calibration examples made it worse.",
       "claims": [
         {
-          "id": "RQ2.5.a",
+          "id": "RQ2.4.a",
           "text": "F5.1 (evaluative judgment absent) is the most common primary code among confirmed failures: 13 of 28, about half at every length.",
           "values": [
             {
@@ -1608,7 +1614,7 @@
           "caveat": "Primary model only; one coder; RC4 pending; boundary of what counts as a judgment."
         },
         {
-          "id": "RQ2.5.b",
+          "id": "RQ2.4.b",
           "text": "With the calibration examples GPT missed more judgment-absent passages (13 vs 7 confirmed rows); all 13 F5.1 fragments failed with examples, 6 only with them.",
           "values": [
             {
@@ -1640,7 +1646,7 @@
           "caveat": "Small numbers; example content, order and length confounded."
         },
         {
-          "id": "RQ2.5.c",
+          "id": "RQ2.4.c",
           "text": "The extra misses introduced by the examples mostly lacked both a judgment and adequate evidence (5 of 6 carry F2.2), so the 'no judgment and no evidence' boundary account does not fit.",
           "values": [
             {
@@ -1668,7 +1674,8 @@
           "code": "src/analysis/findings_metrics.py:f51_by_condition",
           "caveat": "Post hoc refinements of the boundary account would be exploratory."
         }
-      ]
+      ],
+      "previous_headline": "The most common genuine failure was missing that a passage never reaches an evaluative judgment: models passed conclusions that discuss performance without ever saying how good it was. The study's calibration examples made this worse, even though the \"not sound\" example was itself a passage with no judgment."
     },
     {
       "id": "RQ4.evidence",
@@ -1824,7 +1831,7 @@
       "status": "agreed",
       "supporting_findings": [
         "RQ2.2",
-        "RQ2.5"
+        "RQ2.4"
       ],
       "document": "docs/findings/rq2.md"
     },
