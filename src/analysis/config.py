@@ -116,6 +116,7 @@ RC2_BLIND_RETEST_PATH = PROJECT_ROOT / "reliability" / "blind_retest_40frag_pass
 RC3_REVIEW_KEY_PATH = PROJECT_ROOT / "logs" / "human_review_key.csv"
 RC3_REVIEW_BLINDED_PATH = PROJECT_ROOT / "logs" / "human_review_blinded.csv"
 LUNA_TRIAGE_PATH = RESPONSES_DIR / "triangulation_luna_ambiguous.csv"
+GOLD_NOT_SOUND_REASONS_PATH = ANALYSIS_DIR / "gold_not_sound_reasons.csv"  # author classification, 2026-11-13
 RELIABILITY_CHECKS_PATH = RESULTS_DIR / "reliability_checks.json"
 H2_CORRECTED_RESULTS_PATH = RESULTS_DIR / "H2_statistical_tests_corrected.json"
 H2_TRIANGULATED_RESULTS_PATH = RESULTS_DIR / "H2_statistical_tests_triangulated.json"

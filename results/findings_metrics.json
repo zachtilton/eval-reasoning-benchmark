@@ -1592,6 +1592,68 @@
     },
     "note": "Not pre-specified (added after P1 results, at the author's request); see analysis_log E24."
   },
+  "judgment_absent_rates": {
+    "counts": {
+      "judgment_absent": 48,
+      "other_flaw": 14,
+      "stale_rationale": 6,
+      "buried_judgment": 6
+    },
+    "judgment_absent_pct_of_known_not_sound": 70.6,
+    "judgment_absent_pct_of_all_passages": 32.0,
+    "pooled_miss_rate": {
+      "zero_shot": {
+        "buried_judgment": {
+          "miss_rate_pct": 61.1,
+          "units": 36
+        },
+        "judgment_absent": {
+          "miss_rate_pct": 50.7,
+          "units": 288
+        },
+        "other_flaw": {
+          "miss_rate_pct": 41.7,
+          "units": 84
+        },
+        "stale_rationale": {
+          "miss_rate_pct": 52.8,
+          "units": 36
+        }
+      },
+      "few_shot": {
+        "buried_judgment": {
+          "miss_rate_pct": 80.6,
+          "units": 36
+        },
+        "judgment_absent": {
+          "miss_rate_pct": 60.6,
+          "units": 287
+        },
+        "other_flaw": {
+          "miss_rate_pct": 54.8,
+          "units": 84
+        },
+        "stale_rationale": {
+          "miss_rate_pct": 66.7,
+          "units": 36
+        }
+      }
+    },
+    "judgment_absent_miss_rate_by_model": {
+      "claude_opus_5|few_shot": 45.8,
+      "claude_opus_5|zero_shot": 33.3,
+      "deepseek_v4_pro|few_shot": 41.7,
+      "deepseek_v4_pro|zero_shot": 31.2,
+      "gemini_3_pro_preview_high|few_shot": 66.7,
+      "gemini_3_pro_preview_high|zero_shot": 70.8,
+      "glm_5_2|few_shot": 74.5,
+      "glm_5_2|zero_shot": 72.9,
+      "gpt_5_6_sol|few_shot": 58.3,
+      "gpt_5_6_sol|zero_shot": 35.4,
+      "kimi_k3|few_shot": 77.1,
+      "kimi_k3|zero_shot": 60.4
+    }
+  },
   "shared_failures": {
     "per_model_any_condition_fail_rate_pct": {
       "gpt_5_6_sol": 50.7,

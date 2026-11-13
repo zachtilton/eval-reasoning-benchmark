@@ -36,6 +36,7 @@ from .config import (
     FRAGMENT_OUTCOMES_CORRECTED_PATH,
     FRAGMENT_OUTCOMES_PATH,
     FRAGMENT_OUTCOMES_TRIANGULATED_PATH,
+    GOLD_NOT_SOUND_REASONS_PATH,
     GOLD_RATIONALE_SUPPLEMENT_PATH,
     KAPPA_BOOTSTRAP_RESAMPLES,
     LUNA_TRIAGE_PATH,
@@ -1227,6 +1228,39 @@ def pooling_bootstrap(maj: pd.DataFrame, gold: pd.DataFrame, n_fixed: int = BOOT
     return out
 
 
+def judgment_absent_rates(maj: pd.DataFrame, reasons: pd.DataFrame, n_gold: int) -> dict:
+    """
+    C4 denominator: how often models miss passages the expert judged not
+    sound because no evaluative judgment is reached.
+
+    Uses the author's classification of not-sound gold rationales
+    (data/analysis/gold_not_sound_reasons.csv): judgment_absent, buried
+    judgment, other flaw, or stale rationale (reason unknown). Reports the
+    share of each category and, per condition and model, the rate at which
+    models called such passages sound (a missed flaw).
+
+    Args:
+        maj: Output of majority_labels.
+        reasons: Not-sound reason classification.
+        n_gold: Number of benchmark passages.
+
+    Returns:
+        Dict of category counts and miss rates.
+    """
+    m = maj[maj["pred"] != "none"].merge(reasons[["fragment_id", "not_sound_reason"]], on="fragment_id")
+    m = m.assign(missed=(m["pred"] == "sound").astype(float))
+    counts = reasons["not_sound_reason"].value_counts().to_dict()
+    pooled = {c: {cat: {"miss_rate_pct": _pct(d["missed"].mean()), "units": int(len(d))}
+                  for cat, d in m[m["prompt_condition"] == c].groupby("not_sound_reason")} for c in PROMPT_ORDER}
+    by_model = {f"{mod}|{c}": _pct(d["missed"].mean())
+                for (mod, c), d in m[m["not_sound_reason"] == "judgment_absent"].groupby(["model_family", "prompt_condition"])}
+    known = sum(v for k, v in counts.items() if k != "stale_rationale")
+    return {"counts": {k: int(v) for k, v in counts.items()},
+            "judgment_absent_pct_of_known_not_sound": _pct(counts.get("judgment_absent", 0) / known),
+            "judgment_absent_pct_of_all_passages": _pct(counts.get("judgment_absent", 0) / n_gold),
+            "pooled_miss_rate": pooled, "judgment_absent_miss_rate_by_model": by_model}
+
+
 def unanimity(outcomes: pd.DataFrame) -> dict:
     """
     Run-to-run consistency: share of combinations with 3/3 agreement.
@@ -1532,6 +1566,7 @@ def run_findings_metrics(output_path: Path = FINDINGS_METRICS_PATH) -> dict:
         "rater_leniency": rater_leniency(gold, retest),
         "reading_corrections": reading_corrections(db, maj, gold),
         "pooling_bootstrap": pooling_bootstrap(maj, gold),
+        "judgment_absent_rates": judgment_absent_rates(maj, pd.read_csv(GOLD_NOT_SOUND_REASONS_PATH), len(gold)),
         "shared_failures": shared_failures(outcomes, gold, resolved, frags),
         "challenge_cases": challenge_case_summary(outcomes, rows),
         "contested_review": {
