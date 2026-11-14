@@ -256,11 +256,31 @@ fill the gap between "named, untested" and "unaddressed".
   consistency across checks.
 - **Confidence = the lower of the two** (conservative; IPCC leaves the
   mapping partly to judgment).
+- **Dimensions → summary: lowest wins** (fixed 2026-11-13, before rating
+  parts c and d). Strong → robust / high; moderate → medium; weak →
+  limited / low. Rationale: hardest rule to bend for a post hoc framework;
+  matches the bar, the parts rule and the confidence rule (no
+  compensation). All five dimension ratings are shown beside each summary
+  so the information is not lost.
 
 Parts of the Domain 5 judgment: (a) fair overall; (b) matched trained
 evaluators' agreement; (c) passed about half of conclusions the expert
 judged flawed, mostly judgment-absent ones; (d) leaned lenient, more so
-with length and calibration examples. Ratings: *(author, pending)*.
+with length and calibration examples. Rating order: b, c, d, then a.
+
+| Part | Transparency & precision | Reference independence | Consistency | Rivals | Scope | Evidence | Agreement | Confidence |
+|---|---|---|---|---|---|---|---|---|
+| (b) agreed with an expert about as often as two trained evaluators did, within a wide margin (author, 2026-11-13) | Strong | Moderate | Moderate | Moderate | Strong | Medium | Medium | **Medium** |
+| (c) | *pending* | | | | | | | |
+| (d) | *pending* | | | | | | | |
+| (a) fair overall | *pending* | | | | | | | |
+
+Notes on (b): precision strong after E27 CI and rewording from "matched";
+reference independence moderate because the locked-gold comparison is
+discounted as partly circular (stated in 1.2); consistency moderate
+(models 42–76%); rivals moderate (small sample quantified by CI; short
+passages checked indirectly against all 150; circularity examined); scope
+strong ("two trained evaluators").
 
 ### Remaining steps
 - Domain 2–3: link each criterion to its findings and warrants.

@@ -56,6 +56,9 @@ explanations, scope); "rate the claim as worded." For now apply at the
 conclusion level per RQ, plus the 2–3 load-bearing findings. To do: verify
 Mastrandrea et al. (2010); write descriptors and the evidence × agreement
 rule; add bootstrap CIs for the leniency ratios.
+**Status 2026-11-13:** descriptors and rules recorded in `conclusions.md`;
+part (b) rated medium. Next: evidence sheet and rating for (c), then (d),
+then (a); then Tier 3 prose (Domain 6).
 
 ## Findings review (author request, 2026-11-13)
 - [x] Headline review done (2026-11-13): implication-first headlines applied to 1.1, 1.2, 2.1–2.4 (1.3 already); former 2.5 renumbered 2.4, then 2.3 when the former 2.3 moved to RQ4 as 4.2.
