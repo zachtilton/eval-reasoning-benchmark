@@ -271,7 +271,7 @@ with length and calibration examples. Rating order: b, c, d, then a.
 | Part | Transparency & precision | Reference independence | Consistency | Rivals | Scope | Evidence | Agreement | Confidence |
 |---|---|---|---|---|---|---|---|---|
 | (b) agreed with an expert about as often as two trained evaluators did, within a wide margin (author, 2026-11-13) | Strong | Moderate | Moderate | Moderate | Strong | Medium | Medium | **Medium** |
-| (c) | *pending* | | | | | | | |
+| (c) passed about half of the conclusions the expert judged flawed, most often ones that never reach a judgment (author and Claude independently, 2026-11-13) | Strong | Moderate | Moderate | Moderate | Strong | Medium | Medium | **Medium** |
 | (d) | *pending* | | | | | | | |
 | (a) fair overall | *pending* | | | | | | | |
 
@@ -281,6 +281,17 @@ discounted as partly circular (stated in 1.2); consistency moderate
 (models 42–76%); rivals moderate (small sample quantified by CI; short
 passages checked indirectly against all 150; circularity examined); scope
 strong ("two trained evaluators").
+
+Notes on (c): precision strong after E28 CIs (pooled missed-flaw rate 55.8%,
+CI 47.7–64.1, vs locked gold); reference independence moderate (holds
+against locked and pre-revision gold, both the expert's; triangulated
+40.1%, CI 32.4–48.0, substantial but not "about half"; wording scoped to
+the expert); consistency moderate (direction holds everywhere, magnitude
+31–77% across models); rivals moderate (label error partly addressed by
+re-review, 27 of 43 lenient failures upheld, and the triangulated reference;
+single-coder classification named, untested; run noise handled by
+majority labels); scope strong. Judgment-absent share of misses 64.6% (CI
+51.5–77.1) supports "most often".
 
 ### Remaining steps
 - Domain 2–3: link each criterion to its findings and warrants.
