@@ -169,7 +169,7 @@ for the overall verdict to exceed fair.
 > within a wide margin, a modest bar, but
 > passed about half of the conclusions the expert judged flawed, most often
 > ones that never reach a judgment. Their errors leaned lenient on longer
-> passages and with calibration examples.**
+> passages and with the calibration examples.**
 
 Drafting notes:
 - "As judges of evaluative conclusions" (added 2026-11-13): the study tested
@@ -192,7 +192,9 @@ Drafting notes:
   (revised 2026-11-13 from "leaned lenient, more so on longer passages and
   with calibration examples"): on short passages without examples there
   was no lean (ratio 0.87, CI 0.56–1.28), so the overall lean holds only
-  when pooled.
+  when pooled. "The calibration examples" (added "the", 2026-11-13) points
+  to the one set tested, so the wording does not generalize to examples in
+  general.
 - Left to the findings: balanced errors on short passages without examples
   (C2 good); the split by condition.
 - Moderators (length, calibration examples) are content; the limits on
@@ -277,7 +279,7 @@ with length and calibration examples. Rating order: b, c, d, then a.
 |---|---|---|---|---|---|---|---|---|
 | (b) agreed with an expert about as often as two trained evaluators did, within a wide margin (author, 2026-11-13) | Strong | Moderate | Moderate | Moderate | Strong | Medium | Medium | **Medium** |
 | (c) passed about half of the conclusions the expert judged flawed, most often ones that never reach a judgment (author and Claude independently, 2026-11-13) | Strong | Moderate | Moderate | Moderate | Strong | Medium | Medium | **Medium** |
-| (d) | *pending* | | | | | | | |
+| (d) leaned lenient on longer passages and with the calibration examples (author, 2026-11-13) | Strong | Moderate | Moderate | Moderate | Strong | Medium | Medium | **Medium** |
 | (a) fair overall | *pending* | | | | | | | |
 
 Notes on (b): precision strong after E27 CI and rewording from "matched";
@@ -297,6 +299,18 @@ re-review, 27 of 43 lenient failures upheld, and the triangulated reference;
 single-coder classification named, untested; run noise handled by
 majority labels); scope strong. Judgment-absent share of misses 64.6% (CI
 51.5–77.1) supports "most often".
+
+Notes on (d): precision strong (non-overlapping CIs short vs long, 0.56–1.28
+vs 1.41–4.18; zero- vs few-shot, 1.14–2.01 vs 2.67–5.89; post hoc bins
+logged, continuous ρ ≈ .3 bin-free); reference independence moderate (the
+examples subclaim is reference-free and holds against every reference, but
+the length subclaim rests on one reference-free observation plus the expert
+alone); consistency moderate (Gemini did not shift, partly explained by
+its high zero-shot sound rate); rivals moderate (author revised from weak:
+length rival named with indirect evidence against it, lexicon test parked;
+recency and gold error ruled out for examples; stimulus sampling named,
+untested); scope strong after "the calibration examples" and the rewording
+from an unconditional lean.
 
 ### Remaining steps
 - Domain 2–3: link each criterion to its findings and warrants.
