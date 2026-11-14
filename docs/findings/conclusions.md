@@ -227,12 +227,12 @@ conclusions"; "the expert judged flawed."
 | # | Qualification | Likely direction | Could it change "fair"? |
 |---|---|---|---|
 | 8 | Criteria, weights, bar and C4's absolute standard set after results (safeguard 1) | Unknown | Possibly: a framework set in advance might land elsewhere |
-| 1 | Contested yardstick (Tier 2) | Understates models on strict calls; unknown where models agreed with a mistaken label (never reviewed) | Unlikely under the bar: C4 rests on lenient misses, and the expert upheld most lenient failures (27 of 43) |
+| 1 | Contested yardstick (Tier 2) | Understates models on strict calls; unknown where models agreed with a mistaken label (never reviewed) | Unlikely under the bar: C4 rests on lenient misses, and the expert upheld most lenient failures (27 of 43); against the triangulated reference C4 stays fair (36% / 48% missed; E29) |
 | 5 | Scope: six frontier models, one prompt, UN conclusion passages; producing evaluative reasoning and rationale quality not assessed (Tier 2) | Unknown | Not for what was tested; limits generalization. If rationales were rated, C5 could lower the verdict (poor on a very important criterion), not raise it (the bar caps at fair) |
 | 7 | C5 insufficient evidence; persuasion check likely after the poster | Unknown | See #5 |
 | 2 | One calibration set | Few-shot effects specific to that set | Unlikely: verdict is fair in both conditions |
 | 3 | Length: only human comparator is the expert, who is also the yardstick | Unknown | Unlikely: affects C3 only |
-| 4 | Judgment-absent classification (E25) by one coder | Unknown | Unlikely: models missed other flaws at similar rates |
+| 4 | Judgment-absent classification (E25) by one coder; the third reviewer judged 12 of the 48 judgment-absent passages sound (E29) | Unknown | Unlikely: models missed other flaws at similar rates, and C4 stays fair without those 12 |
 | 6 | Human comparison rests on two raters and 38 short passages | Unknown | Unlikely: C1 would need to fall to poor |
 
 ### Evidence rubric (scaffold agreed 2026-11-13)
