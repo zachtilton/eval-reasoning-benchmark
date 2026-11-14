@@ -1327,6 +1327,65 @@ def judgment_absent_rates(maj: pd.DataFrame, reasons: pd.DataFrame, n_gold: int)
             "pooled_miss_rate": pooled, "judgment_absent_miss_rate_by_model": by_model}
 
 
+def missed_flaw_ci(maj: pd.DataFrame, ref: pd.DataFrame, reasons: pd.DataFrame,
+                   n: int = BOOTSTRAP_RESAMPLES, seed: int = FINDINGS_SEED) -> dict:
+    """
+    Fragment-clustered bootstrap CIs for missed-flaw rates.
+
+    Exploratory (E28, 2026-11-13): requested for the evidence-rubric rating of
+    "passed about half of the conclusions the expert judged flawed, most often
+    ones that never reach a judgment". Outputs fixed before running: the
+    missed-flaw rate (share of model x condition majority labels calling a
+    not-sound passage sound) against the locked and triangulated references,
+    pooled and per condition; the judgment-absent miss rate per condition and
+    pooled; and the judgment-absent share of misses against the locked gold.
+
+    Args:
+        maj: Output of majority_labels.
+        ref: Output of reference_labels.
+        reasons: Not-sound reason classification.
+
+    Returns:
+        Dict of point estimates (percent) with 95% percentile CIs.
+    """
+    m = maj[maj["pred"] != "none"].merge(ref, on="fragment_id")
+    m = m.merge(reasons[["fragment_id", "not_sound_reason"]], on="fragment_id", how="left")
+    m["miss"] = (m["pred"] == "sound").astype(float)
+    frags = np.sort(m["fragment_id"].unique())
+    pos = {f: i for i, f in enumerate(frags)}
+    m["i"] = m["fragment_id"].map(pos)
+    k = len(frags)
+
+    def sums(mask: pd.Series) -> tuple[np.ndarray, np.ndarray]:
+        d = m[mask]
+        return (np.bincount(d["i"], weights=d["miss"], minlength=k), np.bincount(d["i"], minlength=k).astype(float))
+
+    conds = {"pooled": pd.Series(True, index=m.index), **{c: m["prompt_condition"] == c for c in PROMPT_ORDER}}
+    stats: dict[str, tuple] = {}
+    for col in ("locked", "triangulated"):
+        for c, cm in conds.items():
+            stats[f"missed_flaws_{col}|{c}"] = ("rate", sums(cm & (m[col] == "not_sound")))
+    ja = m["not_sound_reason"] == "judgment_absent"
+    for c, cm in conds.items():
+        stats[f"judgment_absent_miss|{c}"] = ("rate", sums(cm & ja))
+        miss_all = sums(cm & (m["locked"] == "not_sound"))[0]
+        miss_ja = sums(cm & ja)[0]
+        stats[f"judgment_absent_share_of_misses|{c}"] = ("rate", (miss_ja, miss_all))
+
+    rng = np.random.default_rng(seed)
+    w = np.array([np.bincount(rng.integers(0, k, k), minlength=k) for _ in range(n)], dtype=float)
+    out: dict = {}
+    for key, (_, (num, den)) in stats.items():
+        name, c = key.split("|")
+        point = num.sum() / den.sum()
+        boot = (w @ num) / (w @ den)
+        out.setdefault(name, {})[c] = {"pct": _pct(point),
+                                       "ci95": [_pct(np.percentile(boot, 2.5)), _pct(np.percentile(boot, 97.5))]}
+    out["n_fragments"] = int(k)
+    out["resamples"] = n
+    return out
+
+
 def unanimity(outcomes: pd.DataFrame) -> dict:
     """
     Run-to-run consistency: share of combinations with 3/3 agreement.
@@ -1634,6 +1693,7 @@ def run_findings_metrics(output_path: Path = FINDINGS_METRICS_PATH) -> dict:
         "reading_corrections": reading_corrections(db, maj, gold),
         "pooling_bootstrap": pooling_bootstrap(maj, gold),
         "judgment_absent_rates": judgment_absent_rates(maj, pd.read_csv(GOLD_NOT_SOUND_REASONS_PATH), len(gold)),
+        "missed_flaw_ci": missed_flaw_ci(maj, ref, pd.read_csv(GOLD_NOT_SOUND_REASONS_PATH)),
         "shared_failures": shared_failures(outcomes, gold, resolved, frags),
         "challenge_cases": challenge_case_summary(outcomes, rows),
         "contested_review": {

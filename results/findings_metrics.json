@@ -1714,6 +1714,102 @@
       "kimi_k3|zero_shot": 60.4
     }
   },
+  "missed_flaw_ci": {
+    "missed_flaws_locked": {
+      "pooled": {
+        "pct": 55.8,
+        "ci95": [
+          47.7,
+          64.1
+        ]
+      },
+      "zero_shot": {
+        "pct": 50.0,
+        "ci95": [
+          41.6,
+          58.6
+        ]
+      },
+      "few_shot": {
+        "pct": 61.6,
+        "ci95": [
+          53.3,
+          70.1
+        ]
+      }
+    },
+    "missed_flaws_triangulated": {
+      "pooled": {
+        "pct": 40.1,
+        "ci95": [
+          32.4,
+          48.0
+        ]
+      },
+      "zero_shot": {
+        "pct": 32.2,
+        "ci95": [
+          25.0,
+          40.0
+        ]
+      },
+      "few_shot": {
+        "pct": 48.1,
+        "ci95": [
+          39.4,
+          57.0
+        ]
+      }
+    },
+    "judgment_absent_miss": {
+      "pooled": {
+        "pct": 55.7,
+        "ci95": [
+          45.0,
+          66.4
+        ]
+      },
+      "zero_shot": {
+        "pct": 50.7,
+        "ci95": [
+          39.9,
+          61.5
+        ]
+      },
+      "few_shot": {
+        "pct": 60.6,
+        "ci95": [
+          49.6,
+          71.5
+        ]
+      }
+    },
+    "judgment_absent_share_of_misses": {
+      "pooled": {
+        "pct": 64.6,
+        "ci95": [
+          51.5,
+          77.1
+        ]
+      },
+      "zero_shot": {
+        "pct": 65.8,
+        "ci95": [
+          52.2,
+          78.4
+        ]
+      },
+      "few_shot": {
+        "pct": 63.7,
+        "ci95": [
+          50.8,
+          76.1
+        ]
+      }
+    },
+    "n_fragments": 150,
+    "resamples": 5000
+  },
   "shared_failures": {
     "per_model_any_condition_fail_rate_pct": {
       "gpt_5_6_sol": 50.7,
