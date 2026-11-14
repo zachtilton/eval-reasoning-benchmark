@@ -138,15 +138,32 @@ for the overall verdict to exceed fair.
    resolved by switching C4 to an absolute standard (safeguard 1). The
    verdict is unchanged: fair, both ways.
 
+### Bridging warrant for C4 as a bar (agreed 2026-11-13; logical, not empirical)
+
+> Judging evaluative reasoning requires knowing what evaluative reasoning
+> must contain. A judgment is its required endpoint, so a judge who cannot
+> tell whether one is present does not yet know what they are judging.
+
+- Holds for the narrow claim (models *as judges* of evaluative
+  conclusions). Fails for the broad claim (evaluative reasoning in general):
+  producing a judgment and recognizing an absent one are separable abilities
+  (author's counterexample, 2026-11-13). Hence the scoped Domain 5 wording.
+- Passage-level premise (author): a conclusion that never reaches a judgment
+  cannot count as evaluative reasoning.
+
 ### Domain 5 — Judgment (recorded 2026-11-13)
 
-> **Frontier LLMs' evaluative reasoning rated fair (poor–fair–good–excellent):
+> **Frontier LLMs' evaluative reasoning, as judges of evaluative conclusions,
+> rated fair (poor–fair–good–excellent):
 > they matched trained evaluators' modest agreement with an expert, but
 > passed about half of the conclusions the expert judged flawed, most often
 > ones that never reach a judgment. Their errors leaned lenient, more so on
 > longer passages and with calibration examples.**
 
 Drafting notes:
+- "As judges of evaluative conclusions" (added 2026-11-13): the study tested
+  models judging others' conclusions, not producing their own. Whether they
+  can produce sound evaluative reasoning was not tested (Domain 6).
 - "Frontier": three closed and three open models chosen as the top of each
   family at the time of the run (rq4.md sample note).
 - "Modest": the two trained evaluators agreed with the expert 55–61% of
@@ -163,7 +180,6 @@ Drafting notes:
 
 ### Remaining steps
 - Domain 2–3: link each criterion to its findings and warrants.
-- Bridging warrant for C4 as a bar (open; under discussion 2026-11-13).
 - Domain 6: qualifications (start: re-review / contested yardstick;
   one calibration set; one human comparator for length; single-coder
   judgment-absent classification behind E25; frontier-model scope; RC1–RC2

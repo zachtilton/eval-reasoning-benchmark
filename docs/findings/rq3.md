@@ -35,6 +35,14 @@ for the interpretive relating.
   developing.
 - **Argumentative capability** (1.3): a model rationale's capacity to move a
   qualified human's judgment; promise and risk.
+- **Production–recognition gap** (title-level conclusion, 2026-11-13):
+  models reached a verdict with a rationale on every passage (when asked),
+  yet missed about half of the passages that never reach one (E25). Producing
+  a judgment and recognizing an absent one may be separable abilities.
+  Candidate links: jagged frontier (Dell'Acqua et al., 2023; citation to
+  verify; the authors' evidence concerns human–AI task performance, so
+  applying it to a model's capability profile is an extension by analogy)
+  and generation–evaluation gaps in LLM research (to locate and verify).
 - **First-pass leniency in humans and models** (1.3, RQ3 roadmap): the
   expert's reconsiderations moved the gold stricter twice; untested.
 
