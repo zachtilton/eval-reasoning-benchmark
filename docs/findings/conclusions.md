@@ -188,9 +188,40 @@ Drafting notes:
   them (one calibration set; one human comparator for length) go to
   Domain 6.
 
+### Domain 6 — Qualifications (tiers agreed 2026-11-13)
+
+All qualifications are reported (transparency); the tiers set where each
+appears and how much space it gets. Ranking also feeds the evidence-rubric
+rating. Author's top two: #1 and #5 (scope, for its clause on reasoning not
+assessed); Claude's: #1 and #8. Agreed: #1 and "reasoning rated from
+verdicts" in Tier 2; #8 heads Tier 3.
+
+**Tier 1 — in the judgment itself:** "frontier"; "as judges of evaluative
+conclusions"; "the expert judged flawed."
+
+**Tier 2 — beside the verdict (poster; immediately after the judgment):**
+1. **The yardstick is one expert's contested standard.** Re-review
+   overturned most of the primary model's apparent failures, so the
+   benchmark likely understates the models by an unknown amount.
+2. **Reasoning quality was rated from verdicts, not rationales.** Whether
+   models reasoned well, as distinct from concluding correctly, was not
+   systematically assessed; the only rationale analysis was the review of
+   GPT's failures, which produced qualification 1.
+
+**Tier 3 — full list (Domain 6 / limitations chapter), with likely bearing on
+"fair":**
+
+| # | Qualification | Likely direction | Could it change "fair"? |
+|---|---|---|---|
+| 8 | Criteria, weights, bar and C4's absolute standard set after results (safeguard 1) | Unknown | Possibly: a framework set in advance might land elsewhere |
+| 1 | Contested yardstick (Tier 2) | Understates models on strict calls; unknown where models agreed with a mistaken label (never reviewed) | Unlikely under the bar: C4 rests on lenient misses, and the expert upheld most lenient failures (27 of 43) |
+| 5 | Scope: six frontier models, one prompt, UN conclusion passages; producing evaluative reasoning and rationale quality not assessed (Tier 2) | Unknown | Not for what was tested; limits generalization. If rationales were rated, C5 could lower the verdict (poor on a very important criterion), not raise it (the bar caps at fair) |
+| 7 | C5 insufficient evidence; persuasion check likely after the poster | Unknown | See #5 |
+| 2 | One calibration set | Few-shot effects specific to that set | Unlikely: verdict is fair in both conditions |
+| 3 | Length: only human comparator is the expert, who is also the yardstick | Unknown | Unlikely: affects C3 only |
+| 4 | Judgment-absent classification (E25) by one coder | Unknown | Unlikely: models missed other flaws at similar rates |
+| 6 | Human comparison rests on two raters and 38 short passages | Unknown | Unlikely: C1 would need to fall to poor |
+
 ### Remaining steps
 - Domain 2–3: link each criterion to its findings and warrants.
-- Domain 6: qualifications (start: re-review / contested yardstick;
-  one calibration set; one human comparator for length; single-coder
-  judgment-absent classification behind E25; frontier-model scope; RC1–RC2
-  bases); evidence-rubric rating.
+- Domain 6: write up Tier 3 entries in prose; evidence-rubric rating.
