@@ -287,6 +287,60 @@ def human_comparison(maj: pd.DataFrame, gold: pd.DataFrame, retest: pd.DataFrame
     return out
 
 
+def human_comparison_ci(maj: pd.DataFrame, gold: pd.DataFrame, retest: pd.DataFrame,
+                        n: int = BOOTSTRAP_RESAMPLES, seed: int = FINDINGS_SEED) -> dict:
+    """
+    Bootstrap CIs for the model-vs-rater agreement gap on the shared RC2 fragments.
+
+    Exploratory (E27, 2026-11-13): requested for the evidence-rubric rating of
+    "matched trained evaluators' agreement". Resamples fragments with
+    replacement; model agreement is the mean over model x condition
+    combinations, as in human_comparison.
+
+    Args:
+        maj: Output of majority_labels.
+        gold: Locked gold.
+        retest: RC2 blind retest.
+
+    Returns:
+        Dict keyed by reference ("pass2", "locked") with point estimates and
+        95% percentile CIs (percentage points) for models minus rater 1,
+        rater 2 and the rater mean.
+    """
+    h = retest.rename(columns={"report_id": "fragment_id"}).copy()
+    for c in ("rater_1", "rater_2", "anchor3_pass2"):
+        h[c] = _norm_label(h[c])
+    shared = h.merge(gold[["fragment_id", "expert_classification"]].rename(columns={"expert_classification": "locked"}), on="fragment_id")
+    shared = shared.sort_values("fragment_id").reset_index(drop=True)
+    m = maj[(maj["pred"] != "none") & maj["fragment_id"].isin(shared["fragment_id"])]
+    preds = m.pivot_table(index="fragment_id", columns=["model_family", "prompt_condition"], values="pred", aggfunc="first")
+    preds = preds.reindex(shared["fragment_id"])
+    rng = np.random.default_rng(seed)
+    idx = [rng.integers(0, len(shared), len(shared)) for _ in range(n)]
+    out = {}
+    for name, col in (("pass2", "anchor3_pass2"), ("locked", "locked")):
+        ref = shared[col].to_numpy()
+        model_hit = np.where(preds.isna().to_numpy(), np.nan, (preds.to_numpy() == ref[:, None]).astype(float))
+        r1 = (shared["rater_1"].to_numpy() == ref).astype(float)
+        r2 = (shared["rater_2"].to_numpy() == ref).astype(float)
+
+        def gaps(rows: np.ndarray) -> np.ndarray:
+            mod = np.nanmean(np.nanmean(model_hit[rows], axis=0))
+            a, b = r1[rows].mean(), r2[rows].mean()
+            return 100 * np.array([mod - a, mod - b, mod - (a + b) / 2])
+
+        point = gaps(np.arange(len(shared)))
+        boot = np.array([gaps(i) for i in idx])
+        out[name] = {
+            label: {"diff_pp": round(float(point[k]), 1),
+                    "ci95": [round(float(np.percentile(boot[:, k], 2.5)), 1), round(float(np.percentile(boot[:, k], 97.5)), 1)]}
+            for k, label in enumerate(("models_minus_rater_1", "models_minus_rater_2", "models_minus_rater_mean"))
+        }
+    out["n_fragments"] = int(len(shared))
+    out["resamples"] = n
+    return out
+
+
 def leniency_vs_human_raters(maj: pd.DataFrame, gold: pd.DataFrame, retest: pd.DataFrame) -> dict:
     """
     Is model leniency relative to the anchor, or to human judges generally?
@@ -1562,6 +1616,7 @@ def run_findings_metrics(output_path: Path = FINDINGS_METRICS_PATH) -> dict:
         "model_model_kappa": model_model_kappa(maj),
         "error_asymmetry": error_asymmetry_by_reference(maj, ref),
         "human_comparison": human_comparison(maj, gold, retest),
+        "human_comparison_ci": human_comparison_ci(maj, gold, retest),
         "leniency_vs_human_raters": leniency_vs_human_raters(maj, gold, retest),
         "unanimity_corrected": unanimity(outcomes),
         "unanimity_by_condition_pct": {c: _pct(outcomes.loc[outcomes["prompt_condition"] == c, "unanimous_agreement"].astype(bool).mean()) for c in PROMPT_ORDER},

@@ -230,11 +230,18 @@ is no more certain than its weakest part).
 
 | Dimension | Strong | Moderate | Weak |
 |---|---|---|---|
-| Transparency & precision | Pre-specified or fully logged; uncertainty quantified (CIs) | Logged but partly post hoc; uncertainty partly quantified | Post hoc and unquantified |
+| Transparency & precision | Pre-specified, or post hoc and logged and disclosed; uncertainty quantified, with precision adequate to the claim as worded | Logged and disclosed, but uncertainty unquantified, or quantified but too imprecise for the claim as worded | Not logged or disclosed; uncertainty unquantified |
 | Reference independence | Holds against several independent references (locked gold, blind pass 2, RC2 raters, third reviewer) | Holds against more than one, but they share a source | Rests on a single reference |
 | Consistency across checks | Same direction across models, conditions, analyses | Mostly consistent, exceptions explained | Mixed or contradicted |
 | Rival explanations | Plausible rivals tested and ruled out | Some tested; others named, untested | Unaddressed |
 | Scope | Within what was sampled | Slight stretch, signalled in wording | Beyond the sample |
+
+Descriptor revision (author, 2026-11-13): post hoc work is not
+discredited outright. The proposal claims an abductive approach, and lines
+of inquiry emerge as results are interpreted, so logged and disclosed post
+hoc work can rate strong. Precision is judged against the claim's wording:
+"matched" needs a tight interval around zero, while "no detectable
+difference" tolerates a wide one.
 
 - **Evidence** (limited / medium / robust) ← transparency & precision,
   rival explanations, scope.
