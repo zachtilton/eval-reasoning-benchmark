@@ -1614,6 +1614,18 @@
           "text": "142 of 156 verdict changes between conditions (91%) went from not sound to sound; strong for four models (p < .0001), modest for GLM (p = .04), absent for Gemini.",
           "values": [
             {
+              "metric": "findings_metrics.json:few_shot_shift.pooled.n_paired",
+              "value": 897
+            },
+            {
+              "metric": "findings_metrics.json:few_shot_shift.pooled.n_changed",
+              "value": 156
+            },
+            {
+              "metric": "findings_metrics.json:few_shot_shift.pooled.changed_pct",
+              "value": 17.4
+            },
+            {
               "metric": "findings_metrics.json:few_shot_shift.pooled.flips_to_sound",
               "value": 142
             },

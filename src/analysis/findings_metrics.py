@@ -440,9 +440,11 @@ def few_shot_shift(maj: pd.DataFrame, gold: pd.DataFrame) -> dict:
     fs = [v["few_shot_calls_sound_pct"] for v in per.values()]
     tot_s = sum(v["flips_to_sound"] for v in per.values())
     tot_n = sum(v["flips_to_not_sound"] for v in per.values())
+    n_paired = sum(v["n_paired"] for v in per.values())
     return {
         "by_model": per,
-        "pooled": {"flips_to_sound": tot_s, "flips_to_not_sound": tot_n, "share_of_flips_to_sound_pct": _pct(tot_s / (tot_s + tot_n)),
+        "pooled": {"n_paired": n_paired, "n_changed": tot_s + tot_n,
+                   "changed_pct": _pct((tot_s + tot_n) / n_paired), "flips_to_sound": tot_s, "flips_to_not_sound": tot_n, "share_of_flips_to_sound_pct": _pct(tot_s / (tot_s + tot_n)),
                    "flips_fixed_error": sum(v["flips_fixed_error"] for v in per.values()),
                    "flips_created_error": sum(v["flips_created_error"] for v in per.values())},
         "models_more_lenient_with_examples": [m for m, v in per.items() if v["shift_pp"] > 0],

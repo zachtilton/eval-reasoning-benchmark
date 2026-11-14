@@ -663,6 +663,9 @@
       }
     },
     "pooled": {
+      "n_paired": 897,
+      "n_changed": 156,
+      "changed_pct": 17.4,
       "flips_to_sound": 142,
       "flips_to_not_sound": 14,
       "share_of_flips_to_sound_pct": 91.0,

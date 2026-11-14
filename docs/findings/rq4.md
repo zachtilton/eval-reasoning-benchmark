@@ -93,9 +93,11 @@ by the observation that warrants it. Structure agreed 2026-11-13.
 
 #### Expanded
 
-> Adding two calibration examples (one sound, one not sound) changed models'
-> verdicts on the same passages almost entirely in one direction: 142 of 156
-> changes (91%) went from "not sound" to "sound." The shift was strong for
+> Adding two calibration examples (one sound, one not sound) changed 156 of
+> models' 897 paired verdicts on the same passages (17%; six models × 150
+> passages, less 3 without a majority verdict), and almost entirely in one
+> direction: 142 of the 156 changes (91%) went from "not sound" to
+> "sound." The shift was strong for
 > four models (GPT, DeepSeek, Kimi, Claude; p < .0001), modest for GLM
 > (p = .04), and absent for Gemini. GPT, for example, changed 40 verdicts, all
 > toward "sound." Accuracy barely moved because the changes cut both ways: of
