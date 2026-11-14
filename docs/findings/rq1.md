@@ -228,16 +228,31 @@ are what test it.
 
 The 43.3% figure belongs here only, not alongside the 60% / 74% estimates.
 
-## Poster
+## Poster (revised 2026-11-14)
 
-> **LLMs agreed with the expert 60% of the time, barely better than a coin
-> flip but about as often as trained human evaluators did, and they erred
-> toward leniency.**
+> **LLMs agreed with the expert 60% of the time, modestly above chance. On a
+> shared subset they agreed about as often as two trained evaluators did,
+> within a wide margin. Overall, their errors leaned lenient.**
 >
-> *Robustness: 60% (95% CI 54–66%); 74% when contested labels are
-> independently resolved. Expert's own test-retest: 85% (κ = 0.70). Roughly 1 in 4
-> fragments split qualified evaluators. Human comparison: two independent
-> evaluators, n = 38.*
+> *Against the expert's locked ratings: 60% (95% CI 54–66%; κ ≈ 0.20), or
+> 74% when contested labels are independently resolved. Expert's own
+> test-retest: 85% (κ = 0.70, n = 20). Roughly 1 in 4 passages split
+> qualified evaluators. Human comparison (38 short passages, against the
+> expert's blind second-pass ratings): models 57.5%, trained evaluators
+> 55–61% (κ 0.13–0.19); gap −0.4 points (95% CI −15 to 15). Leniency: models
+> missed flaws 2.3 times as often as they wrongly rejected sound reasoning
+> (CI 1.7–3.1), pooled; no lean on short passages without examples.*
+
+Revision notes (consistency check against Domain 5 and E27): the human
+comparison is scoped to its own subset and reference (pass 2), with its
+margin; "overall" keeps the pooled leniency decision while the supporting
+line gives the exception (ratio 0.87 on short zero-shot passages); "barely
+better than a coin flip" replaced by "modestly above chance" (Finding 1.1);
+κ paired with each agreement figure except models on the 38 (not computed).
+Omitted for space: against the locked gold on the 38, models trailed the
+evaluators by 11.6 points (CI −25.9 to 3.8). Previous version: "LLMs agreed
+with the expert 60% of the time, barely better than a coin flip but about as
+often as trained human evaluators did, and they erred toward leniency."
 
 ---
 
