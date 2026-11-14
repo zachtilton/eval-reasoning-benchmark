@@ -280,7 +280,7 @@ with length and calibration examples. Rating order: b, c, d, then a.
 | (b) agreed with an expert about as often as two trained evaluators did, within a wide margin (author, 2026-11-13) | Strong | Moderate | Moderate | Moderate | Strong | Medium | Medium | **Medium** |
 | (c) passed about half of the conclusions the expert judged flawed, most often ones that never reach a judgment (author and Claude independently, 2026-11-13) | Strong | Moderate | Moderate | Moderate | Strong | Medium | Medium | **Medium** |
 | (d) leaned lenient on longer passages and with the calibration examples (author, 2026-11-13) | Strong | Moderate | Moderate | Moderate | Strong | Medium | Medium | **Medium** |
-| (a) fair overall | *pending* | | | | | | | |
+| (a) fair overall (author, 2026-11-14) | Moderate | Moderate | Strong | Moderate | Moderate | Medium | Medium | **Medium** |
 
 Notes on (b): precision strong after E27 CI and rewording from "matched";
 reference independence moderate because the locked-gold comparison is
@@ -311,6 +311,22 @@ length rival named with indirect evidence against it, lexicon test parked;
 recency and gold error ruled out for examples; stimulus sampling named,
 untested); scope strong after "the calibration examples" and the rewording
 from an unconditional lean.
+
+Notes on (a), the synthesis (dimensions applied to the grading framework,
+not the data): transparency strong but precision limited, since with
+examples C4's judgment-absent miss rate (61%, CI 50–72%) spans fair
+("about half") and poor ("most"), and C4 is the bar (moderate); reference
+independence moderate, since C4 stays fair against the triangulated
+reference (36% zero-shot, 48% few-shot; E29), where 12 of 48 judgment-absent
+labels become sound; consistency strong (author; bar and weighted versions
+and both conditions land at fair, though the bar did not bind); rivals
+moderate (weighting tested; other criteria, unrated C5 and C4's original
+relative standard named, untested; C5 could lower the grade); scope
+moderate (author kept: "evaluative reasoning" is graded from verdicts, and
+rationale quality was not assessed; Tier 2 #2). Medium equals the ceiling
+set by parts (b)–(d).
+
+**Overall: every part rated medium confidence (2026-11-14).**
 
 ### Remaining steps
 - Domain 2–3: link each criterion to its findings and warrants.

@@ -1784,6 +1784,29 @@
         ]
       }
     },
+    "judgment_absent_miss_triangulated": {
+      "pooled": {
+        "pct": 42.2,
+        "ci95": [
+          31.2,
+          53.4
+        ]
+      },
+      "zero_shot": {
+        "pct": 36.1,
+        "ci95": [
+          25.9,
+          46.9
+        ]
+      },
+      "few_shot": {
+        "pct": 48.4,
+        "ci95": [
+          35.9,
+          60.2
+        ]
+      }
+    },
     "judgment_absent_share_of_misses": {
       "pooled": {
         "pct": 64.6,

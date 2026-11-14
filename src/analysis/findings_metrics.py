@@ -1368,6 +1368,8 @@ def missed_flaw_ci(maj: pd.DataFrame, ref: pd.DataFrame, reasons: pd.DataFrame,
     ja = m["not_sound_reason"] == "judgment_absent"
     for c, cm in conds.items():
         stats[f"judgment_absent_miss|{c}"] = ("rate", sums(cm & ja))
+        # E29 (2026-11-14): judgment-absent passages still not sound under the triangulated reference
+        stats[f"judgment_absent_miss_triangulated|{c}"] = ("rate", sums(cm & ja & (m["triangulated"] == "not_sound")))
         miss_all = sums(cm & (m["locked"] == "not_sound"))[0]
         miss_ja = sums(cm & ja)[0]
         stats[f"judgment_absent_share_of_misses|{c}"] = ("rate", (miss_ja, miss_all))
