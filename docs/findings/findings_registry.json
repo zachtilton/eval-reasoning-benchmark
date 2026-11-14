@@ -379,6 +379,28 @@
             {
               "metric": "findings_metrics.json:human_comparison.all_40.rater_2_vs_anchor_original.agreement_pct",
               "value": 52.5
+            },
+            {
+              "metric": "findings_metrics.json:human_comparison_ci.pass2.models_minus_rater_mean.diff_pp",
+              "value": -0.4
+            },
+            {
+              "metric": "findings_metrics.json:human_comparison_ci.pass2.models_minus_rater_mean.ci95",
+              "value": [
+                -15.4,
+                14.8
+              ]
+            },
+            {
+              "metric": "findings_metrics.json:human_comparison_ci.locked.models_minus_rater_mean.diff_pp",
+              "value": -11.6
+            },
+            {
+              "metric": "findings_metrics.json:human_comparison_ci.locked.models_minus_rater_mean.ci95",
+              "value": [
+                -25.9,
+                3.8
+              ]
             }
           ],
           "procedure": "Percent agreement on the 38 RC2 fragments in the benchmark: each human rater vs the anchor's pass-2 (independent) ratings; each model x condition majority label vs the same, averaged.",
@@ -387,7 +409,7 @@
             "scored_db_corrected",
             "gold_locked"
           ],
-          "code": "src/analysis/findings_metrics.py:human_comparison",
+          "code": "src/analysis/findings_metrics.py:human_comparison; src/analysis/findings_metrics.py:human_comparison_ci",
           "caveat": "Small (n = 38) and not held out; against the locked gold, humans agree at 68-74% but that comparison is partly circular (gold revised toward the raters)."
         },
         {

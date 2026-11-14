@@ -62,7 +62,11 @@ right but only 44% of gold-not-sound passages. All three runs agreed in
 On the 38 RC2 passages in the benchmark, models agreed with the expert's
 blind pass-2 ratings 57.5% of the time on average (42–76% across model ×
 condition); the two trained evaluators agreed with the same ratings 60.5%
-and 55.3% of the time. The evaluators agreed with each other on 75% of
+and 55.3% of the time. The gap between the models and the evaluators'
+average was −0.4 points, but its 95% CI ran from −15.4 to 14.8 (E27): no
+detectable difference, though too imprecise to show a match. Against the
+locked gold the models trailed the evaluators by 11.6 points (CI −25.9 to
+3.8). The evaluators agreed with each other on 75% of
 passages (κ = 0.50), disagreeing on one in four, and disagreed with the
 expert's pass-2 ratings on about two in five (about one in two against the
 expert's original ratings). Against the locked gold the evaluators agreed

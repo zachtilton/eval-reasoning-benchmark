@@ -165,7 +165,8 @@ for the overall verdict to exceed fair.
 
 > **Frontier LLMs' evaluative reasoning, as judges of evaluative conclusions,
 > rated fair (poor–fair–good–excellent):
-> they matched trained evaluators' modest agreement with an expert, but
+> they agreed with an expert about as often as two trained evaluators did,
+> within a wide margin, a modest bar, but
 > passed about half of the conclusions the expert judged flawed, most often
 > ones that never reach a judgment. Their errors leaned lenient, more so on
 > longer passages and with calibration examples.**
@@ -178,6 +179,11 @@ Drafting notes:
   family at the time of the run (rq4.md sample note).
 - "Modest": the two trained evaluators agreed with the expert 55–61% of
   the time (C1).
+- "About as often as two trained evaluators did, within a wide margin"
+  (revised 2026-11-13 from "matched trained evaluators'"): models minus
+  rater average −0.4 pp, 95% CI −15.4 to 14.8 (E27). No detectable
+  difference, but too imprecise to show a match. Plain wording here; the
+  exact wording is in Finding 1.2.
 - "About half … most often ones that never reach a judgment": models missed
   flaws generally at similar rates (E25); missing judgments are the most
   common flaw (48 of 74 not-sound passages), so most misses fall there.
