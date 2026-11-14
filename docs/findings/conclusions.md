@@ -222,6 +222,32 @@ conclusions"; "the expert judged flawed."
 | 4 | Judgment-absent classification (E25) by one coder | Unknown | Unlikely: models missed other flaws at similar rates |
 | 6 | Human comparison rests on two raters and 38 short passages | Unknown | Unlikely: C1 would need to fall to poor |
 
+### Evidence rubric (scaffold agreed 2026-11-13)
+
+Summary layer: IPCC evidence × agreement → confidence (Mastrandrea et al.,
+2010). Rate the claim as worded, **by parts** (a claim made of several parts
+is no more certain than its weakest part).
+
+| Dimension | Strong | Moderate | Weak |
+|---|---|---|---|
+| Transparency & precision | Pre-specified or fully logged; uncertainty quantified (CIs) | Logged but partly post hoc; uncertainty partly quantified | Post hoc and unquantified |
+| Reference independence | Holds against several independent references (locked gold, blind pass 2, RC2 raters, third reviewer) | Holds against more than one, but they share a source | Rests on a single reference |
+| Consistency across checks | Same direction across models, conditions, analyses | Mostly consistent, exceptions explained | Mixed or contradicted |
+| Rival explanations | Plausible rivals tested and ruled out | Some tested; others named, untested | Unaddressed |
+| Scope | Within what was sampled | Slight stretch, signalled in wording | Beyond the sample |
+
+- **Evidence** (limited / medium / robust) ← transparency & precision,
+  rival explanations, scope.
+- **Agreement** (low / medium / high) ← reference independence,
+  consistency across checks.
+- **Confidence = the lower of the two** (conservative; IPCC leaves the
+  mapping partly to judgment).
+
+Parts of the Domain 5 judgment: (a) fair overall; (b) matched trained
+evaluators' agreement; (c) passed about half of conclusions the expert
+judged flawed, mostly judgment-absent ones; (d) leaned lenient, more so
+with length and calibration examples. Ratings: *(author, pending)*.
+
 ### Remaining steps
 - Domain 2–3: link each criterion to its findings and warrants.
 - Domain 6: write up Tier 3 entries in prose; evidence-rubric rating.
