@@ -85,7 +85,9 @@ order its four anchors. Always show the scale beside a rating.
    2005: a minimum that must be cleared regardless of performance
    elsewhere) and with no bars (a weighted profile). If the two agree, the
    post hoc choice matters little; if they differ, the dependence is
-   visible.
+   visible. *Updated 2026-11-13:* the bar version is now **primary**,
+   because the bridging warrant gives it a logical basis; the weighted
+   version is reported as a sensitivity check.
 
 ### Domain 4 — Synthesis (first pass 2026-11-13; post hoc)
 
@@ -113,13 +115,21 @@ yet → poor; partly can → fair; can do → good; excellent added).
 **Bar version:** C4 must reach good ("mostly reliable", its third level)
 for the overall verdict to exceed fair.
 
-**Results:**
-- Weighted: **fair (partial).** "Good" fails on C4 (fair) and C3 (poor). "Cannot yet" is not triggered: neither C4 nor C1 falls short.
-  This holds in both conditions; examples move C2 to "falls short" and
-  C4 toward it, but neither crosses a threshold in the rule.
-- Bar: **fair** (capped by C4 at fair).
-- The two agree, so by safeguard 3 the post hoc emphasis on C4 does not
-  drive the verdict.
+**Results (bar primary, weighted as sensitivity check; order set 2026-11-13):**
+- **Primary, with C4 as a bar: fair.** C4 is at fair, so the verdict cannot
+  exceed fair, whatever the other criteria show. Rationale: the bridging
+  warrant makes detecting an absent judgment a requirement for judging
+  evaluative reasoning, not one weighted consideration among others.
+- **Sensitivity check, weighted: fair.** "Good" fails on C4 (fair) and C3
+  (poor). "Poor" is not triggered, since neither C4 nor C1 is poor. This
+  holds in both conditions: examples move C2 to poor and C4 toward it,
+  but neither crosses a threshold in the rule.
+- The two agree, but the agreement is partly structural (open issue 2):
+  the bar did not bind, because the weighted rule already landed at fair.
+  The bar would bind if models reached good on the other criteria while
+  C4 stayed at fair; weighting could then rate them good, but the bar
+  would hold them at fair. It also states the threshold for "good":
+  models must reliably catch missing judgments.
 
 **Open issues (author to decide):**
 1. *C5 "insufficient evidence" is not a level the rule names.* As applied
