@@ -70,10 +70,12 @@ Per-RQ conclusions (rated); study-level limitations (ethics, representation,
 design); poster (one headline + one figure per RQ; new figures for RQ1/RQ2).
 
 ## Post-poster extensions
-- Automated coding of all six models' rationales against Appendix D codes,
-  validated against the author's GPT coding (κ); tests whether models miss
-  the same flaws for the same reasons. Risks: LLM-codes-LLM circularity,
-  small single-coder validation set.
+- ~~Automated coding of all six models' rationales against Appendix D codes~~
+  **Not planned (author, 2026-11-13); footnote only.** Estimate: 2–4 working
+  days, mostly author validation (κ against 28 coded GPT failures); risks of
+  LLM-codes-LLM circularity and a small single-coder validation set. The
+  author judges that a more holistic benchmark design would serve future
+  work better. Consequence: C5 stays at "insufficient evidence."
 - Alternative calibration sets for the few-shot condition (stimulus
   sampling), ~$50 per variant across all models.
 
