@@ -235,6 +235,44 @@ conclusions"; "the expert judged flawed."
 | 4 | Judgment-absent classification (E25) by one coder; the third reviewer judged 12 of the 48 judgment-absent passages sound (E29) | Unknown | Unlikely: models missed other flaws at similar rates, and C4 stays fair without those 12 |
 | 6 | Human comparison rests on two raters and 38 short passages | Unknown | Unlikely: C1 would need to fall to poor |
 
+**Reading the direction column (added 2026-11-14).**
+
+*What direction means.* Direction is which way a qualification likely
+skews the results: if it were fixed (more calibration sets, more raters),
+would the models look better or worse than reported? A known direction lets
+a reader adjust; an unknown one does not. Only #1 is partly known: on the
+side that was re-reviewed (models' stricter calls), the expert mostly sided
+with the models, so the benchmark undercounts their correct verdicts there.
+
+*Why most are unknown.* Three reasons, often overlapping:
+1. **The alternative was never tested** (#8, #5, #7, #2): no framework set
+   in advance, no other models, prompts or corpora, no rated rationales, no
+   other calibration set; there is nothing to predict a direction from.
+2. **The qualification cuts both ways by nature** (#6, #4): small samples
+   widen uncertainty in both directions (#6's ±15 points); a single coder can
+   over- or under-classify judgment-absent passages.
+3. **The data fit opposite explanations** (#3): models' rising "sound" calls
+   on longer passages could mean length sways the models (they look worse) or
+   that longer passages really are sounder than the expert's labels say (they
+   look better). The parked lexicon test would separate the two.
+
+*Implications.*
+- **Unknown direction is not unknown size.** Most entries are rated unlikely
+  to change "fair": the grade moves only if C4 crosses a level, and the checks
+  so far (E29) show it staying at fair on the friendlier reference.
+- **The grade can be bounded, not corrected.** With no known bias to adjust
+  for, the response is the evidence rubric's: medium confidence, not high.
+- **For the grade itself, the risks may lean downward** (interpretation, not
+  tested; author to check). Under the bar the grade rises only if C4 reaches
+  good, which E29 suggests it does not; several unknowns could lower it (C5
+  if rated, #5/#7; C4's few-shot miss rate against the locked gold, whose
+  interval reaches "poor"). If so, "fair" reads more as an upper estimate
+  than a midpoint.
+- **Each unknown names the study that would resolve it:** other calibration
+  sets (#2), a second coder (#4), a blind persuasion check (#7), the lexicon
+  test (#3), more human raters on longer passages (#6). Tier 3 doubles as an
+  outline for future research.
+
 ### Evidence rubric (scaffold agreed 2026-11-13)
 
 Summary layer: IPCC evidence × agreement → confidence (Mastrandrea et al.,
