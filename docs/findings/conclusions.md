@@ -168,8 +168,8 @@ for the overall verdict to exceed fair.
 > they agreed with an expert about as often as two trained evaluators did,
 > within a wide margin, a modest bar, but
 > passed about half of the conclusions the expert judged flawed, most often
-> ones that never reach a judgment. Their errors leaned lenient, more so on
-> longer passages and with calibration examples.**
+> ones that never reach a judgment. Their errors leaned lenient on longer
+> passages and with calibration examples.**
 
 Drafting notes:
 - "As judges of evaluative conclusions" (added 2026-11-13): the study tested
@@ -188,6 +188,11 @@ Drafting notes:
   flaws generally at similar rates (E25); missing judgments are the most
   common flaw (48 of 74 not-sound passages), so most misses fall there.
   About half without examples, about 6 in 10 with them.
+- "Leaned lenient on longer passages and with calibration examples"
+  (revised 2026-11-13 from "leaned lenient, more so on longer passages and
+  with calibration examples"): on short passages without examples there
+  was no lean (ratio 0.87, CI 0.56–1.28), so the overall lean holds only
+  when pooled.
 - Left to the findings: balanced errors on short passages without examples
   (C2 good); the split by condition.
 - Moderators (length, calibration examples) are content; the limits on
