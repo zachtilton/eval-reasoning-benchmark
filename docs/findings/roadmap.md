@@ -40,6 +40,7 @@ z-test); check whether leniency aligns with family; conclusion and rating.
   (rows / 76 fragments / 28 coded), layers (disposition and/or codes),
   κ basis (primary code, domain). Earliest date: ~2026-11-18 (last coding
   session 2026-11-11).
+  **Likely after the poster (author, 2026-11-13).**
   **Persuasion check (added 2026-11-12):** re-rate a sample blind to BOTH the
   gold label and GPT's rationale, including GPT passes as well as failures.
   Tests (a) stability of codes/dispositions, (b) whether re-review
@@ -60,7 +61,7 @@ rule; add bootstrap CIs for the leniency ratios.
 - [x] Headline review done (2026-11-13): implication-first headlines applied to 1.1, 1.2, 2.1–2.4 (1.3 already); former 2.5 renumbered 2.4, then 2.3 when the former 2.3 moved to RQ4 as 4.2.
 
 ## Conclusions (in progress, `conclusions.md`)
-- [x] C-a blind spot for missing judgments (Nunns)
+- [x] C-a missing judgments common, passed often (Nunns; "blind spot" dropped 2026-11-13)
 - [ ] Title-level conclusion via the six checklist domains: Domain 1 criteria/standards proposed (post hoc; safeguards adopted: disclose provenance, ground in theory, report verdict with and without C4 as a bar); Domains 2–6 to do
 - [ ] Cluster conclusions (models as judges incl. bias vs noise / correctability — P1 found leniency shiftable, accuracy gain suggestive only; the yardstick; practitioner choices)
 - [ ] Verify Dell'Acqua et al. (2023) jagged frontier, Kahneman et al. (2021) Noise, Turpin et al. (2023), Loru et al. (2025)

@@ -7,15 +7,18 @@ evidence rubric (pending).
 
 ## Candidate conclusions
 
-### C-a. Models carry a blind spot for a flaw common in real reports (kept 2026-11-12)
+### C-a. Models would pass a flaw common in real reports (kept 2026-11-12; reframed 2026-11-13)
 Models missed about half of the passages that never reach an evaluative
 judgment (2.3), and such passages made up about a third of the sampled UN
 conclusions (Finding 0.1). Empirical studies of evaluation reports find that omitted or
 unsupported evaluative conclusions are common (Nunns et al., 2015; see also
-Hurteau et al., 2009 on absent synthesis). Models used for meta-evaluation
-would therefore carry a blind spot for one of the flaws a meta-evaluator
-most needs to catch, which calls for added caution in using them for that
-purpose.
+Hurteau et al., 2009 on absent synthesis). Models missed these passages
+about as often as other flaws (E25); the consequence comes from how common
+the flaw is, not from special susceptibility to it. Models used for
+meta-evaluation would therefore pass many conclusions that never reach a
+judgment, one of the flaws a meta-evaluator most needs to catch, which
+calls for added caution in using them for that purpose. ("Blind spot"
+wording dropped 2026-11-13: it implied special susceptibility.)
 
 - Grounds: 2.3 (F5.1, primary model; generalized via 2.1); 2.2 (leniency).
 - Grounds (added 2026-11-13): corpus Finding 0.1 — about a third of sampled
@@ -48,7 +51,12 @@ that held up on re-review (1.3).
 
 ### Domain 1 — Criteria and standards (proposed 2026-11-13; post hoc)
 
-Levels: Falls short / Partial / Human parity / Expert level.
+Levels (combined labels, adopted 2026-11-13): **Poor** (falls short) /
+**Fair** (partial) / **Good** (human parity) / **Excellent** (expert level).
+The same four-level scale is used for each criterion and for the overall
+verdict. Each level keeps its descriptor as its anchor (e.g., good = within
+the human raters' range); for C4, whose standard is absolute, the levels
+order its four anchors. Always show the scale beside a rating.
 
 | Criterion | Standards (anchors) | Evidence lands | Provenance |
 |---|---|---|---|
@@ -92,23 +100,24 @@ levels and the synthesis rule were set by the author before they were applied.
 | C2 Error structure | Important | Parity zero-shot; falls short few-shot |
 | C3 Robustness to irrelevant features | Important | Falls short |
 
-**Rule (weighted, no bar):**
-- *Can do (human parity)*: parity on all extremely and very important
-  criteria, and no "falls short" on any important one.
-- *Partly can*: very important criteria at parity or partial; extremely
-  important at least partial.
-- *Cannot yet*: extremely important falls short, or very important fall short.
+**Rule (weighted, no bar):** overall levels relabeled 2026-11-13 (cannot
+yet → poor; partly can → fair; can do → good; excellent added).
+- *Excellent (expert level)*: expert level on all extremely and very
+  important criteria, and at least good on every important one.
+- *Good (human parity)*: good or better on all extremely and very important
+  criteria, and none poor on any important one.
+- *Fair (partial)*: very important criteria at good or fair; extremely
+  important at least fair.
+- *Poor (falls short)*: extremely important poor, or very important poor.
 
-**Bar version:** C4 must reach "mostly reliable" (its third level; human
-parity before the switch to an absolute standard) for the overall verdict
-to exceed "partly can."
+**Bar version:** C4 must reach good ("mostly reliable", its third level)
+for the overall verdict to exceed fair.
 
 **Results:**
-- Weighted: **partly can.** "Can do" fails on C4 (partial) and C3 (falls
-  short). "Cannot yet" is not triggered: neither C4 nor C1 falls short.
+- Weighted: **fair (partial).** "Good" fails on C4 (fair) and C3 (poor). "Cannot yet" is not triggered: neither C4 nor C1 falls short.
   This holds in both conditions; examples move C2 to "falls short" and
   C4 toward it, but neither crosses a threshold in the rule.
-- Bar: **partly can** (capped by C4 at partial).
+- Bar: **fair** (capped by C4 at fair).
 - The two agree, so by safeguard 3 the post hoc emphasis on C4 does not
   drive the verdict.
 
@@ -118,18 +127,44 @@ to exceed "partly can."
    alternative is to count the promising signal as partial. The verdict
    is the same either way.
 2. *The agreement is partly structural.* As worded, the bar can only cap the
-   verdict at "partly can," and the weighted rule already landed there.
+   verdict at fair, and the weighted rule already landed there.
    A bar that could have changed the result would be a hurdle: if C4 falls
-   short, the verdict is "cannot yet." C4 clears that hurdle in both
+   short, the verdict is poor. C4 clears that hurdle in both
    conditions, but only narrowly with examples (61% missed).
 3. *The bar's validity (author's concern, 2026-11-13):* no single
    checkpoint is sufficient on its own. A bar claims only that C4 is
    necessary: a conclusion without a judgment cannot count as evaluative
    reasoning (author, 2026-11-13). The missing rater benchmark was
    resolved by switching C4 to an absolute standard (safeguard 1). The
-   verdict is unchanged: partly can, both ways.
+   verdict is unchanged: fair, both ways.
+
+### Domain 5 — Judgment (recorded 2026-11-13)
+
+> **Frontier LLMs' evaluative reasoning rated fair (poor–fair–good–excellent):
+> they matched trained evaluators' modest agreement with an expert, but
+> passed about half of the conclusions the expert judged flawed, most often
+> ones that never reach a judgment. Their errors leaned lenient, more so on
+> longer passages and with calibration examples.**
+
+Drafting notes:
+- "Frontier": three closed and three open models chosen as the top of each
+  family at the time of the run (rq4.md sample note).
+- "Modest": the two trained evaluators agreed with the expert 55–61% of
+  the time (C1).
+- "About half … most often ones that never reach a judgment": models missed
+  flaws generally at similar rates (E25); missing judgments are the most
+  common flaw (48 of 74 not-sound passages), so most misses fall there.
+  About half without examples, about 6 in 10 with them.
+- Left to the findings: balanced errors on short passages without examples
+  (C2 good); the split by condition.
+- Moderators (length, calibration examples) are content; the limits on
+  them (one calibration set; one human comparator for length) go to
+  Domain 6.
 
 ### Remaining steps
 - Domain 2–3: link each criterion to its findings and warrants.
-- Domain 5: explicit judgment — to what extent.
-- Domain 6: qualifications; evidence-rubric rating.
+- Bridging warrant for C4 as a bar (open; under discussion 2026-11-13).
+- Domain 6: qualifications (start: re-review / contested yardstick;
+  one calibration set; one human comparator for length; single-coder
+  judgment-absent classification behind E25; frontier-model scope; RC1–RC2
+  bases); evidence-rubric rating.
