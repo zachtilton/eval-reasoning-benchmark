@@ -95,6 +95,34 @@ the consideration is visible; not pursued.
 > patterns also match known biases of LLMs used as judges, such as favoring
 > longer text.
 
+## Poster answer (2026-11-15; to revisit after the poster)
+
+> **Models stumbled at the step that separates evaluation from description,
+> turning evidence about performance into a judgment of its merit. Most of
+> the flaws they missed were passages that described without judging, a gap
+> a third of the UN reports themselves showed.**
+
+Notes:
+- Replaces the provisional answer above for poster purposes. The author
+  judged the provisional answer underwhelming: it is mainly a claim about
+  the coding tool's comprehensiveness, then restates the main conclusion,
+  and the three unsupported construct-validity predictions need more space
+  than the poster has.
+- This is a mapping claim (where failures sit in evaluation theory), not a
+  mechanism claim. "Separates evaluation from description": Scriven's logic
+  of evaluation. "Most of the flaws they missed": E28 (64.6% of misses, CI
+  51.5–77.1; all six models). "A third of the UN reports": corpus Finding
+  0.1 (48 of 150 passages); Nunns et al. citable in the full text.
+- Overlaps with the RQ2 poster block (the third; "most of the misses"). If
+  space is tight, keep the first sentence only.
+- Mechanism conjectures (evaluative veneer, description–evaluation gap as
+  mechanism, production–recognition gap) go to the discussion as pared-down
+  bullets, not the poster (author, 2026-11-15). The production side is thin:
+  models gave verdicts because the prompt required one; rationale quality
+  was not assessed (Tier 2). E25 (other flaws missed nearly as often) cuts
+  against a veneer-specific account; the length trend supports it more
+  directly.
+
 ## Space for the author's interpretation
 
 *(to be written)*
