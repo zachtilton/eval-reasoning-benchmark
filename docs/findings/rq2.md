@@ -347,6 +347,35 @@ failures remain the coded detail.
 
 ---
 
+## Poster (agreed 2026-11-14)
+
+> **In addition to leaning lenient on longer passages and with the
+> calibration examples, models made most of their misses on conclusions that
+> never reach a judgment. About a third of passages discussed performance
+> without saying how good it was, and models passed about half of them.**
+>
+> *Missing judgments: 48 of 150 passages (32%), and 65% of models' missed
+> flaws (95% CI 52–77). Models called them sound 51% of the time without
+> examples and 61% with them (pooled 56%, CI 45–66). They missed other flaws
+> nearly as often (42% / 55%, 14 passages), so these misses are the most
+> common because the flaw is common, not because it is uniquely hard.
+> Leniency (missed flaws ÷ wrongly rejected): without examples, 0.87 on short
+> passages (no lean) and 2.3 on long ones; with the calibration examples,
+> 2.6 to 5.4. One coder classified passages as lacking a judgment; a third
+> reviewer judged 12 of those 48 sound.*
+
+Notes: leniency, length and calibration examples are given as a lead clause
+because the Domain 5 judgment (likely the poster's lead) carries them; the
+block's focus is missing judgments. The lead clause follows Domain 5's
+wording (no lean on short passages without examples). "Most of their misses"
+(rather than "most often missed") avoids implying a uniquely hard flaw (E25);
+share of misses from E28 (64.6%, CI 51.5–77.1), miss rate from E28
+(55.7%, CI 45.0–66.4). "Evaluative veneer" left out as a conjecture and a
+candidate for the RQ3 slot. Sources: Finding 2.2 (ratios), 2.3 and E25
+(prevalence, miss rates), E29 (12 of 48).
+
+---
+
 ## Still to discuss
 
 - GPT close-up: disposition (28/76 confirmed), failure-code profile
