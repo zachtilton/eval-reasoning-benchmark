@@ -211,3 +211,24 @@ the shift. Source: `config/prompts/few_shot_template.txt`.
 Supporting findings: 4.1 (family), 4.2 (calibration examples) and 4.3
 (the crossing), with 2.2 (leniency amplified by examples). "Somewhat" reflects three models per family; "calibration
 examples" rather than "prompting" reflects the single calibration set.
+
+## Poster (agreed 2026-11-14)
+
+> **Model family mattered little, but calibration examples did, in a way
+> accuracy scores hide: the study's two examples shifted verdicts toward
+> "sound" without reliably improving accuracy, in closed and open models
+> alike.**
+>
+> *Family: accuracy 60.9% closed vs 58.9% open (p = .39); open models called
+> 6–8 points more passages sound (exploratory; three models per family).
+> Calibration examples: changed 156 of 897 paired verdicts, 142 (91%) toward
+> "sound"; accuracy 58.6% → 61.2% (p = .067); leniency ratio 1.5 → 3.8. One
+> calibration set tested.*
+
+Notes: calibration examples lead because family is mostly a null result on
+three models per family (4.1; leniency difference exploratory, E21), while
+the examples are RQ4's strongest and most actionable finding (4.2). The
+angle ("accuracy scores hide") differs from the Domain 5 judgment and the
+RQ2 lead clause, which say only that errors leaned lenient with the
+examples. "Closed and open alike" from 4.3 (13 vs 15 points toward "sound";
+accuracy improved in neither).
