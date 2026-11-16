@@ -526,9 +526,13 @@ def make_human_comparison_chart(data: dict, output_dir: Path = POSTER_FIGURES_DI
     lo, hi = min(data["raters"].values()), max(data["raters"].values())
     fig, ax = plt.subplots(figsize=(7.2, 6.0))
     n_rows = len(models)
-    ax.add_patch(Rectangle((lo, -0.7), hi - lo, n_rows + 0.9, fc=POSTER_ACCENT_PALE, ec="none", zorder=0))
-    ax.text((lo + hi) / 2, n_rows + 0.35, f"Trained evaluators\n{lo:.0f}–{hi:.0f}%", ha="center",
-            va="bottom", fontsize=11.5, fontweight="bold", color=POSTER_LABEL_COLOR)
+    ax.add_patch(Rectangle((lo, -1.5), hi - lo, n_rows + 1.1, fc=POSTER_ACCENT_PALE, ec="none", zorder=0))
+    ax.text((lo + hi) / 2, -0.95, f"Trained\nevaluators\n{lo:.0f}–{hi:.0f}%", ha="center",
+            va="center", fontsize=10.5, fontweight="bold", color=POSTER_LABEL_COLOR, linespacing=1.1)
+    mean = sum(r["pct"] for r in data["rows"]) / len(data["rows"])
+    ax.plot([mean, mean], [-0.4, n_rows - 0.45], color=POSTER_LABEL_COLOR, ls=(0, (2, 2)), lw=1.4, zorder=1)
+    ax.text(mean, n_rows - 0.4, f"Model average {mean:.0f}%", ha="center", va="bottom", fontsize=10.5,
+            color=POSTER_LABEL_COLOR)
     for i, m in enumerate(models[::-1]):
         z, f = by[(m, "zero_shot")], by.get((m, "few_shot"))
         ax.plot([z, f], [i, i], color="0.75", lw=1.5, zorder=1)
@@ -537,7 +541,10 @@ def make_human_comparison_chart(data: dict, output_dir: Path = POSTER_FIGURES_DI
     ax.set_yticks(range(n_rows), [MODEL_DISPLAY_NAMES[m] for m in models[::-1]])
     ax.tick_params(axis="y", length=0)
     ax.set_xlim(35, 85)
-    ax.set_ylim(-0.8, n_rows + 1.3)
+    ax.set_ylim(-1.55, n_rows + 0.1)
+    ax.set_title("On average, models agreed with the expert about as often\n"
+                 "as trained evaluators did, but individual models varied widely",
+                 fontsize=13.5, pad=12)
     ax.set_xlabel(f"% agreement with the expert's blind ratings ({data['n']} short conclusions)")
     handles = [Line2D([], [], marker="o", ls="", ms=10, mfc="white", mec=POSTER_ACCENT_DARK, mew=2,
                       label="Without examples"),
