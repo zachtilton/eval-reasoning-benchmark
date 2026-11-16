@@ -162,41 +162,36 @@ def make_calibration_slope_chart(data: dict, output_dir: Path = POSTER_FIGURES_D
 
 def load_missed_judgment_data(metrics_path: Path = FINDINGS_METRICS_PATH) -> dict:
     """
-    Collect models' miss rates on flawed passages by flaw type and condition.
+    Collect the share of no-judgment conclusions among flawed conclusions and among misses.
 
-    Miss rate = share of model x passage units (majority verdicts) called
-    "sound" among passages the expert judged not sound, by the author's
-    classification of the expert's reasons (E25). Buried-judgment and
-    stale-rationale passages (6 each) are left out as boundary categories.
+    Corpus share: judgment-absent passages / all passages the expert judged
+    not sound (author's classification of the expert's reasons, E25).
+    Miss share: judgment-absent units / all missed units (model x passage
+    majority verdicts called "sound" on not-sound passages), pooled across
+    conditions, with its fragment-clustered bootstrap CI (E28).
 
     Args:
         metrics_path: findings_metrics.json.
 
     Returns:
-        Dict with miss rates, passage counts and the share of misses.
+        Dict with counts, corpus share and miss share (pct and CI).
     """
     m = json.loads(metrics_path.read_text())
-    ja = m["judgment_absent_rates"]
-    rates = ja["pooled_miss_rate"]
+    counts = m["judgment_absent_rates"]["counts"]
+    n_flawed = sum(counts.values())
+    share = m["missed_flaw_ci"]["judgment_absent_share_of_misses"]["pooled"]
     return {
-        "conditions": ["zero_shot", "few_shot"],
-        "groups": {
-            "judgment_absent": {
-                "n": ja["counts"]["judgment_absent"],
-                "rates": [rates[c]["judgment_absent"]["miss_rate_pct"] for c in ("zero_shot", "few_shot")],
-            },
-            "other_flaw": {
-                "n": ja["counts"]["other_flaw"],
-                "rates": [rates[c]["other_flaw"]["miss_rate_pct"] for c in ("zero_shot", "few_shot")],
-            },
-        },
-        "share_of_misses": m["missed_flaw_ci"]["judgment_absent_share_of_misses"]["pooled"],
+        "n_flawed": n_flawed,
+        "n_judgment_absent": counts["judgment_absent"],
+        "corpus_pct": 100 * counts["judgment_absent"] / n_flawed,
+        "miss_pct": share["pct"],
+        "miss_ci": share["ci95"],
     }
 
 
 def make_missed_judgment_chart(data: dict, output_dir: Path = POSTER_FIGURES_DIR) -> list[Path]:
     """
-    Draw grouped bars of miss rates by flaw type and condition (PNG and PDF).
+    Draw two stacked bars: no-judgment share of flawed conclusions vs of models' misses.
 
     Args:
         data: Output of load_missed_judgment_data.
@@ -209,33 +204,31 @@ def make_missed_judgment_chart(data: dict, output_dir: Path = POSTER_FIGURES_DIR
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
 
-    plt.rcParams.update({
-        "font.size": 13,
-        "axes.spines.top": False,
-        "axes.spines.right": False,
-        "pdf.fonttype": 42,
-    })
+    plt.rcParams.update({"font.size": 13, "pdf.fonttype": 42})
     output_dir.mkdir(parents=True, exist_ok=True)
-    g = data["groups"]
-    groups = [("judgment_absent", "No judgment"), ("other_flaw", "Other flaws")]
-    conditions = [("Without examples", POSTER_ACCENT_PALE), ("With examples", POSTER_ACCENT)]
-    width = 0.36
-    fig, ax = plt.subplots(figsize=(6.8, 5.4))
-    for j, (cond_label, color) in enumerate(conditions):
-        xs = [k + (j - 0.5) * width for k in range(len(groups))]
-        vals = [g[key]["rates"][j] for key, _ in groups]
-        bars = ax.bar(xs, vals, width * 0.94, color=color, label=cond_label,
-                      edgecolor=POSTER_ACCENT_DARK, linewidth=1.2)
-        for b, v in zip(bars, vals):
-            ax.text(b.get_x() + b.get_width() / 2, v + 1.5, f"{v:.0f}%", ha="center", va="bottom",
-                    fontsize=12, fontweight="bold")
-    ax.set_xticks(range(len(groups)),
-                  [f"{name}\n({g[key]['n']} conclusions)" for key, name in groups])
-    ax.tick_params(axis="x", length=0)
-    ax.set_ylim(0, 100)
-    ax.set_ylabel('% called "sound" (all six models)')
-    ax.set_title("Flawed conclusions the models passed", fontsize=14, pad=10)
-    ax.legend(frameon=False, loc="upper right", fontsize=11)
+    rows = [
+        (f"Conclusions the expert\njudged flawed ({data['n_flawed']})", data["corpus_pct"]),
+        ("Flawed conclusions\nthe models passed", data["miss_pct"]),
+    ]
+    fig, ax = plt.subplots(figsize=(7.6, 3.6))
+    for i, (_, pct) in enumerate(rows):
+        y = len(rows) - 1 - i
+        ax.barh(y, pct, 0.62, color=POSTER_ACCENT, edgecolor=POSTER_ACCENT_DARK, lw=1.2)
+        ax.barh(y, 100 - pct, 0.62, left=pct, color=POSTER_ACCENT_PALE, edgecolor=POSTER_ACCENT_DARK, lw=1.2)
+        ax.text(pct / 2, y, f"{pct:.0f}%", ha="center", va="center", fontsize=15, fontweight="bold")
+        ax.text(pct + (100 - pct) / 2, y, f"{100 - pct:.0f}%", ha="center", va="center", fontsize=13,
+                color="0.3")
+    ax.set_yticks(range(len(rows)), [r[0] for r in rows][::-1], fontsize=12)
+    ax.set_xlim(0, 100)
+    ax.set_xticks([])
+    for side in ("top", "right", "bottom", "left"):
+        ax.spines[side].set_visible(False)
+    ax.tick_params(axis="y", length=0)
+    ax.text(0, len(rows) - 0.35, "No judgment", fontsize=12, fontweight="bold", va="bottom")
+    ax.text(100, len(rows) - 0.35, "Other flaws", fontsize=12, color="0.3", va="bottom", ha="right")
+    lo, hi = data["miss_ci"]
+    ax.text(0, -0.55, f"Models' share: all six models, both conditions (95% CI {lo:.0f}–{hi:.0f}%).",
+            fontsize=10, color="0.4", va="top")
     fig.tight_layout()
 
     paths = [output_dir / "missed_judgment.png", output_dir / "missed_judgment.pdf"]
