@@ -123,6 +123,23 @@ H2_TRIANGULATED_RESULTS_PATH = RESULTS_DIR / "H2_statistical_tests_triangulated.
 FINDINGS_METRICS_PATH = RESULTS_DIR / "findings_metrics.json"
 FINDINGS_REGISTRY_PATH = PROJECT_ROOT / "docs" / "findings" / "findings_registry.json"
 
+# ---------------------------------------------------------------------------
+# Poster figures (see poster_figures.py)
+# ---------------------------------------------------------------------------
+
+POSTER_FIGURES_DIR = FIGURES_DIR / "poster"
+
+MODEL_DISPLAY_NAMES: dict[str, str] = {
+    "gpt_5_6_sol":               "GPT 5.6 Sol",
+    "claude_opus_5":             "Claude Opus 5",
+    "gemini_3_pro_preview_high": "Gemini 3 Pro",
+    "deepseek_v4_pro":           "DeepSeek V4 Pro",
+    "kimi_k3":                   "Kimi K3",
+    "glm_5_2":                   "GLM 5.2",
+}
+
+FAMILY_COLORS: dict[str, str] = {"closed": "#1f4e9c", "open": "#d9822b"}
+
 FINDINGS_SEED: int = 42
 BOOTSTRAP_RESAMPLES: int = 5000
 KAPPA_BOOTSTRAP_RESAMPLES: int = 2000
