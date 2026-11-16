@@ -238,6 +238,114 @@ def make_missed_judgment_chart(data: dict, output_dir: Path = POSTER_FIGURES_DIR
     return paths
 
 
+def load_unit_chart_data() -> dict:
+    """
+    Count, for each flawed conclusion, how many of the six models passed it (E30).
+
+    A model "passes" a conclusion when its majority label (>= 2 of 3 runs) is
+    "sound" on a conclusion the expert's locked label rates not sound. No
+    majority label counts as not passed.
+
+    Returns:
+        Dict: for each condition, lists of per-conclusion pass counts (0-6) for
+        no-judgment conclusions and for all other flawed conclusions, sorted
+        high to low; plus summary counts.
+    """
+    import pandas as pd
+
+    from src.analysis.config import GOLD_NOT_SOUND_REASONS_PATH, SCORED_DB_CORRECTED_PATH
+    from src.analysis.findings_metrics import majority_labels
+
+    maj = majority_labels(pd.read_csv(SCORED_DB_CORRECTED_PATH))
+    reasons = pd.read_csv(GOLD_NOT_SOUND_REASONS_PATH)[["fragment_id", "not_sound_reason"]]
+    reasons["group"] = (reasons["not_sound_reason"] == "judgment_absent").map(
+        {True: "no_judgment", False: "other"})
+    passed = (maj.assign(passed=(maj["pred"] == "sound").astype(int))
+                 .groupby(["prompt_condition", "fragment_id"])["passed"].sum().reset_index())
+    out = {"conditions": {}}
+    for cond in ("zero_shot", "few_shot"):
+        d = reasons.merge(passed[passed["prompt_condition"] == cond], on="fragment_id", how="left")
+        d["passed"] = d["passed"].fillna(0).astype(int)
+        groups = {}
+        for g in ("no_judgment", "other"):
+            vals = sorted(d.loc[d["group"] == g, "passed"].tolist(), reverse=True)
+            groups[g] = {
+                "counts": vals,
+                "n": len(vals),
+                "distribution": {k: vals.count(k) for k in range(7)},
+                "majority_passed": sum(v >= 4 for v in vals),
+            }
+        out["conditions"][cond] = groups
+    return out
+
+
+def make_unit_chart(data: dict, output_dir: Path = POSTER_FIGURES_DIR) -> list[Path]:
+    """
+    Draw one square per flawed conclusion, shaded by how many models passed it.
+
+    Two panels (without / with examples); in each, no-judgment conclusions and
+    other flawed conclusions are separate blocks, sorted from most to fewest
+    models passing.
+
+    Args:
+        data: Output of load_unit_chart_data.
+        output_dir: Destination directory.
+
+    Returns:
+        Paths written.
+    """
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+    from matplotlib.colors import LinearSegmentedColormap, to_hex
+    from matplotlib.patches import Rectangle
+
+    plt.rcParams.update({"font.size": 12, "pdf.fonttype": 42})
+    output_dir.mkdir(parents=True, exist_ok=True)
+    ramp = LinearSegmentedColormap.from_list("accent", [POSTER_ACCENT_PALE, POSTER_ACCENT, POSTER_ACCENT_DARK])
+    shade = {0: "#e6e6e6", **{k: to_hex(ramp((k - 1) / 5)) for k in range(1, 7)}}
+    cols, size, gap = 8, 1.0, 0.18
+    titles = {"zero_shot": "Without examples", "few_shot": "With examples"}
+    labels = {"no_judgment": "No judgment", "other": "Other flaws"}
+
+    fig, axes = plt.subplots(1, 2, figsize=(9.2, 6.6))
+    for ax, cond in zip(axes, ("zero_shot", "few_shot")):
+        y0 = 0.0
+        for g in ("no_judgment", "other"):
+            vals = data["conditions"][cond][g]["counts"]
+            n_rows = -(-len(vals) // cols)
+            ax.text(0, y0 + 0.35, f"{labels[g]} ({len(vals)})", fontsize=12, fontweight="bold", va="bottom")
+            for i, v in enumerate(vals):
+                r, c = divmod(i, cols)
+                ax.add_patch(Rectangle((c * (size + gap), y0 - (r + 1) * (size + gap)), size, size,
+                                       fc=shade[v], ec="white", lw=0.5))
+            y0 -= n_rows * (size + gap) + 1.6
+        ax.set_xlim(-0.1, cols * (size + gap))
+        ax.set_ylim(y0 + 0.6, 1.6)
+        ax.set_aspect("equal")
+        ax.axis("off")
+        ax.set_title(titles[cond], fontsize=14, pad=4)
+
+    # Legend: models that passed the conclusion
+    lax = fig.add_axes([0.2, 0.02, 0.6, 0.06])
+    lax.axis("off")
+    lax.set_xlim(0, 7)
+    lax.set_ylim(0, 1)
+    for k in range(7):
+        lax.add_patch(Rectangle((k + 0.1, 0.25), 0.8, 0.6, fc=shade[k], ec="white"))
+        lax.text(k + 0.5, 0.55, str(k), ha="center", va="center", fontsize=11,
+                 color="white" if k >= 5 else "black")
+    fig.text(0.5, 0.11, "Number of the six models that called it sound", ha="center", fontsize=11,
+             color="0.3")
+    fig.subplots_adjust(left=0.03, right=0.97, top=0.93, bottom=0.14, wspace=0.12)
+
+    paths = [output_dir / "unit_chart.png", output_dir / "unit_chart.pdf"]
+    fig.savefig(paths[0], dpi=FIGURE_DPI, bbox_inches="tight")
+    fig.savefig(paths[1], bbox_inches="tight")
+    plt.close(fig)
+    return paths
+
+
 # Domain 1 / Domain 4 synthesis as recorded in docs/findings/conclusions.md
 # (2026-11-13). Text, not computed: the ratings are the author's judgments.
 RUBRIC_ROWS: list[dict] = [
@@ -362,7 +470,8 @@ def run_poster_figures() -> list[Path]:
     """
     return (make_calibration_slope_chart(load_slope_data())
             + make_missed_judgment_chart(load_missed_judgment_data())
-            + make_rubric_table())
+            + make_rubric_table()
+            + make_unit_chart(load_unit_chart_data()))
 
 
 if __name__ == "__main__":
