@@ -254,15 +254,19 @@ RUBRIC_ROWS: list[dict] = [
     {"criterion": "Unswayed by irrelevant features", "importance": "Important",
      "rating": ["Poor"], "evidence": '"Sound" calls rose with length; the expert\'s did not'},
 ]
+# Gradations of the poster accent colour (#f2c503), light to dark.
 RUBRIC_LEVEL_COLORS: dict[str, str] = {
-    "Poor": "#d7e3f4", "Fair": "#9fbde3", "Good": "#4f7fc4", "Excellent": "#1f4e9c",
+    "Poor": "#fdf4c4", "Fair": "#f8df6e", "Good": "#f2c503", "Excellent": "#a88900",
 }
 
 
 def make_rubric_table(rows: list[dict] = RUBRIC_ROWS, overall: str = "Fair",
                       output_dir: Path = POSTER_FIGURES_DIR) -> list[Path]:
     """
-    Draw the synthesis rubric (criteria, importance, rating, evidence) as a figure.
+    Draw the synthesis rubric as a near-square figure for a narrow poster column.
+
+    Each row shows the criterion (importance beneath it), a rating chip and
+    wrapped evidence text.
 
     Args:
         rows: Criterion rows, most important first.
@@ -272,6 +276,8 @@ def make_rubric_table(rows: list[dict] = RUBRIC_ROWS, overall: str = "Fair",
     Returns:
         Paths written.
     """
+    import textwrap
+
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
@@ -279,53 +285,67 @@ def make_rubric_table(rows: list[dict] = RUBRIC_ROWS, overall: str = "Fair",
 
     plt.rcParams.update({"font.size": 12, "pdf.fonttype": 42})
     output_dir.mkdir(parents=True, exist_ok=True)
-    cols = {"criterion": 0.0, "importance": 0.33, "rating": 0.46, "evidence": 0.61}
-    row_h = 1.0
+    cols = {"criterion": 0.0, "rating": 0.40, "evidence": 0.64}
+    chip_w = 0.21
+    row_h = 1.25
     n = len(rows)
-    fig, ax = plt.subplots(figsize=(12.5, 0.62 * (n + 3.2)))
+    fig, ax = plt.subplots(figsize=(7.6, 7.6))
     ax.set_xlim(0, 1)
-    ax.set_ylim(-(n + 2.4) * row_h, 1.0)
+    ax.set_ylim(-(n + 3.3) * row_h, 0.6)
     ax.axis("off")
 
-    head_y = 0.2
-    for key, label in [("criterion", "Criterion"), ("importance", "Importance"),
-                       ("rating", "Rating"), ("evidence", "Evidence")]:
-        ax.text(cols[key], head_y, label, fontsize=12.5, fontweight="bold", va="center")
-    ax.plot([0, 1], [-0.35, -0.35], color="black", lw=1.2)
+    for key, label in [("criterion", "Criterion"), ("rating", "Rating"), ("evidence", "Evidence")]:
+        ax.text(cols[key], 0.1, label, fontsize=13, fontweight="bold", va="center")
+    ax.plot([0, 1], [-0.45, -0.45], color="black", lw=1.2)
 
-    def chip(x, y, level, w=0.135):
-        """Draw one rating chip at (x, y)."""
+    def chip(x, y, level, w=chip_w):
+        """Draw one rating chip centred vertically on y."""
         if level is None:
-            ax.add_patch(Rectangle((x, y - 0.3), w, 0.6, fc="white", ec="0.55", lw=1, ls="--"))
+            ax.add_patch(Rectangle((x, y - 0.33), w, 0.66, fc="white", ec="0.55", lw=1, ls="--"))
             ax.text(x + w / 2, y, "Not rated", ha="center", va="center", fontsize=11, color="0.4")
             return
-        fc = RUBRIC_LEVEL_COLORS[level]
-        tc = "white" if level in ("Good", "Excellent") else "black"
-        ax.add_patch(Rectangle((x, y - 0.3), w, 0.6, fc=fc, ec="none"))
-        ax.text(x + w / 2, y, level, ha="center", va="center", fontsize=11.5, color=tc, fontweight="bold")
+        ax.add_patch(Rectangle((x, y - 0.33), w, 0.66, fc=RUBRIC_LEVEL_COLORS[level], ec="none"))
+        ax.text(x + w / 2, y, level, ha="center", va="center", fontsize=12, fontweight="bold",
+                color="white" if level == "Excellent" else "black")
+
+    def wrap(text, width):
+        """Wrap text to a character width, keeping explicit line breaks out."""
+        return textwrap.fill(text.replace("\n", " "), width)
 
     for i, r in enumerate(rows):
         y = -(i + 1) * row_h
-        ax.text(cols["criterion"], y, r["criterion"], va="center", fontsize=12)
-        ax.text(cols["importance"], y, r["importance"], va="center", fontsize=12, color="0.25")
+        ax.text(cols["criterion"], y + 0.17, wrap(r["criterion"], 22), va="center", fontsize=12.5,
+                linespacing=1.1)
+        ax.text(cols["criterion"], y - 0.42, f"{r['importance']} important".replace("Important important", "Important"),
+                va="center", fontsize=10, color="0.45", style="italic")
         if len(r["rating"]) == 1:
             chip(cols["rating"], y, r["rating"][0])
         else:
-            chip(cols["rating"], y, r["rating"][0], w=0.065)
-            chip(cols["rating"] + 0.07, y, r["rating"][1], w=0.065)
-        ax.text(cols["evidence"], y, r["evidence"], va="center", fontsize=11, color="0.2")
+            half = (chip_w - 0.01) / 2
+            chip(cols["rating"], y, r["rating"][0], w=half)
+            chip(cols["rating"] + half + 0.01, y, r["rating"][1], w=half)
+        ax.text(cols["evidence"], y, wrap(r["evidence"], 26), va="center", fontsize=11, color="0.2",
+                linespacing=1.15)
         if i < n - 1:
-            ax.plot([0, 1], [y - 0.5, y - 0.5], color="0.85", lw=0.8)
+            ax.plot([0, 1], [y - 0.62, y - 0.62], color="0.85", lw=0.8)
 
-    y = -(n + 1) * row_h - 0.1
-    ax.plot([0, 1], [y + 0.5, y + 0.5], color="black", lw=1.2)
-    ax.text(cols["criterion"], y, "Overall verdict", va="center", fontsize=13, fontweight="bold")
+    y = -(n + 1) * row_h - 0.05
+    ax.plot([0, 1], [y + 0.62, y + 0.62], color="black", lw=1.2)
+    ax.text(cols["criterion"], y, "Overall verdict", va="center", fontsize=13.5, fontweight="bold")
     chip(cols["rating"], y, overall)
-    ax.text(cols["evidence"], y, "Capped at Fair until models reliably\ncatch missing judgments",
-            va="center", fontsize=11, color="0.2")
-    ax.text(0, y - 1.05, "Scale: Poor (falls short) · Fair (partial) · Good (human parity) · "
-            "Excellent (expert level). Split rating: without | with examples.",
-            fontsize=10, color="0.35", va="center")
+    ax.text(cols["evidence"], y, wrap("Capped at Fair until models reliably catch missing judgments", 26),
+            va="center", fontsize=11, color="0.2", linespacing=1.15)
+
+    ky = y - 1.15
+    ax.text(0, ky, "Scale:", fontsize=10, color="0.35", va="center")
+    key = [("Poor", "falls short"), ("Fair", "partial"), ("Good", "human parity"),
+           ("Excellent", "expert level")]
+    for j, (level, desc) in enumerate(key):
+        kx = 0.11 + (j % 2) * 0.40
+        kyj = ky - (j // 2) * 0.6
+        ax.add_patch(Rectangle((kx, kyj - 0.2), 0.035, 0.4, fc=RUBRIC_LEVEL_COLORS[level], ec="none"))
+        ax.text(kx + 0.05, kyj, f"{level} ({desc})", fontsize=10, color="0.35", va="center")
+    ax.text(0, ky - 1.3, "Split rating: without | with examples.", fontsize=10, color="0.35", va="center")
 
     fig.tight_layout()
     paths = [output_dir / "rubric_table.png", output_dir / "rubric_table.pdf"]
