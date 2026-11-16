@@ -408,6 +408,149 @@ def make_funnel_chart(unit: dict, n_total: int = 150, output_dir: Path = POSTER_
     return paths
 
 
+def make_length_chart(metrics_path: Path = FINDINGS_METRICS_PATH,
+                      output_dir: Path = POSTER_FIGURES_DIR) -> list[Path]:
+    """
+    Draw the share of conclusions called "sound" by passage length: models vs the expert.
+
+    Values from findings_metrics.json -> length_moderation (Finding 2.2):
+    models' share of majority verdicts "sound" per condition, and the
+    expert's share (100 - gold not-sound %).
+
+    Args:
+        metrics_path: findings_metrics.json.
+        output_dir: Destination directory.
+
+    Returns:
+        Paths written.
+    """
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+
+    lm = json.loads(metrics_path.read_text())["length_moderation"]["by_length"]
+    bins = ["1-3 paragraphs", "4-6 paragraphs", "7+ paragraphs"]
+    xlabels = [f"Short\n1–3 paragraphs", f"Medium\n4–6", f"Long\n7+"]
+    series = [
+        ("Models, with examples", [lm[b]["few_shot"]["models_call_sound_pct"] for b in bins],
+         POSTER_ACCENT_DARK, "-", "o"),
+        ("Models, without examples", [lm[b]["zero_shot"]["models_call_sound_pct"] for b in bins],
+         POSTER_ACCENT, "-", "o"),
+        ("Expert", [100 - lm[b]["gold_not_sound_pct"] for b in bins], "#404040", "--", "s"),
+    ]
+    plt.rcParams.update({"font.size": 13, "axes.spines.top": False, "axes.spines.right": False,
+                         "pdf.fonttype": 42})
+    output_dir.mkdir(parents=True, exist_ok=True)
+    fig, ax = plt.subplots(figsize=(7.2, 6.0))
+    x = list(range(len(bins)))
+    for label, ys, color, ls, mk in series:
+        ax.plot(x, ys, color=color, ls=ls, marker=mk, lw=3, ms=9)
+        below = label == "Expert"
+        for xi, yi in zip(x, ys):
+            if xi == 0 and label != "Models, with examples":
+                # Short bin: expert and zero-shot points nearly coincide; label to the left
+                ax.text(xi - 0.1, yi + (1.6 if below else -1.6), f"{yi:.0f}%", ha="right",
+                        va="center", fontsize=11, color=POSTER_LABEL_COLOR)
+                continue
+            ax.text(xi, yi - 2.4 if below else yi + 2.2, f"{yi:.0f}%", ha="center",
+                    va="top" if below else "bottom", fontsize=11, color=POSTER_LABEL_COLOR)
+        ax.text(x[-1] + 0.12, ys[-1], label, va="center", fontsize=12, color=POSTER_LABEL_COLOR,
+                fontweight="bold" if label.startswith("Models") else "normal")
+    ax.set_xticks(x, xlabels)
+    ax.tick_params(axis="x", length=0)
+    ax.set_xlim(-0.45, 3.35)
+    ax.set_ylim(30, 90)
+    ax.set_ylabel('% of conclusions called "sound"')
+    ax.set_title("Longer conclusions looked sounder to models, not to the expert", fontsize=13.5, pad=12)
+    fig.tight_layout()
+    paths = [output_dir / "length.png", output_dir / "length.pdf"]
+    fig.savefig(paths[0], dpi=FIGURE_DPI, bbox_inches="tight")
+    fig.savefig(paths[1], bbox_inches="tight")
+    plt.close(fig)
+    return paths
+
+
+def load_human_comparison_data() -> dict:
+    """
+    Agreement with the expert's blind second-pass ratings on the 38 shared RC2 passages.
+
+    Recomputes the per model x condition values behind
+    findings_metrics.json -> human_comparison.shared (mean 57.5%, range
+    42.1-76.3%) for display; raters from the same entry.
+
+    Returns:
+        Dict with per-model rows and rater agreement.
+    """
+    import pandas as pd
+
+    from src.analysis.config import RC2_BLIND_RETEST_PATH, SCORED_DB_CORRECTED_PATH
+    from src.analysis.findings_metrics import _norm_label, majority_labels
+    from src.scoring.accuracy import load_gold_standard
+
+    maj = majority_labels(pd.read_csv(SCORED_DB_CORRECTED_PATH))
+    h = pd.read_csv(RC2_BLIND_RETEST_PATH).rename(columns={"report_id": "fragment_id"})
+    for c in ("rater_1", "rater_2", "anchor3_pass2"):
+        h[c] = _norm_label(h[c])
+    gold = load_gold_standard()
+    h = h[h["fragment_id"].isin(gold["fragment_id"])]
+    x = h.merge(maj[maj["pred"] != "none"], on="fragment_id")
+    rows = []
+    for (m, c), d in x.groupby(["model_family", "prompt_condition"]):
+        rows.append({"model": m, "condition": c, "pct": 100 * (d["pred"] == d["anchor3_pass2"]).mean()})
+    raters = {r: 100 * (h[r] == h["anchor3_pass2"]).mean() for r in ("rater_1", "rater_2")}
+    return {"rows": rows, "raters": raters, "n": int(len(h))}
+
+
+def make_human_comparison_chart(data: dict, output_dir: Path = POSTER_FIGURES_DIR) -> list[Path]:
+    """
+    Draw a dot plot: each model's agreement with the expert vs two trained evaluators.
+
+    Args:
+        data: Output of load_human_comparison_data.
+        output_dir: Destination directory.
+
+    Returns:
+        Paths written.
+    """
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+    from matplotlib.lines import Line2D
+    from matplotlib.patches import Rectangle
+
+    plt.rcParams.update({"font.size": 13, "axes.spines.top": False, "axes.spines.right": False,
+                         "axes.spines.left": False, "pdf.fonttype": 42})
+    output_dir.mkdir(parents=True, exist_ok=True)
+    by = {(r["model"], r["condition"]): r["pct"] for r in data["rows"]}
+    models = [m for m in MODEL_ORDER if (m, "zero_shot") in by]
+    lo, hi = min(data["raters"].values()), max(data["raters"].values())
+    fig, ax = plt.subplots(figsize=(7.2, 6.0))
+    n_rows = len(models)
+    ax.add_patch(Rectangle((lo, -0.7), hi - lo, n_rows + 0.9, fc=POSTER_ACCENT_PALE, ec="none", zorder=0))
+    ax.text((lo + hi) / 2, n_rows + 0.35, f"Trained evaluators\n{lo:.0f}–{hi:.0f}%", ha="center",
+            va="bottom", fontsize=11.5, fontweight="bold", color=POSTER_LABEL_COLOR)
+    for i, m in enumerate(models[::-1]):
+        z, f = by[(m, "zero_shot")], by.get((m, "few_shot"))
+        ax.plot([z, f], [i, i], color="0.75", lw=1.5, zorder=1)
+        ax.plot(z, i, "o", ms=11, mfc="white", mec=POSTER_ACCENT_DARK, mew=2.2, zorder=2)
+        ax.plot(f, i, "o", ms=11, color=POSTER_ACCENT_DARK, zorder=2)
+    ax.set_yticks(range(n_rows), [MODEL_DISPLAY_NAMES[m] for m in models[::-1]])
+    ax.tick_params(axis="y", length=0)
+    ax.set_xlim(35, 85)
+    ax.set_ylim(-0.8, n_rows + 1.3)
+    ax.set_xlabel(f"% agreement with the expert's blind ratings ({data['n']} short conclusions)")
+    handles = [Line2D([], [], marker="o", ls="", ms=10, mfc="white", mec=POSTER_ACCENT_DARK, mew=2,
+                      label="Without examples"),
+               Line2D([], [], marker="o", ls="", ms=10, color=POSTER_ACCENT_DARK, label="With examples")]
+    ax.legend(handles=handles, loc="lower right", frameon=False, fontsize=11)
+    fig.tight_layout()
+    paths = [output_dir / "human_comparison.png", output_dir / "human_comparison.pdf"]
+    fig.savefig(paths[0], dpi=FIGURE_DPI, bbox_inches="tight")
+    fig.savefig(paths[1], bbox_inches="tight")
+    plt.close(fig)
+    return paths
+
+
 # Domain 1 / Domain 4 synthesis as recorded in docs/findings/conclusions.md
 # (2026-11-13). Text, not computed: the ratings are the author's judgments.
 RUBRIC_ROWS: list[dict] = [
@@ -534,7 +677,9 @@ def run_poster_figures() -> list[Path]:
             + make_missed_judgment_chart(load_missed_judgment_data())
             + make_rubric_table()
             + make_unit_chart(unit := load_unit_chart_data())
-            + make_funnel_chart(unit))
+            + make_funnel_chart(unit)
+            + make_length_chart()
+            + make_human_comparison_chart(load_human_comparison_data()))
 
 
 if __name__ == "__main__":
