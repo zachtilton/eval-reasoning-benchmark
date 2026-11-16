@@ -607,11 +607,9 @@ def make_human_comparison_chart_compact(data: dict, output_dir: Path = POSTER_FI
     lo, hi = min(data["raters"].values()), max(data["raters"].values())
     n_rows = len(models)
 
-    fig = plt.figure(figsize=(5.6, 7.4))
-    ax = fig.add_axes((0.40, 0.32, 0.56, 0.48))
-    fig.text(0.02, 0.985, "On average, models agreed with the\nexpert about as often as trained\n"
-             "evaluators did, but individual\nmodels varied widely",
-             fontsize=17, ha="left", va="top", linespacing=1.15)
+    fig = plt.figure(figsize=(5.6, 5.3))
+    ax = fig.add_axes((0.40, 0.30, 0.56, 0.62))
+    # Title omitted: the author sets it in the poster layout (2026-11-16).
 
     ax.add_patch(Rectangle((lo, -0.6), hi - lo, n_rows + 0.2, fc=POSTER_ACCENT_PALE, ec="none", zorder=0))
     mean = sum(r["pct"] for r in data["rows"]) / len(data["rows"])
@@ -630,12 +628,13 @@ def make_human_comparison_chart_compact(data: dict, output_dir: Path = POSTER_FI
     ax.set_ylim(-0.7, n_rows + 0.1)
     ax.set_xlabel(f"% agreement with the expert\n({data['n']} short conclusions)")
 
-    handles = [Line2D([], [], marker="o", ls="", ms=13, mfc="white", mec=POSTER_ACCENT_DARK, mew=2.4,
+    handles = [Line2D([], [], marker="o", ls="", ms=12, mfc="white", mec=POSTER_ACCENT_DARK, mew=2.4,
                       label="Without examples"),
-               Line2D([], [], marker="o", ls="", ms=13, color=POSTER_ACCENT_DARK, label="With examples"),
-               Patch(fc=POSTER_ACCENT_PALE, ec="none", label=f"Trained evaluators ({lo:.0f}–{hi:.0f}%)")]
-    fig.legend(handles=handles, loc="lower left", bbox_to_anchor=(0.02, 0.0), ncol=1, frameon=False,
-               fontsize=14, handletextpad=0.4, labelspacing=0.35)
+               Line2D([], [], marker="o", ls="", ms=12, color=POSTER_ACCENT_DARK, label="With examples"),
+               Patch(fc=POSTER_ACCENT_PALE, ec="none", label=f"Trained evaluators\n{lo:.0f}–{hi:.0f}%")]
+    # Legend fills the empty block under the model names, left of the x-axis label
+    fig.legend(handles=handles, loc="upper left", bbox_to_anchor=(0.0, 0.265), ncol=1, frameon=False,
+               fontsize=13, handletextpad=0.35, labelspacing=0.35, handlelength=1.2, borderaxespad=0)
 
     paths = [output_dir / "human_comparison_compact.png", output_dir / "human_comparison_compact.pdf"]
     fig.savefig(paths[0], dpi=FIGURE_DPI, bbox_inches="tight")
