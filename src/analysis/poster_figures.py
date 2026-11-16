@@ -156,6 +156,90 @@ def make_calibration_slope_chart(data: dict, output_dir: Path = POSTER_FIGURES_D
     return paths
 
 
+def load_missed_judgment_data(metrics_path: Path = FINDINGS_METRICS_PATH) -> dict:
+    """
+    Collect models' miss rates on flawed passages by flaw type and condition.
+
+    Miss rate = share of model x passage units (majority verdicts) called
+    "sound" among passages the expert judged not sound, by the author's
+    classification of the expert's reasons (E25). Buried-judgment and
+    stale-rationale passages (6 each) are left out as boundary categories.
+
+    Args:
+        metrics_path: findings_metrics.json.
+
+    Returns:
+        Dict with miss rates, passage counts and the share of misses.
+    """
+    m = json.loads(metrics_path.read_text())
+    ja = m["judgment_absent_rates"]
+    rates = ja["pooled_miss_rate"]
+    return {
+        "conditions": ["zero_shot", "few_shot"],
+        "groups": {
+            "judgment_absent": {
+                "n": ja["counts"]["judgment_absent"],
+                "rates": [rates[c]["judgment_absent"]["miss_rate_pct"] for c in ("zero_shot", "few_shot")],
+            },
+            "other_flaw": {
+                "n": ja["counts"]["other_flaw"],
+                "rates": [rates[c]["other_flaw"]["miss_rate_pct"] for c in ("zero_shot", "few_shot")],
+            },
+        },
+        "share_of_misses": m["missed_flaw_ci"]["judgment_absent_share_of_misses"]["pooled"],
+    }
+
+
+def make_missed_judgment_chart(data: dict, output_dir: Path = POSTER_FIGURES_DIR) -> list[Path]:
+    """
+    Draw grouped bars of miss rates by flaw type and condition (PNG and PDF).
+
+    Args:
+        data: Output of load_missed_judgment_data.
+        output_dir: Destination directory.
+
+    Returns:
+        Paths written.
+    """
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+
+    plt.rcParams.update({
+        "font.size": 13,
+        "axes.spines.top": False,
+        "axes.spines.right": False,
+        "pdf.fonttype": 42,
+    })
+    output_dir.mkdir(parents=True, exist_ok=True)
+    g = data["groups"]
+    styles = [
+        ("judgment_absent", f"No judgment ({g['judgment_absent']['n']} conclusions)", FAMILY_COLORS["closed"]),
+        ("other_flaw", f"Other flaws ({g['other_flaw']['n']} conclusions)", "#a6a6a6"),
+    ]
+    width = 0.36
+    fig, ax = plt.subplots(figsize=(6.8, 5.4))
+    for i, (key, label, color) in enumerate(styles):
+        xs = [k + (i - 0.5) * width for k in range(2)]
+        bars = ax.bar(xs, g[key]["rates"], width * 0.94, color=color, label=label)
+        for b, v in zip(bars, g[key]["rates"]):
+            ax.text(b.get_x() + b.get_width() / 2, v + 1.5, f"{v:.0f}%", ha="center", va="bottom",
+                    fontsize=12, fontweight="bold" if key == "judgment_absent" else "normal")
+    ax.set_xticks([0, 1], ["Without\nexamples", "With\nexamples"])
+    ax.tick_params(axis="x", length=0)
+    ax.set_ylim(0, 100)
+    ax.set_ylabel('% of flawed conclusions called "sound"')
+    ax.set_title("Flawed conclusions the models passed", fontsize=14, pad=10)
+    ax.legend(frameon=False, loc="upper left", fontsize=11)
+    fig.tight_layout()
+
+    paths = [output_dir / "missed_judgment.png", output_dir / "missed_judgment.pdf"]
+    fig.savefig(paths[0], dpi=FIGURE_DPI, bbox_inches="tight")
+    fig.savefig(paths[1], bbox_inches="tight")
+    plt.close(fig)
+    return paths
+
+
 def run_poster_figures() -> list[Path]:
     """
     Build all poster figures.
@@ -163,7 +247,8 @@ def run_poster_figures() -> list[Path]:
     Returns:
         Paths written.
     """
-    return make_calibration_slope_chart(load_slope_data())
+    return (make_calibration_slope_chart(load_slope_data())
+            + make_missed_judgment_chart(load_missed_judgment_data()))
 
 
 if __name__ == "__main__":
