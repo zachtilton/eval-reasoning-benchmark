@@ -240,6 +240,101 @@ def make_missed_judgment_chart(data: dict, output_dir: Path = POSTER_FIGURES_DIR
     return paths
 
 
+# Domain 1 / Domain 4 synthesis as recorded in docs/findings/conclusions.md
+# (2026-11-13). Text, not computed: the ratings are the author's judgments.
+RUBRIC_ROWS: list[dict] = [
+    {"criterion": "Detecting a missing judgment", "importance": "Extremely",
+     "rating": ["Fair"], "evidence": "Passed 51% of them without examples, 61% with"},
+    {"criterion": "Agreement with the expert", "importance": "Very",
+     "rating": ["Good"], "evidence": "57% vs trained evaluators' 55–61% (38 passages)"},
+    {"criterion": "Reasoning in rationales", "importance": "Very",
+     "rating": [None], "evidence": "Not rated: too little evidence"},
+    {"criterion": "Balance of errors", "importance": "Important",
+     "rating": ["Good", "Poor"], "evidence": "Like trained evaluators without examples (short\npassages); far more lenient with them"},
+    {"criterion": "Unswayed by irrelevant features", "importance": "Important",
+     "rating": ["Poor"], "evidence": '"Sound" calls rose with length; the expert\'s did not'},
+]
+RUBRIC_LEVEL_COLORS: dict[str, str] = {
+    "Poor": "#d7e3f4", "Fair": "#9fbde3", "Good": "#4f7fc4", "Excellent": "#1f4e9c",
+}
+
+
+def make_rubric_table(rows: list[dict] = RUBRIC_ROWS, overall: str = "Fair",
+                      output_dir: Path = POSTER_FIGURES_DIR) -> list[Path]:
+    """
+    Draw the synthesis rubric (criteria, importance, rating, evidence) as a figure.
+
+    Args:
+        rows: Criterion rows, most important first.
+        overall: Overall verdict.
+        output_dir: Destination directory.
+
+    Returns:
+        Paths written.
+    """
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+    from matplotlib.patches import Rectangle
+
+    plt.rcParams.update({"font.size": 12, "pdf.fonttype": 42})
+    output_dir.mkdir(parents=True, exist_ok=True)
+    cols = {"criterion": 0.0, "importance": 0.33, "rating": 0.46, "evidence": 0.61}
+    row_h = 1.0
+    n = len(rows)
+    fig, ax = plt.subplots(figsize=(12.5, 0.62 * (n + 3.2)))
+    ax.set_xlim(0, 1)
+    ax.set_ylim(-(n + 2.4) * row_h, 1.0)
+    ax.axis("off")
+
+    head_y = 0.2
+    for key, label in [("criterion", "Criterion"), ("importance", "Importance"),
+                       ("rating", "Rating"), ("evidence", "Evidence")]:
+        ax.text(cols[key], head_y, label, fontsize=12.5, fontweight="bold", va="center")
+    ax.plot([0, 1], [-0.35, -0.35], color="black", lw=1.2)
+
+    def chip(x, y, level, w=0.135):
+        """Draw one rating chip at (x, y)."""
+        if level is None:
+            ax.add_patch(Rectangle((x, y - 0.3), w, 0.6, fc="white", ec="0.55", lw=1, ls="--"))
+            ax.text(x + w / 2, y, "Not rated", ha="center", va="center", fontsize=11, color="0.4")
+            return
+        fc = RUBRIC_LEVEL_COLORS[level]
+        tc = "white" if level in ("Good", "Excellent") else "black"
+        ax.add_patch(Rectangle((x, y - 0.3), w, 0.6, fc=fc, ec="none"))
+        ax.text(x + w / 2, y, level, ha="center", va="center", fontsize=11.5, color=tc, fontweight="bold")
+
+    for i, r in enumerate(rows):
+        y = -(i + 1) * row_h
+        ax.text(cols["criterion"], y, r["criterion"], va="center", fontsize=12)
+        ax.text(cols["importance"], y, r["importance"], va="center", fontsize=12, color="0.25")
+        if len(r["rating"]) == 1:
+            chip(cols["rating"], y, r["rating"][0])
+        else:
+            chip(cols["rating"], y, r["rating"][0], w=0.065)
+            chip(cols["rating"] + 0.07, y, r["rating"][1], w=0.065)
+        ax.text(cols["evidence"], y, r["evidence"], va="center", fontsize=11, color="0.2")
+        if i < n - 1:
+            ax.plot([0, 1], [y - 0.5, y - 0.5], color="0.85", lw=0.8)
+
+    y = -(n + 1) * row_h - 0.1
+    ax.plot([0, 1], [y + 0.5, y + 0.5], color="black", lw=1.2)
+    ax.text(cols["criterion"], y, "Overall verdict", va="center", fontsize=13, fontweight="bold")
+    chip(cols["rating"], y, overall)
+    ax.text(cols["evidence"], y, "Capped at Fair until models reliably\ncatch missing judgments",
+            va="center", fontsize=11, color="0.2")
+    ax.text(0, y - 1.05, "Scale: Poor (falls short) · Fair (partial) · Good (human parity) · "
+            "Excellent (expert level). Split rating: without | with examples.",
+            fontsize=10, color="0.35", va="center")
+
+    fig.tight_layout()
+    paths = [output_dir / "rubric_table.png", output_dir / "rubric_table.pdf"]
+    fig.savefig(paths[0], dpi=FIGURE_DPI, bbox_inches="tight")
+    fig.savefig(paths[1], bbox_inches="tight")
+    plt.close(fig)
+    return paths
+
+
 def run_poster_figures() -> list[Path]:
     """
     Build all poster figures.
@@ -248,7 +343,8 @@ def run_poster_figures() -> list[Path]:
         Paths written.
     """
     return (make_calibration_slope_chart(load_slope_data())
-            + make_missed_judgment_chart(load_missed_judgment_data()))
+            + make_missed_judgment_chart(load_missed_judgment_data())
+            + make_rubric_table())
 
 
 if __name__ == "__main__":
