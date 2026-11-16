@@ -138,7 +138,13 @@ MODEL_DISPLAY_NAMES: dict[str, str] = {
     "glm_5_2":                   "GLM 5.2",
 }
 
-FAMILY_COLORS: dict[str, str] = {"closed": "#1f4e9c", "open": "#d9822b"}
+# Poster palette: gradations of the accent colour #f2c503 (author, 2026-11-15).
+POSTER_ACCENT: str = "#f2c503"
+POSTER_ACCENT_DARK: str = "#a88900"
+POSTER_ACCENT_PALE: str = "#fdf4c4"
+POSTER_LABEL_COLOR: str = "#262626"   # yellow text is unreadable on white
+
+FAMILY_COLORS: dict[str, str] = {"closed": POSTER_ACCENT_DARK, "open": POSTER_ACCENT}
 
 FINDINGS_SEED: int = 42
 BOOTSTRAP_RESAMPLES: int = 5000

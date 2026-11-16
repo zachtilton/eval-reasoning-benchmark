@@ -16,6 +16,10 @@ from pathlib import Path
 from src.analysis.config import (
     ARCHITECTURE_MAP,
     FAMILY_COLORS,
+    POSTER_ACCENT,
+    POSTER_ACCENT_DARK,
+    POSTER_ACCENT_PALE,
+    POSTER_LABEL_COLOR,
     FIGURE_DPI,
     FINDINGS_METRICS_PATH,
     H2_CORRECTED_RESULTS_PATH,
@@ -120,15 +124,15 @@ def make_calibration_slope_chart(data: dict, output_dir: Path = POSTER_FIGURES_D
     # Left: share called sound
     for r in rows:
         ax_s.plot(x, [r["sound_zero"], r["sound_few"]], color=FAMILY_COLORS[r["family"]],
-                  lw=2.2, marker="o", ms=6, ls="-" if r["family"] == "closed" else "--")
+                  lw=2.6, marker="o", ms=7, ls="-" if r["family"] == "closed" else "--")
     label_y = _spread_labels([r["sound_few"] for r in rows], min_gap=4.2)
     for r, y in zip(rows, label_y):
         ax_s.text(1.06, y, f"{r['label']} {r['sound_few']:.0f}%", va="center", fontsize=11,
-                  color=FAMILY_COLORS[r["family"]])
+                  color=POSTER_LABEL_COLOR)
     left_y = _spread_labels([r["sound_zero"] for r in rows], min_gap=4.2)
     for r, y in zip(rows, left_y):
         ax_s.text(-0.06, y, f"{r['sound_zero']:.0f}%", va="center", ha="right", fontsize=11,
-                  color=FAMILY_COLORS[r["family"]])
+                  color=POSTER_LABEL_COLOR)
     ax_s.axhline(data["expert_sound_pct"], color="0.45", lw=1.2, ls=":")
     ax_s.text(1.06, data["expert_sound_pct"] - 1.5, f"Expert: {data['expert_sound_pct']:.0f}%",
               ha="left", va="top", fontsize=11, color="0.35", style="italic")
@@ -214,14 +218,15 @@ def make_missed_judgment_chart(data: dict, output_dir: Path = POSTER_FIGURES_DIR
     output_dir.mkdir(parents=True, exist_ok=True)
     g = data["groups"]
     styles = [
-        ("judgment_absent", f"No judgment ({g['judgment_absent']['n']} conclusions)", FAMILY_COLORS["closed"]),
-        ("other_flaw", f"Other flaws ({g['other_flaw']['n']} conclusions)", "#a6a6a6"),
+        ("judgment_absent", f"No judgment ({g['judgment_absent']['n']} conclusions)", POSTER_ACCENT),
+        ("other_flaw", f"Other flaws ({g['other_flaw']['n']} conclusions)", POSTER_ACCENT_PALE),
     ]
     width = 0.36
     fig, ax = plt.subplots(figsize=(6.8, 5.4))
     for i, (key, label, color) in enumerate(styles):
         xs = [k + (i - 0.5) * width for k in range(2)]
-        bars = ax.bar(xs, g[key]["rates"], width * 0.94, color=color, label=label)
+        bars = ax.bar(xs, g[key]["rates"], width * 0.94, color=color, label=label,
+                      edgecolor=POSTER_ACCENT_DARK, linewidth=1.2)
         for b, v in zip(bars, g[key]["rates"]):
             ax.text(b.get_x() + b.get_width() / 2, v + 1.5, f"{v:.0f}%", ha="center", va="bottom",
                     fontsize=12, fontweight="bold" if key == "judgment_absent" else "normal")
