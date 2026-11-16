@@ -487,6 +487,68 @@ def make_length_chart(metrics_path: Path = FINDINGS_METRICS_PATH,
     return paths
 
 
+def make_length_chart_compact(metrics_path: Path = FINDINGS_METRICS_PATH,
+                              output_dir: Path = POSTER_FIGURES_DIR) -> list[Path]:
+    """
+    Compact, larger-type variant of the length chart, sized to match human_comparison_compact.
+
+    Same values as make_length_chart; no title (set in the poster layout);
+    legend inside the empty lower band of the plot. Written to length_compact.*.
+
+    Args:
+        metrics_path: findings_metrics.json.
+        output_dir: Destination directory.
+
+    Returns:
+        Paths written.
+    """
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+    _use_poster_font()
+    from matplotlib.lines import Line2D
+
+    lm = json.loads(metrics_path.read_text())["length_moderation"]["by_length"]
+    bins = ["1-3 paragraphs", "4-6 paragraphs", "7+ paragraphs"]
+    series = [
+        ("Models, with examples", [lm[b]["few_shot"]["models_call_sound_pct"] for b in bins],
+         POSTER_ACCENT_DARK, "-", "o"),
+        ("Models, without examples", [lm[b]["zero_shot"]["models_call_sound_pct"] for b in bins],
+         POSTER_ACCENT, "-", "o"),
+        ("Expert", [100 - lm[b]["gold_not_sound_pct"] for b in bins], "#404040", "--", "s"),
+    ]
+    plt.rcParams.update({"font.size": 17, "axes.spines.top": False, "axes.spines.right": False,
+                         "pdf.fonttype": 42})
+    output_dir.mkdir(parents=True, exist_ok=True)
+    fig = plt.figure(figsize=(5.6, 5.3))
+    ax = fig.add_axes((0.17, 0.20, 0.80, 0.77))
+    x = list(range(len(bins)))
+    for label, ys, color, ls, mk in series:
+        ax.plot(x, ys, color=color, ls=ls, marker=mk, lw=4, ms=12)
+        below = label == "Expert"
+        for xi, yi in zip(x, ys):
+            if xi == 0 and label != "Models, with examples":
+                ax.text(xi - 0.13, yi + (1.8 if below else -1.8), f"{yi:.0f}%", ha="right", va="center",
+                        fontsize=15, color=POSTER_LABEL_COLOR)
+                continue
+            ax.text(xi, yi - 2.6 if below else yi + 2.4, f"{yi:.0f}%", ha="center",
+                    va="top" if below else "bottom", fontsize=15, color=POSTER_LABEL_COLOR)
+    ax.set_xticks(x, ["Short\n1–3 ¶", "Medium\n4–6 ¶", "Long\n7+ ¶"])
+    ax.tick_params(axis="x", length=0)
+    ax.set_xlim(-0.55, 2.35)
+    ax.set_ylim(25, 88)
+    ax.set_yticks([30, 40, 50, 60, 70, 80])
+    ax.set_ylabel('% called "sound"')
+    handles = [Line2D([], [], color=c, ls=ls, marker=mk, lw=4, ms=10, label=l) for l, _, c, ls, mk in series]
+    ax.legend(handles=handles, loc="lower left", frameon=False, fontsize=13.5, handlelength=1.8,
+              handletextpad=0.4, labelspacing=0.3, borderaxespad=0.2)
+    paths = [output_dir / "length_compact.png", output_dir / "length_compact.pdf"]
+    fig.savefig(paths[0], dpi=FIGURE_DPI, bbox_inches="tight")
+    fig.savefig(paths[1], bbox_inches="tight")
+    plt.close(fig)
+    return paths
+
+
 def load_human_comparison_data() -> dict:
     """
     Agreement with the expert's blind second-pass ratings on the 38 shared RC2 passages.
@@ -772,6 +834,7 @@ def run_poster_figures() -> list[Path]:
             + make_unit_chart(unit := load_unit_chart_data())
             + make_funnel_chart(unit)
             + make_length_chart()
+            + make_length_chart_compact()
             + make_human_comparison_chart(hc := load_human_comparison_data())
             + make_human_comparison_chart_compact(hc))
 
