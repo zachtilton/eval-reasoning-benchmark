@@ -128,6 +128,8 @@ FINDINGS_REGISTRY_PATH = PROJECT_ROOT / "docs" / "findings" / "findings_registry
 # ---------------------------------------------------------------------------
 
 POSTER_FIGURES_DIR = FIGURES_DIR / "poster"
+POSTER_FONT_DIR = PROJECT_ROOT / "assets" / "fonts" / "montserrat"  # SIL OFL 1.1 (OFL.txt)
+POSTER_FONT_FAMILY: str = "Montserrat"
 
 MODEL_DISPLAY_NAMES: dict[str, str] = {
     "gpt_5_6_sol":               "GPT 5.6 Sol",

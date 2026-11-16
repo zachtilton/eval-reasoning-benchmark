@@ -26,7 +26,19 @@ from src.analysis.config import (
     MODEL_DISPLAY_NAMES,
     MODEL_ORDER,
     POSTER_FIGURES_DIR,
+    POSTER_FONT_DIR,
+    POSTER_FONT_FAMILY,
 )
+
+
+def _use_poster_font() -> None:
+    """Register the bundled Montserrat files with matplotlib and make it the default family."""
+    import matplotlib.pyplot as plt
+    from matplotlib import font_manager
+
+    for f in sorted(POSTER_FONT_DIR.glob("*.ttf")):
+        font_manager.fontManager.addfont(str(f))
+    plt.rcParams["font.family"] = POSTER_FONT_FAMILY
 
 
 def load_slope_data(
@@ -108,6 +120,7 @@ def make_calibration_slope_chart(data: dict, output_dir: Path = POSTER_FIGURES_D
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
+    _use_poster_font()
     from matplotlib.lines import Line2D
 
     plt.rcParams.update({
@@ -203,6 +216,7 @@ def make_missed_judgment_chart(data: dict, output_dir: Path = POSTER_FIGURES_DIR
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
+    _use_poster_font()
 
     plt.rcParams.update({"font.size": 13, "pdf.fonttype": 42})
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -297,6 +311,7 @@ def make_unit_chart(data: dict, output_dir: Path = POSTER_FIGURES_DIR) -> list[P
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
+    _use_poster_font()
     from matplotlib.colors import LinearSegmentedColormap, to_hex
     from matplotlib.patches import Rectangle
 
@@ -364,6 +379,7 @@ def make_funnel_chart(unit: dict, n_total: int = 150, output_dir: Path = POSTER_
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
+    _use_poster_font()
 
     plt.rcParams.update({"font.size": 13, "pdf.fonttype": 42})
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -427,6 +443,7 @@ def make_length_chart(metrics_path: Path = FINDINGS_METRICS_PATH,
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
+    _use_poster_font()
 
     lm = json.loads(metrics_path.read_text())["length_moderation"]["by_length"]
     bins = ["1-3 paragraphs", "4-6 paragraphs", "7+ paragraphs"]
@@ -515,6 +532,7 @@ def make_human_comparison_chart(data: dict, output_dir: Path = POSTER_FIGURES_DI
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
+    _use_poster_font()
     from matplotlib.lines import Line2D
     from matplotlib.patches import Rectangle
 
@@ -599,6 +617,7 @@ def make_rubric_table(rows: list[dict] = RUBRIC_ROWS, overall: str = "Fair",
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
+    _use_poster_font()
     from matplotlib.patches import Rectangle
 
     plt.rcParams.update({"font.size": 12, "pdf.fonttype": 42})
