@@ -1,12 +1,11 @@
 """
 Poster figures built from existing results files (no new analysis).
 
-Figure: calibration-example slope chart. Left panel: each model's share of
-passages called "sound" without vs with the two calibration examples
-(findings_metrics.json -> few_shot_shift). Right panel: each model's
-agreement with the expert's locked ratings in the same two conditions
-(H2_statistical_tests_corrected.json -> test_1_mcnemar), with the pooled
-change. The pairing shows verdicts shifting while accuracy barely moves.
+Figure: calibration-example slope chart. Each model's share of passages
+called "sound" without vs with the two calibration examples
+(findings_metrics.json -> few_shot_shift), against the expert's share.
+Agreement with the expert (H2_statistical_tests_corrected.json ->
+test_1_mcnemar) is loaded for the caption, not plotted (author, 2026-11-15).
 
 Run: python3 -m src.analysis.poster_figures
 """
@@ -93,7 +92,7 @@ def _spread_labels(values: list[float], min_gap: float) -> list[float]:
 
 def make_calibration_slope_chart(data: dict, output_dir: Path = POSTER_FIGURES_DIR) -> list[Path]:
     """
-    Draw the two-panel calibration-example slope chart (PNG and PDF).
+    Draw the calibration-example slope chart (PNG and PDF).
 
     Args:
         data: Output of load_slope_data.
@@ -116,7 +115,7 @@ def make_calibration_slope_chart(data: dict, output_dir: Path = POSTER_FIGURES_D
     output_dir.mkdir(parents=True, exist_ok=True)
     rows = data["rows"]
     x = [0, 1]
-    fig, (ax_s, ax_a) = plt.subplots(1, 2, figsize=(10, 5.6), sharey=True)
+    fig, ax_s = plt.subplots(figsize=(6.8, 5.8))
 
     # Left: share called sound
     for r in rows:
@@ -135,24 +134,11 @@ def make_calibration_slope_chart(data: dict, output_dir: Path = POSTER_FIGURES_D
               ha="left", va="top", fontsize=11, color="0.35", style="italic")
     ax_s.set_title('Called the conclusion "sound"', fontsize=14, pad=10)
 
-    # Right: agreement with the expert
-    for r in rows:
-        ax_a.plot(x, [r["acc_zero"], r["acc_few"]], color=FAMILY_COLORS[r["family"]], lw=1.2,
-                  alpha=0.55, ls="-" if r["family"] == "closed" else "--")
-    ax_a.plot(x, [data["pooled_acc_zero"], data["pooled_acc_few"]], color="black", lw=3.2,
-              marker="o", ms=7)
-    ax_a.text(1.06, data["pooled_acc_few"], f"All models\n{data['pooled_acc_few']:.0f}%",
-              va="center", fontsize=11, fontweight="bold")
-    ax_a.text(-0.06, data["pooled_acc_zero"], f"{data['pooled_acc_zero']:.0f}%", va="center",
-              ha="right", fontsize=11, fontweight="bold")
-    ax_a.set_title("Agreed with the expert", fontsize=14, pad=10)
-
-    for ax in (ax_s, ax_a):
-        ax.set_xticks(x, ["Without\nexamples", "With\nexamples"])
-        ax.set_xlim(-0.35, 1.75)
-        ax.set_ylim(20, 100)
-        ax.tick_params(axis="x", length=0)
-        ax.spines["bottom"].set_visible(False)
+    ax_s.set_xticks(x, ["Without\nexamples", "With\nexamples"])
+    ax_s.set_xlim(-0.35, 1.75)
+    ax_s.set_ylim(20, 100)
+    ax_s.tick_params(axis="x", length=0)
+    ax_s.spines["bottom"].set_visible(False)
     ax_s.set_ylabel("% of 150 conclusions")
 
     handles = [
