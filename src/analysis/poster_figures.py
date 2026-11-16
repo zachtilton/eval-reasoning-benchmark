@@ -576,6 +576,74 @@ def make_human_comparison_chart(data: dict, output_dir: Path = POSTER_FIGURES_DI
     return paths
 
 
+def make_human_comparison_chart_compact(data: dict, output_dir: Path = POSTER_FIGURES_DIR) -> list[Path]:
+    """
+    Narrower, larger-type variant of the human-comparison dot plot for a slim poster column.
+
+    Same data and encodings as make_human_comparison_chart; the evaluator band
+    is explained in the legend rather than labelled in the plot. Written to
+    human_comparison_compact.* so the original is kept. Layout is fixed by
+    hand (no tight_layout) so the title sits directly above the plot.
+
+    Args:
+        data: Output of load_human_comparison_data.
+        output_dir: Destination directory.
+
+    Returns:
+        Paths written.
+    """
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+    _use_poster_font()
+    from matplotlib.lines import Line2D
+    from matplotlib.patches import Patch, Rectangle
+
+    plt.rcParams.update({"font.size": 17, "axes.spines.top": False, "axes.spines.right": False,
+                         "axes.spines.left": False, "pdf.fonttype": 42})
+    output_dir.mkdir(parents=True, exist_ok=True)
+    by = {(r["model"], r["condition"]): r["pct"] for r in data["rows"]}
+    models = [m for m in MODEL_ORDER if (m, "zero_shot") in by]
+    lo, hi = min(data["raters"].values()), max(data["raters"].values())
+    n_rows = len(models)
+
+    fig = plt.figure(figsize=(5.6, 7.4))
+    ax = fig.add_axes((0.40, 0.32, 0.56, 0.48))
+    fig.text(0.02, 0.985, "On average, models agreed with the\nexpert about as often as trained\n"
+             "evaluators did, but individual\nmodels varied widely",
+             fontsize=17, ha="left", va="top", linespacing=1.15)
+
+    ax.add_patch(Rectangle((lo, -0.6), hi - lo, n_rows + 0.2, fc=POSTER_ACCENT_PALE, ec="none", zorder=0))
+    mean = sum(r["pct"] for r in data["rows"]) / len(data["rows"])
+    ax.plot([mean, mean], [-0.6, n_rows - 0.45], color=POSTER_LABEL_COLOR, ls=(0, (2, 2)), lw=1.6, zorder=1)
+    ax.text(mean, n_rows - 0.4, f"Model average {mean:.0f}%", ha="center", va="bottom", fontsize=13,
+            color=POSTER_LABEL_COLOR)
+    for i, m in enumerate(models[::-1]):
+        z, f = by[(m, "zero_shot")], by.get((m, "few_shot"))
+        ax.plot([z, f], [i, i], color="0.75", lw=2, zorder=1)
+        ax.plot(z, i, "o", ms=14, mfc="white", mec=POSTER_ACCENT_DARK, mew=2.6, zorder=2)
+        ax.plot(f, i, "o", ms=14, color=POSTER_ACCENT_DARK, zorder=2)
+    ax.set_yticks(range(n_rows), [MODEL_DISPLAY_NAMES[m] for m in models[::-1]])
+    ax.tick_params(axis="y", length=0)
+    ax.set_xlim(40, 80)
+    ax.set_xticks([40, 50, 60, 70, 80])
+    ax.set_ylim(-0.7, n_rows + 0.1)
+    ax.set_xlabel(f"% agreement with the expert\n({data['n']} short conclusions)")
+
+    handles = [Line2D([], [], marker="o", ls="", ms=13, mfc="white", mec=POSTER_ACCENT_DARK, mew=2.4,
+                      label="Without examples"),
+               Line2D([], [], marker="o", ls="", ms=13, color=POSTER_ACCENT_DARK, label="With examples"),
+               Patch(fc=POSTER_ACCENT_PALE, ec="none", label=f"Trained evaluators ({lo:.0f}–{hi:.0f}%)")]
+    fig.legend(handles=handles, loc="lower left", bbox_to_anchor=(0.02, 0.0), ncol=1, frameon=False,
+               fontsize=14, handletextpad=0.4, labelspacing=0.35)
+
+    paths = [output_dir / "human_comparison_compact.png", output_dir / "human_comparison_compact.pdf"]
+    fig.savefig(paths[0], dpi=FIGURE_DPI, bbox_inches="tight")
+    fig.savefig(paths[1], bbox_inches="tight")
+    plt.close(fig)
+    return paths
+
+
 # Domain 1 / Domain 4 synthesis as recorded in docs/findings/conclusions.md
 # (2026-11-13). Text, not computed: the ratings are the author's judgments.
 RUBRIC_ROWS: list[dict] = [
@@ -705,7 +773,8 @@ def run_poster_figures() -> list[Path]:
             + make_unit_chart(unit := load_unit_chart_data())
             + make_funnel_chart(unit)
             + make_length_chart()
-            + make_human_comparison_chart(load_human_comparison_data()))
+            + make_human_comparison_chart(hc := load_human_comparison_data())
+            + make_human_comparison_chart_compact(hc))
 
 
 if __name__ == "__main__":
