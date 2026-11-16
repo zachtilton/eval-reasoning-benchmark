@@ -346,6 +346,68 @@ def make_unit_chart(data: dict, output_dir: Path = POSTER_FIGURES_DIR) -> list[P
     return paths
 
 
+def make_funnel_chart(unit: dict, n_total: int = 150, output_dir: Path = POSTER_FIGURES_DIR) -> list[Path]:
+    """
+    Draw a narrowing funnel: all conclusions -> flawed -> no judgment -> passed by most models.
+
+    Counts come from load_unit_chart_data (E30); "most models" = at least 4
+    of 6 majority labels "sound". The last stage is split by condition.
+
+    Args:
+        unit: Output of load_unit_chart_data.
+        n_total: Number of benchmark conclusions.
+        output_dir: Destination directory.
+
+    Returns:
+        Paths written.
+    """
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+
+    plt.rcParams.update({"font.size": 13, "pdf.fonttype": 42})
+    output_dir.mkdir(parents=True, exist_ok=True)
+    zs, fs = unit["conditions"]["zero_shot"], unit["conditions"]["few_shot"]
+    n_flawed = zs["no_judgment"]["n"] + zs["other"]["n"]
+    n_nj = zs["no_judgment"]["n"]
+    stages = [
+        (n_total, "UN evaluation conclusions", POSTER_ACCENT_PALE),
+        (n_flawed, "judged flawed by the expert", "#f8df6e"),
+        (n_nj, "never reach a judgment", POSTER_ACCENT),
+    ]
+    scale = 1.0 / n_total
+    fig, ax = plt.subplots(figsize=(7.6, 6.4))
+    h, step = 0.72, 1.15
+    for i, (n, label, color) in enumerate(stages):
+        y = -i * step
+        w = n * scale
+        ax.barh(y, w, h, left=0.5 - w / 2, color=color, edgecolor=POSTER_ACCENT_DARK, lw=1.2)
+        ax.text(0.5, y + 0.02, f"{n}", ha="center", va="center", fontsize=17, fontweight="bold")
+        ax.text(0.5, y - h / 2 - 0.08, label, ha="center", va="top", fontsize=12, color="0.25")
+
+    # Final stage, split by condition
+    y = -len(stages) * step - 0.25
+    final = [(zs["no_judgment"]["majority_passed"], "without examples"),
+             (fs["no_judgment"]["majority_passed"], "with examples")]
+    for (n, cond), cx in zip(final, (0.33, 0.67)):
+        w = n * scale
+        ax.barh(y, w, h, left=cx - w / 2, color=POSTER_ACCENT_DARK, edgecolor=POSTER_ACCENT_DARK, lw=1.2)
+        ax.text(cx, y + 0.02, f"{n}", ha="center", va="center", fontsize=17, fontweight="bold", color="white")
+        ax.text(cx, y - h / 2 - 0.08, cond, ha="center", va="top", fontsize=12, color="0.25")
+    ax.text(0.5, y + h / 2 + 0.12, "passed by most models (4+ of 6)", ha="center", va="bottom",
+            fontsize=12, fontweight="bold", color="0.15")
+
+    ax.set_xlim(0, 1)
+    ax.set_ylim(y - 1.0, 0.6)
+    ax.axis("off")
+    fig.tight_layout()
+    paths = [output_dir / "funnel.png", output_dir / "funnel.pdf"]
+    fig.savefig(paths[0], dpi=FIGURE_DPI, bbox_inches="tight")
+    fig.savefig(paths[1], bbox_inches="tight")
+    plt.close(fig)
+    return paths
+
+
 # Domain 1 / Domain 4 synthesis as recorded in docs/findings/conclusions.md
 # (2026-11-13). Text, not computed: the ratings are the author's judgments.
 RUBRIC_ROWS: list[dict] = [
@@ -471,7 +533,8 @@ def run_poster_figures() -> list[Path]:
     return (make_calibration_slope_chart(load_slope_data())
             + make_missed_judgment_chart(load_missed_judgment_data())
             + make_rubric_table()
-            + make_unit_chart(load_unit_chart_data()))
+            + make_unit_chart(unit := load_unit_chart_data())
+            + make_funnel_chart(unit))
 
 
 if __name__ == "__main__":
