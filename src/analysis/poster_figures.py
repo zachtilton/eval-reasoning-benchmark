@@ -20,7 +20,6 @@ from src.analysis.config import (
     POSTER_ACCENT_DARK,
     POSTER_ACCENT_PALE,
     POSTER_LABEL_COLOR,
-    FIGURE_DPI,
     FINDINGS_METRICS_PATH,
     H2_CORRECTED_RESULTS_PATH,
     MODEL_DISPLAY_NAMES,
@@ -28,6 +27,7 @@ from src.analysis.config import (
     POSTER_FIGURES_DIR,
     POSTER_FONT_DIR,
     POSTER_FONT_FAMILY,
+    POSTER_PNG_DPI,
 )
 
 
@@ -167,7 +167,7 @@ def make_calibration_slope_chart(data: dict, output_dir: Path = POSTER_FIGURES_D
     fig.tight_layout(rect=(0, 0.05, 1, 1))
 
     paths = [output_dir / "calibration_slope.png", output_dir / "calibration_slope.pdf"]
-    fig.savefig(paths[0], dpi=FIGURE_DPI, bbox_inches="tight")
+    fig.savefig(paths[0], dpi=POSTER_PNG_DPI, bbox_inches="tight")
     fig.savefig(paths[1], bbox_inches="tight")
     plt.close(fig)
     return paths
@@ -246,7 +246,7 @@ def make_missed_judgment_chart(data: dict, output_dir: Path = POSTER_FIGURES_DIR
     fig.tight_layout()
 
     paths = [output_dir / "missed_judgment.png", output_dir / "missed_judgment.pdf"]
-    fig.savefig(paths[0], dpi=FIGURE_DPI, bbox_inches="tight")
+    fig.savefig(paths[0], dpi=POSTER_PNG_DPI, bbox_inches="tight")
     fig.savefig(paths[1], bbox_inches="tight")
     plt.close(fig)
     return paths
@@ -355,7 +355,7 @@ def make_unit_chart(data: dict, output_dir: Path = POSTER_FIGURES_DIR) -> list[P
     fig.subplots_adjust(left=0.03, right=0.97, top=0.93, bottom=0.14, wspace=0.12)
 
     paths = [output_dir / "unit_chart.png", output_dir / "unit_chart.pdf"]
-    fig.savefig(paths[0], dpi=FIGURE_DPI, bbox_inches="tight")
+    fig.savefig(paths[0], dpi=POSTER_PNG_DPI, bbox_inches="tight")
     fig.savefig(paths[1], bbox_inches="tight")
     plt.close(fig)
     return paths
@@ -418,7 +418,7 @@ def make_funnel_chart(unit: dict, n_total: int = 150, output_dir: Path = POSTER_
     ax.axis("off")
     fig.tight_layout()
     paths = [output_dir / "funnel.png", output_dir / "funnel.pdf"]
-    fig.savefig(paths[0], dpi=FIGURE_DPI, bbox_inches="tight")
+    fig.savefig(paths[0], dpi=POSTER_PNG_DPI, bbox_inches="tight")
     fig.savefig(paths[1], bbox_inches="tight")
     plt.close(fig)
     return paths
@@ -481,7 +481,7 @@ def make_length_chart(metrics_path: Path = FINDINGS_METRICS_PATH,
     ax.set_title("Longer conclusions looked sounder to models, not to the expert", fontsize=13.5, pad=12)
     fig.tight_layout()
     paths = [output_dir / "length.png", output_dir / "length.pdf"]
-    fig.savefig(paths[0], dpi=FIGURE_DPI, bbox_inches="tight")
+    fig.savefig(paths[0], dpi=POSTER_PNG_DPI, bbox_inches="tight")
     fig.savefig(paths[1], bbox_inches="tight")
     plt.close(fig)
     return paths
@@ -544,7 +544,7 @@ def make_length_chart_compact(metrics_path: Path = FINDINGS_METRICS_PATH,
     ax.legend(handles=handles, loc="lower left", frameon=False, fontsize=13.5, handlelength=1.8,
               handletextpad=0.4, labelspacing=0.3, borderaxespad=0.2)
     paths = [output_dir / "length_compact.png", output_dir / "length_compact.pdf"]
-    fig.savefig(paths[0], dpi=FIGURE_DPI, bbox_inches="tight")
+    fig.savefig(paths[0], dpi=POSTER_PNG_DPI, bbox_inches="tight")
     fig.savefig(paths[1], bbox_inches="tight")
     plt.close(fig)
     return paths
@@ -633,7 +633,7 @@ def make_human_comparison_chart(data: dict, output_dir: Path = POSTER_FIGURES_DI
     ax.legend(handles=handles, loc="lower right", frameon=False, fontsize=11)
     fig.tight_layout()
     paths = [output_dir / "human_comparison.png", output_dir / "human_comparison.pdf"]
-    fig.savefig(paths[0], dpi=FIGURE_DPI, bbox_inches="tight")
+    fig.savefig(paths[0], dpi=POSTER_PNG_DPI, bbox_inches="tight")
     fig.savefig(paths[1], bbox_inches="tight")
     plt.close(fig)
     return paths
@@ -700,7 +700,7 @@ def make_human_comparison_chart_compact(data: dict, output_dir: Path = POSTER_FI
                fontsize=13, handletextpad=0.35, labelspacing=0.35, handlelength=1.2, borderaxespad=0)
 
     paths = [output_dir / "human_comparison_compact.png", output_dir / "human_comparison_compact.pdf"]
-    fig.savefig(paths[0], dpi=FIGURE_DPI, bbox_inches="tight")
+    fig.savefig(paths[0], dpi=POSTER_PNG_DPI, bbox_inches="tight")
     fig.savefig(paths[1], bbox_inches="tight")
     plt.close(fig)
     return paths
@@ -816,7 +816,7 @@ def make_rubric_table(rows: list[dict] = RUBRIC_ROWS, overall: str = "Fair",
 
     fig.tight_layout()
     paths = [output_dir / "rubric_table.png", output_dir / "rubric_table.pdf"]
-    fig.savefig(paths[0], dpi=FIGURE_DPI, bbox_inches="tight")
+    fig.savefig(paths[0], dpi=POSTER_PNG_DPI, bbox_inches="tight")
     fig.savefig(paths[1], bbox_inches="tight")
     plt.close(fig)
     return paths
