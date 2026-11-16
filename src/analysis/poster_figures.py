@@ -217,25 +217,25 @@ def make_missed_judgment_chart(data: dict, output_dir: Path = POSTER_FIGURES_DIR
     })
     output_dir.mkdir(parents=True, exist_ok=True)
     g = data["groups"]
-    styles = [
-        ("judgment_absent", f"No judgment ({g['judgment_absent']['n']} conclusions)", POSTER_ACCENT),
-        ("other_flaw", f"Other flaws ({g['other_flaw']['n']} conclusions)", POSTER_ACCENT_PALE),
-    ]
+    groups = [("judgment_absent", "No judgment"), ("other_flaw", "Other flaws")]
+    conditions = [("Without examples", POSTER_ACCENT_PALE), ("With examples", POSTER_ACCENT)]
     width = 0.36
     fig, ax = plt.subplots(figsize=(6.8, 5.4))
-    for i, (key, label, color) in enumerate(styles):
-        xs = [k + (i - 0.5) * width for k in range(2)]
-        bars = ax.bar(xs, g[key]["rates"], width * 0.94, color=color, label=label,
+    for j, (cond_label, color) in enumerate(conditions):
+        xs = [k + (j - 0.5) * width for k in range(len(groups))]
+        vals = [g[key]["rates"][j] for key, _ in groups]
+        bars = ax.bar(xs, vals, width * 0.94, color=color, label=cond_label,
                       edgecolor=POSTER_ACCENT_DARK, linewidth=1.2)
-        for b, v in zip(bars, g[key]["rates"]):
+        for b, v in zip(bars, vals):
             ax.text(b.get_x() + b.get_width() / 2, v + 1.5, f"{v:.0f}%", ha="center", va="bottom",
-                    fontsize=12, fontweight="bold" if key == "judgment_absent" else "normal")
-    ax.set_xticks([0, 1], ["Without\nexamples", "With\nexamples"])
+                    fontsize=12, fontweight="bold")
+    ax.set_xticks(range(len(groups)),
+                  [f"{name}\n({g[key]['n']} conclusions)" for key, name in groups])
     ax.tick_params(axis="x", length=0)
     ax.set_ylim(0, 100)
-    ax.set_ylabel('% of flawed conclusions called "sound"')
+    ax.set_ylabel('% called "sound" (all six models)')
     ax.set_title("Flawed conclusions the models passed", fontsize=14, pad=10)
-    ax.legend(frameon=False, loc="upper left", fontsize=11)
+    ax.legend(frameon=False, loc="upper right", fontsize=11)
     fig.tight_layout()
 
     paths = [output_dir / "missed_judgment.png", output_dir / "missed_judgment.pdf"]
