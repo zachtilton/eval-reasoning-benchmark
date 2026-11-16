@@ -533,7 +533,8 @@ def make_length_chart_compact(metrics_path: Path = FINDINGS_METRICS_PATH,
                 continue
             ax.text(xi, yi - 2.6 if below else yi + 2.4, f"{yi:.0f}%", ha="center",
                     va="top" if below else "bottom", fontsize=15, color=POSTER_LABEL_COLOR)
-    ax.set_xticks(x, ["Short\n1–3 ¶", "Medium\n4–6 ¶", "Long\n7+ ¶"])
+    ax.set_xticks(x, ["Short\n1–3", "Medium\n4–6", "Long\n7+"])
+    ax.set_xlabel("Conclusion length (paragraphs)", fontsize=15, labelpad=8)
     ax.tick_params(axis="x", length=0)
     ax.set_xlim(-0.55, 2.35)
     ax.set_ylim(25, 88)
