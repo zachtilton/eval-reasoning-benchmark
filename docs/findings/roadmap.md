@@ -90,6 +90,7 @@ design); poster (one headline + one figure per RQ; new figures for RQ1/RQ2).
   triage of ambiguous runs, corrected-scoring decision record).
 
 ## Housekeeping (not poster-critical)
+- [ ] Clean up the randomizer workbook (`data/Evaluation Search Results & Randomizer.xlsx`; added 2026-11-24): remove bloat before it can be shared. Stays gitignored and local-only until the author approves publishing it.
 - [x] RC numbering fixed in repo (2026-11-12): coherence references RC2 → RC3 in `src/scoring/*`, `coding_synthesis.py`, `runner.py`, `meta_evaluation.py` (RC1/RC3/RC4 κ checks; RC2 MRST separate), `.gitignore`, `CLAUDE.md`. Remaining: proposal paragraph on failure-coding recode (says RC3) — author to update.
 - Proposal text says 4 calibration fragments; study used 2 — author to update proposal.
 Rename RC2 → RC3 in code references (`corrected_scoring.py`, `*_corrected`).
