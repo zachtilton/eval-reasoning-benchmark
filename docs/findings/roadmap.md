@@ -41,8 +41,9 @@ instead, all parts medium).
   failures, blind re-code after ≥ 1 week, Cohen's κ ≥ 0.80). **Design agreed
   2026-11-24 (P2, D4 in `analysis_log.md`):** 56 rows (all 42 confirmed + 14
   of 70 doubted, seed 42); disposition then codes; primary-code κ (main),
-  domain κ + PABAK, all with % agreement. Next: build the blinded recode
-  sheet, then recode.
+  domain κ + PABAK, all with % agreement. Blinded sheet built 2026-11-24:
+  `reliability/rc4/rc4_recode_blinded.xlsx` (`src/analysis/rc4_recode.py`).
+  Next: author recodes; then score agreement.
   **Persuasion check (added 2026-11-12):** re-rate a sample blind to BOTH the
   gold label and GPT's rationale, including GPT passes as well as failures.
   Tests (a) stability of codes/dispositions, (b) whether re-review

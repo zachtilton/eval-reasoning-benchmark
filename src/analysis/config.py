@@ -150,6 +150,18 @@ POSTER_LABEL_COLOR: str = "#262626"   # yellow text is unreadable on white
 
 FAMILY_COLORS: dict[str, str] = {"closed": POSTER_ACCENT_DARK, "open": POSTER_ACCENT}
 
+# ---------------------------------------------------------------------------
+# RC4 failure-coding temporal consistency (see rc4_recode.py; design P2 in
+# docs/findings/analysis_log.md)
+# ---------------------------------------------------------------------------
+
+RC4_DIR = PROJECT_ROOT / "reliability" / "rc4"
+RC4_BLINDED_SHEET_PATH = RC4_DIR / "rc4_recode_blinded.xlsx"
+RC4_KEY_PATH = RC4_DIR / "rc4_recode_key.csv"
+APPENDIX_D_PATH = PROJECT_ROOT / "docs" / "appendix_d_failure_coding_schema.md"
+RC4_N_DOUBTED_SAMPLE: int = 14   # 20% of 70 doubted rows; all confirmed rows included
+RC4_SEED: int = 42
+
 FINDINGS_SEED: int = 42
 BOOTSTRAP_RESAMPLES: int = 5000
 KAPPA_BOOTSTRAP_RESAMPLES: int = 2000
