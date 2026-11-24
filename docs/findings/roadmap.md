@@ -38,11 +38,11 @@ instead, all parts medium).
 
 ## Reliability
 - [ ] **RC4** failure-coding temporal consistency (proposal: 20% of GPT
-  failures, blind re-code after ≥ 1 week, Cohen's κ ≥ 0.80). Decide: unit
-  (rows / 76 fragments / 28 coded), layers (disposition and/or codes),
-  κ basis (primary code, domain). Earliest date: ~2026-11-18, now passed (last coding
-  session 2026-11-11).
-  **Likely after the poster (author, 2026-11-13).**
+  failures, blind re-code after ≥ 1 week, Cohen's κ ≥ 0.80). **Design agreed
+  2026-11-24 (P2, D4 in `analysis_log.md`):** 56 rows (all 42 confirmed + 14
+  of 70 doubted, seed 42); disposition then codes; primary-code κ (main),
+  domain κ + PABAK, all with % agreement. Next: build the blinded recode
+  sheet, then recode.
   **Persuasion check (added 2026-11-12):** re-rate a sample blind to BOTH the
   gold label and GPT's rationale, including GPT passes as well as failures.
   Tests (a) stability of codes/dispositions, (b) whether re-review

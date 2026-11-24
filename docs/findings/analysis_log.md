@@ -59,6 +59,49 @@ or prompts before being claimed generally.
 
 ---
 
+### P2 — RC4 failure-coding temporal consistency: design (2026-11-24; agreed by the author before any recoding)
+
+**Question.** Are the first-pass failure-coding judgments (7–11 Nov 2026)
+stable when the same coder recodes blind after more than one week?
+
+**Unit.** Fragment × condition row (one representative failed run), as in
+the first pass (`data/analysis/failure_codes_gpt5.csv`, 112 rows, 76
+fragments).
+
+**Sample (56 rows).** All 42 confirmed-failure rows plus a random 14 of the
+70 rows where the coder doubted the gold label (20%), drawn with seed 42.
+Rows presented in random order (seed 42), dispositions mixed.
+
+**Layers, in first-pass order.** (1) Disposition: confirmed failure vs
+doubts gold label. (2) For rows the recoder judges confirmed: primary,
+secondary and tertiary codes (Appendix D.1, emergent codes allowed).
+
+**Materials shown.** Fragment text, criterion, prompt condition, GPT's
+classification and rationale, gold classification and the gold rationale as
+it stood at first coding (`gold_rationale`). Hidden: all first-pass coding
+fields (codes, domain, disposition, justification, notes, mismatch and
+pre-lock flags) and `gold_rationale_updated` (written after first coding).
+
+**Outcomes (reported whatever they show), each κ paired with % agreement.**
+- Disposition: Cohen's κ on all 56 rows.
+- Primary code (main test of the proposal's RC4): Cohen's κ on rows
+  confirmed in both passes; target κ ≥ .80.
+- Domain of the primary code (secondary check): Cohen's κ plus
+  prevalence-adjusted κ (PABAK), because Domain 5 dominates (30 of 42).
+- Rows whose disposition changed between passes: listed, excluded from
+  code κ.
+- Secondary/tertiary codes: descriptive overlap only (no κ).
+
+**Deviation from the proposal.** The proposal specified 20% of failures
+(12–24 cases) and codes only. The sample is enlarged to all confirmed rows
+so the code-level κ is interpretable (about 9 rows at 20% would not be), and
+the disposition layer, which emerged during coding and drives Finding 1.3
+and Tier 2 limit #1, is added.
+
+**Status.** Planned reliability check (RC4), extended as above. The
+persuasion check (blind to gold label and GPT rationale, including passes)
+is separate and not part of this design.
+
 ## Deviations from planned analyses
 
 | ID | Date | Planned analysis | Departure | Why | Effect |
@@ -66,6 +109,7 @@ or prompts before being claimed generally.
 | D1 | 2026-11-05 | Coherence gate in scoring (Tier 1 + Tier 2) | Gate removed; all usable responses scored on classification accuracy ("corrected scoring") | RC3: 0 of 217 sampled flagged runs rated incoherent | Pass rate 43.3% → 59.9%; coherence no longer measured. Metric: `rc3_deviation` |
 | D2 | 2026-11-12 | H.4 challenge cases (never previously run) | Run on corrected outcomes with confirmed coded rows only | Proposal's Type 1 coding became a two-layer disposition + code | Criterion 2 almost fully nested in Criterion 1; module's "low overlap" label misleading. Metric: `challenge_cases` |
 | D3 | 2026-11-11 | RC3 sample 50 responses (20/20/10) | Enlarged stratified sample (314 sampled, 311 rated) | Precision (~±10 pp) | See D1 |
+| D4 | 2026-11-24 | RC4: recode 20% of GPT failures (12–24 cases), codes only | 56 rows (all 42 confirmed + 14 of 70 doubted); disposition layer added; primary-code and domain κ (+ PABAK) | Code κ uninterpretable at ~9 rows; disposition layer emerged during coding and carries Finding 1.3 | Pending (see P2) |
 
 ---
 
