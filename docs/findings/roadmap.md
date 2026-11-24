@@ -7,7 +7,7 @@ One topline conclusion per RQ, supported by findings; 2–3 supporting findings 
 ## RQ1 — done (answer + findings 1.1–1.3; 2.4 re-homed as 1.3, 2026-11-13)
 `rq1.md`. Resolved 2026-11-13: the leniency clause stays as a pooled statement (≈2.3:1, CI 1.7–3.1); RQ2's answer carries the length and calibration-example nuance.
 
-## RQ2 — in progress (`rq2.md`)
+## RQ2 — done (answer agreed 2026-11-13; poster block 2026-11-14) (`rq2.md`)
 - [x] 2.1 Shared failures
 - [x] 2.2 Leniency (headline settled: leniency / length / calibration examples, three sentences)
 - [x] Former 2.3 Calibration examples → moved to RQ4 as 4.2 (2026-11-13)
@@ -18,7 +18,7 @@ One topline conclusion per RQ, supported by findings; 2–3 supporting findings 
 - [x] 2.3 (formerly 2.5, then 2.4) Missing the missing judgment (F5.1; examples made it worse); named phenomena: evaluative veneer (preferred), description–evaluation gap
 - [x] RQ2 answer agreed (2026-11-13): lenient, esp. longer passages and calibration examples, most often missed judgments; supporting 2.2, 2.3
 
-## RQ3 — tabled (2026-11-13); provisional answer in `rq3.md`; Stairway marked dead end; conclusions candidates in `conclusions.md`
+## RQ3 — next (tabled 2026-11-13 until after the poster); poster answer recorded 2026-11-15 in `rq3.md` (to revisit); mechanism conjectures go to the discussion as short bullets; Stairway marked dead end
 **Scope decision (2026-11-12):** the proposal's named frameworks lead (Scriven's general logic and Nunns et al.'s variation; JCSEE; Toulmin; Hurteau et al.; Gullickson; Meldrum & Gullickson), with abductive extensions accompanying (verbosity bias, shortcut learning, in-context-learning literature). Proposal commitments 1–3 (named-framework interpretation, checklist as sensitizing concepts, emergent-code / framework-adequacy analysis) are met procedurally by the coding; the interpretive relating to theory remains to be written. Construct-validity questions (D4 vs D2; few-shot and D6; criterion clustering) to be reported as weak/null checks. Candidate connections: Gullickson's (Stake's) "fully describe / fully judge" for the description–evaluation gap (conjecture; revisit data); Nunns et al. on omitted conclusions as a practical stake for meta-evaluation; Stairway propagation within a passage (suggestive only).
 Develop the named phenomena from RQ2: **evaluative veneer** (2.3; links to verbosity bias, shortcut learning), the **description–evaluation gap** (Scriven's logic of evaluation), and **argumentative capability** (1.3).
 Domain profile and theory linkage; **parked lexicon test**: do surface
@@ -31,14 +31,16 @@ proposal construct-validity questions (Domain 4 vs 2; few-shot and Domain 6;
 challenge cases by criterion). Mostly interpretive writing by the author.
 
 ## RQ4 — answer agreed 2026-11-13 (`rq4.md`); findings 4.1 family, 4.2 calibration examples (former 2.3), 4.3 crossing
-Prompting (2.2, 4.2); model family (H2 chi-squared, closed vs open
-z-test); check whether leniency aligns with family; conclusion and rating.
+Done: prompting (2.2, 4.2); model family (H2 chi-squared, closed vs open
+z-test); leniency by family (E21); poster block 2026-11-14. Open: per-RQ
+confidence rating (author decision; the title-level conclusion was rated
+instead, all parts medium).
 
 ## Reliability
 - [ ] **RC4** failure-coding temporal consistency (proposal: 20% of GPT
   failures, blind re-code after ≥ 1 week, Cohen's κ ≥ 0.80). Decide: unit
   (rows / 76 fragments / 28 coded), layers (disposition and/or codes),
-  κ basis (primary code, domain). Earliest date: ~2026-11-18 (last coding
+  κ basis (primary code, domain). Earliest date: ~2026-11-18, now passed (last coding
   session 2026-11-11).
   **Likely after the poster (author, 2026-11-13).**
   **Persuasion check (added 2026-11-12):** re-rate a sample blind to BOTH the
@@ -56,9 +58,9 @@ explanations, scope); "rate the claim as worded." For now apply at the
 conclusion level per RQ, plus the 2–3 load-bearing findings. To do: verify
 Mastrandrea et al. (2010); write descriptors and the evidence × agreement
 rule; add bootstrap CIs for the leniency ratios.
-**Status 2026-11-13:** descriptors and rules recorded in `conclusions.md`;
-part (b) rated medium. Next: evidence sheet and rating for (c), then (d),
-then (a); then Tier 3 prose (Domain 6).
+**Status 2026-11-24:** title-level conclusion rated, parts (a)–(d) all
+medium (`conclusions.md`). Sub-findings not rated (author, 2026-11-15).
+Tier 3 prose deferred until chapter drafting.
 
 ## Findings review (author request, 2026-11-13)
 - [x] Headline review done (2026-11-13): implication-first headlines applied to 1.1, 1.2, 2.1–2.4 (1.3 already); former 2.5 renumbered 2.4, then 2.3 when the former 2.3 moved to RQ4 as 4.2.
